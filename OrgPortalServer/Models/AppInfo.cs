@@ -10,6 +10,7 @@ namespace OrgPortalServer.Models
     {
         public string Name { get; set; }
         public string PackageFamilyName { get; set; }
+        public string CertificateFile { get; set; }
         public string Description { get; set; }
         public string Version { get; set; }
         public string InstallMode { get; set; }
@@ -24,6 +25,15 @@ namespace OrgPortalServer.Models
                 // TODO: There must be better ways to construct these URLs
                 var uri = new Uri(ConfigurationManager.AppSettings["OrgUrl"]);
                 return "http://" + uri.Authority + "/api/appx/" + PackageFamilyName;
+            }
+        }
+
+        public string CertificateUrl
+        {
+            get
+            {
+                var uri = new Uri(ConfigurationManager.AppSettings["OrgUrl"]);
+                return "http://" + uri.Authority + "/api/certificate/" + CertificateFile;
             }
         }
 

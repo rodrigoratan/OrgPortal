@@ -17,11 +17,11 @@ namespace OrgPortalServer.Controllers
         }
 
         [HttpPost]
-        public ActionResult Application(int categoryID, string installMode, HttpPostedFileBase appxFile)
+        public ActionResult Application(int categoryID, string installMode, HttpPostedFileBase appxFile/*, HttpPostedFileBase certificateFile*/)
         {
             using (var uow = IoCContainerFactory.Current.GetInstance<UnitOfWork>())
             {
-                uow.ApplicationRepository.Add(new Application(appxFile.InputStream, categoryID, installMode));
+                uow.ApplicationRepository.Add(new Application(appxFile.InputStream, /*certificateFile.InputStream,*/ categoryID, installMode));
                 uow.Commit();
             }
             TempData["WarningMessage"] = "Application saved.";

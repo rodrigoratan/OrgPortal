@@ -36,6 +36,7 @@ namespace OrgPortalServer.Controllers
                         {
                             Name = a.Name,
                             PackageFamilyName = a.PackageFamilyName,
+                            CertificateFile = a.CertificateFile,
                             Description = a.Description,
                             Version = a.Version,
                             InstallMode = a.InstallMode,
