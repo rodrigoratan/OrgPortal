@@ -42,6 +42,13 @@ namespace OrgPortal.Infrastructure.DAL.Repositories
             return File.ReadAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName + ".appx"));
         }
 
+        public byte[] GetCertificate(string certificateFile)
+        {
+            if (!File.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], certificateFile)))
+                throw new ArgumentException("Unable to find an app by that name.");
+            return File.ReadAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], certificateFile));
+        }
+
         public byte[] GetLogo(string packageFamilyName)
         {
             if (!File.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName + ".png")))

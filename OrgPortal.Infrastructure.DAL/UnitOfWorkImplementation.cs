@@ -76,12 +76,14 @@ namespace OrgPortal.Infrastructure.DAL
                 if (entry.State == EntityState.Modified || entry.State == EntityState.Added)
                 {
                     File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + ".appx"), entry.Entity.Package);
+                    File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.CertificateFile), entry.Entity.Certificate);
                     File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + ".png"), entry.Entity.Logo);
                     File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + "-small.png"), entry.Entity.SmallLogo);
                 }
                 else if (entry.State == EntityState.Deleted)
                 {
                     File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + ".appx"));
+                    File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.CertificateFile));
                     File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + ".png"));
                     File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + "-small.png"));
                 }

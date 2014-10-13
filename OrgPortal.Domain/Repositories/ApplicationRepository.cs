@@ -14,7 +14,9 @@ namespace OrgPortal.Domain.Repositories
         void Remove(Application model);
 
         byte[] GetAppx(string packageFamilyName);
+        byte[] GetCertificate(string packageFamilyName);
         byte[] GetLogo(string packageFamilyName);
         byte[] GetSmallLogo(string packageFamilyName);
+
     }
 }

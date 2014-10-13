@@ -24,6 +24,7 @@ namespace OrgPortal.Domain.Models
         public string PublisherDisplayName { get; private set; }
         public string InstallMode { get; private set; }
         public string PackageFamilyName { get; private set; }
+        public string CertificateFile { get; private set; }
         public DateTime DateAdded { get; private set; }
         public string BackgroundColor { get; private set; }
         public int CategoryID { get; set; }
@@ -44,6 +45,18 @@ namespace OrgPortal.Domain.Models
                 return _package;
             }
             set { _package = value; }
+        }
+
+        private byte[] _certificate;
+        public byte[] Certificate
+        {
+            get
+            {
+                if (_certificate == null || _certificate.Length == 0)
+                    _certificate = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().GetCertificate(CertificateFile);
+                return _certificate;
+            }
+            set { _certificate = value; }
         }
 
         private byte[] _logo;
@@ -72,18 +85,25 @@ namespace OrgPortal.Domain.Models
 
         private Application() { }
 
-        public Application(Stream data, int categoryID, string installMode)
+        //public Application(Stream dataAppx, /*Stream dataCertificate,*/ int categoryID, string installMode)
+        public Application(Stream dataAppx, Stream dataCertificate, int categoryID, string installMode)
         {
             CategoryID = categoryID;
             InstallMode = installMode;
             DateAdded = DateTime.UtcNow;
-            ExtractValuesFromPackage(data);
-            data.Seek(0, SeekOrigin.Begin);
-            Package = data.ReadFully();
+
+            ExtractValuesFromPackage(dataAppx);
+            dataAppx.Seek(0, SeekOrigin.Begin);
+            Package = dataAppx.ReadFully();
+
+            dataCertificate.Seek(0, SeekOrigin.Begin);
+            Certificate = dataCertificate.ReadFully();
 
             // TODO: This is not correct.  Publisher needs to be the Publisher ID, which is a hash of something.
             //       Need to figure out how to calculate/fetch the Publisher ID.
+            //Agile for Windows_CN=C42B4C41-BEC2-494C-AFE8-5E95519F8A0C
             PackageFamilyName = Name + "_" + Publisher;
+            CertificateFile = PackageFamilyName; //TODO: na duvida de usar o mesmo nome do package ou usar o nome original do certificado
         }
 
         // TODO: Move all of this extraction logic into an infrastructure assembly to get the Zip references out of the domain?

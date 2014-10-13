@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[Application] (
     [PackageFamilyName]		NVARCHAR (500) NOT NULL, 
-	[CategoryID]			INT			   NOT NULL,
+	[CertificateFile]       NVARCHAR (255) NOT NULL,
+    [CategoryID]			INT			   NOT NULL,
     [Name]                  NVARCHAR (255) NOT NULL,
     [Publisher]             NVARCHAR (255) NOT NULL,
     [Version]               NVARCHAR (25)  NOT NULL,

@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Diagnostics;
 
 namespace OrgPortal.DataModel
 {
@@ -13,7 +14,7 @@ namespace OrgPortal.DataModel
     [Shared]
     public class PortalDataSource : IPortalDataSource
     {
-        private static readonly string _serviceURI = "http://localhost:48257/api/";
+        private /*static readonly*/ string _serviceURI = "http://orgportal/api/";
 
         public async Task<List<AppInfo>> GetAppListAsync()
         {
@@ -77,6 +78,8 @@ namespace OrgPortal.DataModel
 
         public async Task<BrandingInfo> GetBrandingDataAsync()
         {
+            try
+            {
             using (var client = new HttpClient())
             {
                 var response = await client.GetAsync(_serviceURI + "Branding");
@@ -88,8 +91,44 @@ namespace OrgPortal.DataModel
                     return branding;
                 }
             }
+            }
+            catch (System.Net.WebException ex)
+            {
+                LogException(ex);
+                return null;
+            }
+            catch (System.ObjectDisposedException ex)
+            {
+                LogException(ex);
+                return null;
+            }
+            catch (System.Net.Http.HttpRequestException ex)
+            {
+                LogException(ex);
+                return null;
+            }
+            catch (System.Exception ex)
+            {
+                LogException(ex);
+                return null;
+                //throw;
+            }
+//System.Net.Sockets.SocketException
+//System.Net.WebException
+//System.ObjectDisposedException
+//
 
             return null;
+        }
+
+        private static void LogException(System.Exception ex)
+        {
+            Debug.WriteLine("Message:");
+            Debug.WriteLine(ex.Message);
+            Debug.WriteLine("InnerException:");
+            Debug.WriteLine(ex.InnerException);
+            Debug.WriteLine("StackTrace:");
+            Debug.WriteLine(ex.StackTrace);
         }
 
         public async Task<List<CategoryInfo>> GetCategoryListAsync()

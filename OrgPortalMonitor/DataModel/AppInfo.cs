@@ -19,6 +19,8 @@ namespace OrgPortalMonitor.DataModel
         [DataMember]
         public string AppxUrl { get; set; }
         [DataMember]
+        public string CertificateUrl { get; set; }
+        [DataMember]
         public string ImageUrl { get; set; }
         [DataMember]
         public string SmallImageUrl { get; set; }
