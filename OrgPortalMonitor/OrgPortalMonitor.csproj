@@ -13,7 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <PublishUrl>C:\_ZOLLIE\GitHub\Magenic\trunk\OrgPortalServer\OrgPortalMonitor\</PublishUrl>
+    <PublishUrl>C:\_GitHub\Ratan\OrgPortal\trunk\OrgPortalServer\OrgPortalMonitor\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>

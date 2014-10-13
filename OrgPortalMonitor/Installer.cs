@@ -25,7 +25,7 @@ namespace OrgPortalMonitor
       this.Watcher = watcher;
 
       this.Output.AppendText("Monitor started at " + DateTime.Now + Environment.NewLine);
-      this.NotifyIcon.ShowBalloonTip(500, "OrgPortal", "The OrgPortal monitor has started", System.Windows.Forms.ToolTipIcon.None);
+            this.NotifyIcon.ShowBalloonTip(500, "OrgPortal", "The OrgPortal monitor has started", System.Windows.Forms.ToolTipIcon.Info);
 
       var tempPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
       if (!tempPath.EndsWith(@"\"))
@@ -120,8 +120,16 @@ namespace OrgPortalMonitor
 
       var result = new InstallResult();
       result.Error = DownloadAppx(appxurl, filePath);
+
+            if (string.IsNullOrWhiteSpace(result.Error))
+            {
+                //result = InstallCertificate(filePath);
+            }
+
       if (string.IsNullOrWhiteSpace(result.Error))
+            {
         result = InstallAppx(filePath);
+            }
 
       if (string.IsNullOrWhiteSpace(result.Error))
       {
@@ -191,6 +199,76 @@ namespace OrgPortalMonitor
       return result;
     }
 
+        /*
+         * importpfx.exe -f "somePfx.pfx" -p "somePassword" -t MACHINE -s "TRUSTEDPEOPLE"
+         */
+        public InstallResult InstallCertificate(string filepath)
+        {
+            var result = new InstallResult();
+
+            try
+            {
+                var sb = new StringBuilder();
+
+                if (filepath.Contains(".pfx"))
+                {
+                    sb.Append(@"importpfx.exe -f ");
+                    sb.Append(@"""");
+                    sb.Append(filepath);
+                    sb.Append(@"""");
+                    sb.Append(@" -p """" -t RATAN -s ""TRUSTEDPEOPLE"" ");
+                }
+                else if (filepath.Contains(".cer"))
+                {
+                    //Certutil -addstore -f "TRUSTEDPEOPLE" "someCertificate.cer"
+                    sb.Append(@"Certutil -addstore -f ");
+                    sb.Append(@"""");
+                    sb.Append("TRUSTEDPEOPLE");
+                    sb.Append(@""" """);
+                    sb.Append(filepath);
+                    sb.Append(@"""");
+                }
+
+                var process = new System.Diagnostics.Process();
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardError = true;
+                process.StartInfo.RedirectStandardOutput = true;
+
+                process.StartInfo.FileName = "powershell.exe";
+                process.StartInfo.Arguments = sb.ToString();
+
+                process.StartInfo.CreateNoWindow = false;
+                process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+
+                process.Start();
+
+                var stdout = process.StandardOutput;
+                var stderr = process.StandardError;
+
+                result.Output = stdout.ReadToEnd();
+                result.Error = stderr.ReadToEnd();
+
+                if (!process.HasExited)
+                    process.Kill();
+
+                stdout.Close();
+                stderr.Close();
+            }
+            catch (Exception ex)
+            {
+                if (string.IsNullOrWhiteSpace(result.Error))
+                    result.Error = ex.Message;
+                else
+                    result.Error += Environment.NewLine + ex.Message;
+            }
+            finally
+            {
+                File.Delete(filepath);
+            }
+
+            return result;
+        }
+
     public void GetInstalledPackages()
     {
       var sb = new StringBuilder();
@@ -242,11 +320,11 @@ namespace OrgPortalMonitor
       outputDoc.Add(new XElement("success", "true"));
     }
 
-    public static readonly string _serviceURI = "http://localhost:48257/api/";
+        public static readonly string _serviceURI = "http://orgportal/api/";
 
     public async Task AutoInstallUpdateApps()
     {
-      this.Output.AppendText("Auto-install and auto-update apps");
+            this.Output.AppendText("Auto-install and auto-update apps...");
 
       var serverAppList = await GetAppList();
       var installedAppList = GetInstalledApps();
@@ -261,6 +339,7 @@ namespace OrgPortalMonitor
           {
             await requestFile.WriteLineAsync(serverApp.Name);
             await requestFile.WriteLineAsync(serverApp.AppxUrl);
+                        //await requestFile.WriteLineAsync(serverApp.CertificateUrl);
             requestFile.Close();
           }
         }
@@ -322,15 +401,16 @@ namespace OrgPortalMonitor
         foreach (var obj in info)
         {
           var app = new AppInfo();
-          app.Name = obj["Name"];
-          app.PackageFamilyName = obj["PackageFamilyName"];
-          app.AppxUrl = obj["AppxUrl"];
-          app.Version = obj["Version"];
-          app.Description = obj["Description"];
-          app.ImageUrl = obj["LogoUrl"];
+                    app.Name = obj["Name"] != null ? obj["Name"] : "";
+                    app.PackageFamilyName = obj["PackageFamilyName"] != null ? obj["PackageFamilyName"] : "";
+                    app.AppxUrl = obj["AppxUrl"] != null ? obj["AppxUrl"] : "";
+                    app.CertificateUrl = obj["CertificateUrl"] != null ? obj["CertificateUrl"] : "";
+                    app.Version = obj["Version"] != null ? obj["Version"] : "";
+                    app.Description = obj["Description"] != null ? obj["Description"] : "";
+                    app.ImageUrl = obj.ContainsKey("LogoUrl") && obj["LogoUrl"] != null ? obj["LogoUrl"] : "Assets/DarkGray.png";
           if (string.IsNullOrEmpty(app.ImageUrl))
             app.ImageUrl = "Assets/DarkGray.png";
-          app.InstallMode = obj["InstallMode"];
+                    app.InstallMode = obj["InstallMode"] != null ? obj["InstallMode"] : "";
           appList.Add(app);
         }
       }
