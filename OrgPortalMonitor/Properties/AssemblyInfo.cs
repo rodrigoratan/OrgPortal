@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("OrgPortalMonitor")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Improved by Zollie")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Magenic")]
 [assembly: AssemblyProduct("OrgPortalMonitor")]

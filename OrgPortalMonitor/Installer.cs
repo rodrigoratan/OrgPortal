@@ -149,12 +149,14 @@ namespace OrgPortalMonitor
             if (string.IsNullOrWhiteSpace(result.Error))
             {
                 outputDoc.Add(new XElement("success", "true"));
+                outputDoc.Add(new XElement("filePath", filePath));
                 NotifyIcon.ShowBalloonTip(500, "OrgPortal", installUrl + " installed", System.Windows.Forms.ToolTipIcon.Info);
                 this.Output.AppendText("**SUCCESS" + Environment.NewLine);
             }
             else
             {
                 outputDoc.Add(new XElement("success", "false"));
+                outputDoc.Add(new XElement("filePath", filePath));
                 outputDoc.Add(new XElement("error", result.ToString()));
                 NotifyIcon.ShowBalloonTip(500, "OrgPortal", installUrl + " not installed", System.Windows.Forms.ToolTipIcon.Warning);
                 this.Output.AppendText("**FAILED" + Environment.NewLine);
@@ -173,6 +175,7 @@ namespace OrgPortalMonitor
                 var sb = new StringBuilder();
                 sb.Append(@"add-appxpackage ");
                 sb.Append(filepath);
+                sb.Append(" -ForceApplicationShutdown");
 
                 var process = new System.Diagnostics.Process();
                 process.StartInfo.UseShellExecute = false;
@@ -219,56 +222,64 @@ namespace OrgPortalMonitor
          */
         public InstallResult InstallCertificate(string filepath)
         {
-            var result = new InstallResult();
+            /*var*/ result = new InstallResult();
 
             try
             {
                 var sb = new StringBuilder();
 
-                //if (filepath.Contains(".pfx"))
-                //{
+                if (filepath.Contains(".pfx"))
+                {
                     sb.Append(@"importpfx.exe -f ");
                     sb.Append(@"""");
                     sb.Append(filepath);
                     sb.Append(@"""");
                     sb.Append(@" -p """" -t MACHINE -s ""TRUSTEDPEOPLE"" ");
-                //}
-                //else if (filepath.Contains(".cer"))
-                //{
-                //    //Certutil -addstore -f "TRUSTEDPEOPLE" "someCertificate.cer"
-                //    sb.Append(@"Certutil -addstore -f ");
-                //    sb.Append(@"""");
-                //    sb.Append("TRUSTEDPEOPLE");
-                //    sb.Append(@""" """);
-                //    sb.Append(filepath);
-                //    sb.Append(@"""");
-                //}
+                }
+                else if (filepath.Contains(".cer"))
+                {
+                    //Certutil -addstore -f "TRUSTEDPEOPLE" "someCertificate.cer"
+                    //C:\Temp>certutil -addstore -f "TRUSTEDPEOPLE" .\Agile.WindowsApp_StoreKey.cer TRUSTEDPEOPLE
+                    sb.Append(@"Certutil -addstore -f ");
+                    sb.Append(@"""");
+                    sb.Append("TRUSTEDPEOPLE");
+                    sb.Append(@""" """);
+                    sb.Append(filepath);
+                    sb.Append(@"""");
+                } 
 
                 var process = new System.Diagnostics.Process();
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.UseShellExecute = true;
+                //process.StartInfo.RedirectStandardError = true;
+                //process.StartInfo.RedirectStandardOutput = true;
 
-                process.StartInfo.FileName = "cmd.exe /c ";
-                process.StartInfo.Arguments = sb.ToString()/* + " | more"*/;
+                process.StartInfo.FileName = "cmd.exe";
+                //process.StartInfo.Arguments = "dir /w"; //sb.ToString()/* + " | more"*/;
+                process.StartInfo.Arguments = " /c " + sb.ToString()/* + " | more"*/;
                 process.StartInfo.Verb = "runas";
 
                 process.StartInfo.CreateNoWindow = false;
-                process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-
+                //process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+                process.ErrorDataReceived += process_ErrorDataReceived;
+                process.OutputDataReceived += process_OutputDataReceived;
+                process.EnableRaisingEvents = true;
                 process.Start();
+                process.WaitForExit();
+                //process.BeginOutputReadLine();
+                //process.BeginErrorReadLine();
+                
+                //var stdout = process.StandardOutput;
+                //var stderr = process.StandardError;
 
-                var stdout = process.StandardOutput;
-                var stderr = process.StandardError;
+                //result.Output = stdout.ReadToEnd();
+                //result.Error = stderr.ReadToEnd();
 
-                result.Output = stdout.ReadToEnd();
-                result.Error = stderr.ReadToEnd();
+                //if (!process.HasExited)
+                //    process.Kill();
 
-                if (!process.HasExited)
-                    process.Kill();
-
-                stdout.Close();
-                stderr.Close();
+                //stdout.Close();
+                //stderr.Close();
             }
             catch (Exception ex)
             {
@@ -283,6 +294,16 @@ namespace OrgPortalMonitor
             }
 
             return result;
+        }
+
+        void process_OutputDataReceived(object sender, System.Diagnostics.DataReceivedEventArgs e)
+        {
+            result.Output += e.Data;
+        }
+
+        void process_ErrorDataReceived(object sender, System.Diagnostics.DataReceivedEventArgs e)
+        {
+            result.Error += e.Data;
         }
 
         public void GetInstalledPackages()
@@ -485,5 +506,7 @@ namespace OrgPortalMonitor
             while (!process.HasExited)
                 System.Threading.Thread.Sleep(5);
         }
+
+        public InstallResult result { get; set; }
     }
 }
