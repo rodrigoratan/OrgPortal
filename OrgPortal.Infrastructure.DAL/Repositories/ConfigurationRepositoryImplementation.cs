@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace OrgPortal.Infrastructure.DAL.Repositories
 {
@@ -15,10 +16,18 @@ namespace OrgPortal.Infrastructure.DAL.Repositories
     {
         public string GetSetting(string key)
         {
-            using (var db = new ConfigDbContext())
+            try
             {
-                var setting = db.Set<ConfigSetting>().SingleOrDefault(c => c.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
-                return setting == null ? string.Empty : setting.Value;
+                using (var db = new ConfigDbContext())
+                {
+                    var setting = db.Set<ConfigSetting>().SingleOrDefault(c => c.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+                    return setting == null ? string.Empty : setting.Value;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return string.Empty;
             }
         }
 

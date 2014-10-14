@@ -123,14 +123,14 @@ namespace OrgPortalMonitor
             var result = new InstallResult();
             result.Error = DownloadFile(installUrl, filePath);
 
-            if (installUrl.Contains(".pfx") || installUrl.Contains(".cer"))
+            if (installUrl.Contains("certificate"))
             {
                 if (string.IsNullOrWhiteSpace(result.Error))
                 {
                     result = InstallCertificate(filePath);
                 }
             }
-            else if (installUrl.Contains(".appx"))
+            else if (installUrl.Contains("appx"))
             {
                 if (string.IsNullOrWhiteSpace(result.Error))
                 {

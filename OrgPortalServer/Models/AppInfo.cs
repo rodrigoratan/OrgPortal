@@ -33,7 +33,7 @@ namespace OrgPortalServer.Models
             get
             {
                 var uri = new Uri(ConfigurationManager.AppSettings["OrgUrl"]);
-                return "http://" + uri.Authority + "/api/certificate/" + CertificateFile;
+                return "http://" + uri.Authority + "/api/certificate/" + PackageFamilyName; //PackageFamilyName é o id correto ao inves de //CertificateFile; 
             }
         }
 
