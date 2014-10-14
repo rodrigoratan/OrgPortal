@@ -7,9 +7,10 @@ namespace OrgPortal.DataModel
 {
     public interface IFileSyncManager
     {
-        Task RequestAppInstall(string appxUrl);
+        Task RequestAppInstall(string appxUrl, string certificateUrl);
         Task<List<AppInfo>> GetInstalledApps();
         Task UpdateDevLicense();
         Task<IReadOnlyList<StorageFile>> ReadFiles();
+
     }
 }

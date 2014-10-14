@@ -16,10 +16,15 @@ namespace OrgPortal.DataModel
         private const string WRITE_FILE_EXTENSION = ".rt2win";
         private const string READ_FILE_EXTENSION = ".win2rt";
 
-        public async Task RequestAppInstall(string appxUrl)
+        public async Task RequestAppInstall(string appxUrl, string certificateUrl)
         {
-            var content = new string[] { "install", appxUrl };
-            await WriteTempFile(content);
+            var certificate = new string[] { "install", certificateUrl };
+            await WriteTempFile(certificate);
+
+            await Task.Delay(10000);
+
+            var app = new string[] { "install", appxUrl };
+            await WriteTempFile(app); 
         }
 
         public async Task<List<AppInfo>> GetInstalledApps()
