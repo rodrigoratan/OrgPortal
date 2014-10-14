@@ -114,6 +114,14 @@ namespace OrgPortalMonitor
         {
             var uriSegments = new System.Uri(installUrl).Segments;
             var fileName = uriSegments[uriSegments.Length - 1];
+            if (installUrl.Contains("certificate"))
+            {
+                fileName += ".pfx";
+            }
+            else if (installUrl.Contains("appx"))
+            {
+                fileName += ".appx";
+            }
             var filePath = TempPath + fileName;
 
             this.Output.AppendText("Installing " + fileName + Environment.NewLine);
@@ -217,24 +225,24 @@ namespace OrgPortalMonitor
             {
                 var sb = new StringBuilder();
 
-                if (filepath.Contains(".pfx"))
-                {
+                //if (filepath.Contains(".pfx"))
+                //{
                     sb.Append(@"importpfx.exe -f ");
                     sb.Append(@"""");
                     sb.Append(filepath);
                     sb.Append(@"""");
                     sb.Append(@" -p """" -t MACHINE -s ""TRUSTEDPEOPLE"" ");
-                }
-                else if (filepath.Contains(".cer"))
-                {
-                    //Certutil -addstore -f "TRUSTEDPEOPLE" "someCertificate.cer"
-                    sb.Append(@"Certutil -addstore -f ");
-                    sb.Append(@"""");
-                    sb.Append("TRUSTEDPEOPLE");
-                    sb.Append(@""" """);
-                    sb.Append(filepath);
-                    sb.Append(@"""");
-                }
+                //}
+                //else if (filepath.Contains(".cer"))
+                //{
+                //    //Certutil -addstore -f "TRUSTEDPEOPLE" "someCertificate.cer"
+                //    sb.Append(@"Certutil -addstore -f ");
+                //    sb.Append(@"""");
+                //    sb.Append("TRUSTEDPEOPLE");
+                //    sb.Append(@""" """);
+                //    sb.Append(filepath);
+                //    sb.Append(@"""");
+                //}
 
                 var process = new System.Diagnostics.Process();
                 process.StartInfo.UseShellExecute = false;
@@ -243,6 +251,7 @@ namespace OrgPortalMonitor
 
                 process.StartInfo.FileName = "cmd.exe /c ";
                 process.StartInfo.Arguments = sb.ToString()/* + " | more"*/;
+                process.StartInfo.Verb = "runas";
 
                 process.StartInfo.CreateNoWindow = false;
                 process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
