@@ -121,7 +121,7 @@ namespace OrgPortalMonitor
                                                      string certificateFile)
         {
             var appUriSegments = new System.Uri(appxUrl).Segments;
-            var appFileName = appUriSegments[appUriSegments.Length - 1];
+            var appFileName = appUriSegments[appUriSegments.Length - 1] + ".appx";
             var appFilePath = TempPath + appFileName;
             var certificateFilePath = TempPath + certificateFile;
 
