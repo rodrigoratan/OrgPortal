@@ -16,18 +16,24 @@ namespace OrgPortal.DataModel
         private const string WRITE_FILE_EXTENSION = ".rt2win";
         private const string READ_FILE_EXTENSION = ".win2rt";
 
-        public async Task RequestAppInstall(string appxUrl, string certificateUrl)
+        public async Task RequestAppInstall(string appxUrl, string certificateUrl, string certificateFile)
         {
-            var certificate = new string[] { "install", certificateUrl };
-            await WriteTempFile(certificate);
+            //var certificate = new string[] { "install", certificateUrl };
+            //var certificateFile = await WriteTempFile(certificate);
 
-            await Task.Delay(10000);
+            //await Task.Delay(10000);
 
-            var app = new string[] { "install", appxUrl };
+            //var app = new string[] { "install", appxUrl };
+            //await WriteTempFile(app); 
+
+            var app = new string[] { "install",         appxUrl, 
+                                     "certificateUrl",  certificateUrl, 
+                                     "certificateFile", certificateFile 
+                                   };
             await WriteTempFile(app); 
         }
 
-        public async Task<List<AppInfo>> GetInstalledApps()
+         public async Task<List<AppInfo>> GetInstalledApps()
         {
             var results = new List<AppInfo>();
             var folder = GetSyncFolder();
@@ -84,12 +90,13 @@ namespace OrgPortal.DataModel
             return string.Format("{0}{1}", Path.GetRandomFileName(), WRITE_FILE_EXTENSION);
         }
 
-        private async Task WriteTempFile(string[] content)
+        private async Task<StorageFile> WriteTempFile(string[] content)
         {
             var folder = GetSyncFolder();
             var file = await folder.CreateFileAsync(GenerateFileName(), CreationCollisionOption.OpenIfExists);
             
             await FileIO.WriteLinesAsync(file, content);
+            return file;
         }
     }
 }

@@ -28,19 +28,21 @@ namespace OrgPortalMonitor
             this.NotifyIcon.ShowBalloonTip(500, "OrgPortal", "The OrgPortal monitor has started", System.Windows.Forms.ToolTipIcon.Info);
 
             var tempPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
-            if (!tempPath.EndsWith(@"\"))
-                tempPath += @"\";
+            if (!tempPath.EndsWith(@"\")) tempPath += @"\";
             tempPath += @"Packages\OrgPortal_m64ba5zfsemg0\TempState\";
             if (!System.IO.Directory.Exists(tempPath))
+            {
                 System.IO.Directory.CreateDirectory(tempPath);
+            }
             this.TempPath = tempPath;
 
             var localPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
-            if (!localPath.EndsWith(@"\"))
-                localPath += @"\";
+            if (!localPath.EndsWith(@"\")) localPath += @"\";
             localPath += @"Packages\OrgPortal_m64ba5zfsemg0\LocalState\";
             if (!System.IO.Directory.Exists(localPath))
+            {
                 System.IO.Directory.CreateDirectory(localPath);
+            }
             this.LocalPath = localPath;
 
             this.Watcher.Path = this.TempPath;
@@ -78,7 +80,7 @@ namespace OrgPortalMonitor
 
                 if (command == "install")
                 {
-                    ProcessInstallRequest(outputDoc, input[1]);
+                    ProcessInstallRequest(outputDoc, input[1], input[3], input[5]);
                 }
                 else if (command == "getDevLicense")
                 {
@@ -103,62 +105,74 @@ namespace OrgPortalMonitor
             }
             finally
             {
-                File.Delete(inputFilePath);
+                //File.Delete(inputFilePath);
+                var arquivoPartes = inputFilePath.Split('.');
+                var extensao = arquivoPartes[arquivoPartes.Length-1];
+                File.Move(inputFilePath, inputFilePath.Replace("." + extensao, ".txt"));
                 this.Output.AppendText("<<Processed " + inputFilePath + Environment.NewLine);
                 this.Output.AppendText(Environment.NewLine);
                 File.WriteAllText(logfilePath, outputDoc.ToString());
             }
         }
 
-        private void ProcessInstallRequest(XElement outputDoc, string installUrl)
+        private /*async*/ void ProcessInstallRequest(XElement outputDoc,
+                                                     string appxUrl,
+                                                     string certificateUrl,
+                                                     string certificateFile)
         {
-            var uriSegments = new System.Uri(installUrl).Segments;
-            var fileName = uriSegments[uriSegments.Length - 1];
-            if (installUrl.Contains("certificate"))
-            {
-                fileName += ".pfx";
-            }
-            else if (installUrl.Contains("appx"))
-            {
-                fileName += ".appx";
-            }
-            var filePath = TempPath + fileName;
+            var appUriSegments = new System.Uri(appxUrl).Segments;
+            var appFileName = appUriSegments[appUriSegments.Length - 1];
+            var appFilePath = TempPath + appFileName;
+            var certificateFilePath = TempPath + certificateFile;
 
-            this.Output.AppendText("Installing " + fileName + Environment.NewLine);
-            this.Output.AppendText("  from " + installUrl + Environment.NewLine);
-            this.Output.AppendText("  at " + DateTime.Now + Environment.NewLine);
+            this.Output.AppendText("Starting Install Request at " + DateTime.Now + Environment.NewLine);
+            this.Output.AppendText("App file name " + appFileName + Environment.NewLine);
+            this.Output.AppendText("from " + appxUrl + Environment.NewLine);
+            if (!string.IsNullOrEmpty(certificateFile))
+            {
+                this.Output.AppendText("Certificate file: " + certificateFile + Environment.NewLine);
+                this.Output.AppendText("from " + certificateUrl + Environment.NewLine);
+            }
+            this.Output.AppendText("Saving at " + TempPath + Environment.NewLine);
 
             var result = new InstallResult();
-            result.Error = DownloadFile(installUrl, filePath);
 
-            if (installUrl.Contains("certificate"))
+            if (!string.IsNullOrEmpty(certificateFile) &&
+                (certificateFile.Contains(".pfx") ||
+                 certificateFile.Contains(".cer")))
             {
+                result.Error = DownloadFile(certificateUrl, certificateFilePath);
+                //result.Error = await DownloadFileTaskAsync(fileUrl, filePath);
+
                 if (string.IsNullOrWhiteSpace(result.Error))
                 {
-                    result = InstallCertificate(filePath);
+                    result = InstallCertificate(certificateFilePath);
                 }
             }
-            else if (installUrl.Contains("appx"))
+
+            if (string.IsNullOrWhiteSpace(result.Error))
             {
+                result.Error = DownloadFile(appxUrl, appFilePath);
+
                 if (string.IsNullOrWhiteSpace(result.Error))
                 {
-                    result = InstallAppx(filePath);
+                    result = InstallAppx(appFilePath);
                 }
             }
 
             if (string.IsNullOrWhiteSpace(result.Error))
             {
                 outputDoc.Add(new XElement("success", "true"));
-                outputDoc.Add(new XElement("filePath", filePath));
-                NotifyIcon.ShowBalloonTip(500, "OrgPortal", installUrl + " installed", System.Windows.Forms.ToolTipIcon.Info);
+                outputDoc.Add(new XElement("filePath", appFilePath));
+                NotifyIcon.ShowBalloonTip(500, "OrgPortal", appxUrl + " installed", System.Windows.Forms.ToolTipIcon.Info);
                 this.Output.AppendText("**SUCCESS" + Environment.NewLine);
             }
             else
             {
                 outputDoc.Add(new XElement("success", "false"));
-                outputDoc.Add(new XElement("filePath", filePath));
+                outputDoc.Add(new XElement("filePath", appFilePath));
                 outputDoc.Add(new XElement("error", result.ToString()));
-                NotifyIcon.ShowBalloonTip(500, "OrgPortal", installUrl + " not installed", System.Windows.Forms.ToolTipIcon.Warning);
+                NotifyIcon.ShowBalloonTip(500, "OrgPortal", appxUrl + " not installed", System.Windows.Forms.ToolTipIcon.Warning);
                 this.Output.AppendText("**FAILED" + Environment.NewLine);
                 this.Output.AppendText(result.ToString() + Environment.NewLine);
             }
@@ -166,7 +180,7 @@ namespace OrgPortalMonitor
             GetInstalledPackages();
         }
 
-        public InstallResult InstallAppx(string filepath)
+        public InstallResult InstallAppx(string appxFilePath)
         {
             var result = new InstallResult();
 
@@ -174,8 +188,8 @@ namespace OrgPortalMonitor
             {
                 var sb = new StringBuilder();
                 sb.Append(@"add-appxpackage ");
-                sb.Append(filepath);
-                sb.Append(" -ForceApplicationShutdown");
+                sb.Append(appxFilePath);
+                sb.Append(" -ForceApplicationShutdown"); //TODO: confirm it's working
 
                 var process = new System.Diagnostics.Process();
                 process.StartInfo.UseShellExecute = false;
@@ -211,7 +225,7 @@ namespace OrgPortalMonitor
             }
             finally
             {
-                File.Delete(filepath);
+                File.Delete(appxFilePath);
             }
 
             return result;
@@ -220,23 +234,24 @@ namespace OrgPortalMonitor
         /*
          * importpfx.exe -f "somePfx.pfx" -p "somePassword" -t MACHINE -s "TRUSTEDPEOPLE"
          */
-        public InstallResult InstallCertificate(string filepath)
+        public InstallResult InstallCertificate(string certificateFilePath)
         {
-            /*var*/ result = new InstallResult();
+            /*var*/
+            result = new InstallResult();
 
             try
             {
                 var sb = new StringBuilder();
 
-                if (filepath.Contains(".pfx"))
+                if (certificateFilePath.Contains(".pfx"))
                 {
                     sb.Append(@"importpfx.exe -f ");
                     sb.Append(@"""");
-                    sb.Append(filepath);
+                    sb.Append(certificateFilePath);
                     sb.Append(@"""");
                     sb.Append(@" -p """" -t MACHINE -s ""TRUSTEDPEOPLE"" ");
                 }
-                else if (filepath.Contains(".cer"))
+                else if (certificateFilePath.Contains(".cer"))
                 {
                     //Certutil -addstore -f "TRUSTEDPEOPLE" "someCertificate.cer"
                     //C:\Temp>certutil -addstore -f "TRUSTEDPEOPLE" .\Agile.WindowsApp_StoreKey.cer TRUSTEDPEOPLE
@@ -244,9 +259,9 @@ namespace OrgPortalMonitor
                     sb.Append(@"""");
                     sb.Append("TRUSTEDPEOPLE");
                     sb.Append(@""" """);
-                    sb.Append(filepath);
+                    sb.Append(certificateFilePath);
                     sb.Append(@"""");
-                } 
+                }
 
                 var process = new System.Diagnostics.Process();
                 process.StartInfo.UseShellExecute = true;
@@ -268,7 +283,7 @@ namespace OrgPortalMonitor
                 process.WaitForExit();
                 //process.BeginOutputReadLine();
                 //process.BeginErrorReadLine();
-                
+
                 //var stdout = process.StandardOutput;
                 //var stderr = process.StandardError;
 
@@ -290,7 +305,7 @@ namespace OrgPortalMonitor
             }
             finally
             {
-                File.Delete(filepath);
+                File.Delete(certificateFilePath);
             }
 
             return result;
@@ -347,6 +362,25 @@ namespace OrgPortalMonitor
             return null;
         }
 
+        public async Task<string> DownloadFileTaskAsync(string fileUrl, string localFilePath)
+        {
+            try
+            {
+                using (var client = new WebClient())
+                {
+                    await client.DownloadFileTaskAsync(fileUrl, localFilePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine("Download of " + fileUrl + " failed.");
+                sb.AppendLine(ex.Message);
+                return sb.ToString();
+            }
+            return null;
+        }
+
         public void GetDevLicense()
         {
             GetDevLicense(new XElement("request"));
@@ -367,16 +401,19 @@ namespace OrgPortalMonitor
             var installedAppList = GetInstalledApps();
             foreach (var serverApp in serverAppList)
             {
-                var installedApp = installedAppList.Where(_ => _.PackageFamilyName == serverApp.PackageFamilyName).FirstOrDefault();
+                var installedApp = installedAppList.Where(a => a.PackageFamilyName == serverApp.PackageFamilyName).FirstOrDefault();
                 if ((installedApp != null && serverApp.InstallMode.StartsWith("Auto") && UpdateAvailable(serverApp, installedApp)) ||
                     (installedApp == null && serverApp.InstallMode == "AutoInstall"))
                 {
                     var requestFile = System.IO.File.CreateText(TempPath + System.Guid.NewGuid().ToString() + ".rt2win");
                     using (requestFile)
                     {
-                        await requestFile.WriteLineAsync(serverApp.Name);
+                        await requestFile.WriteLineAsync("install");
                         await requestFile.WriteLineAsync(serverApp.AppxUrl);
-                        //await requestFile.WriteLineAsync(serverApp.CertificateUrl);
+                        await requestFile.WriteLineAsync("certificateUrl");
+                        await requestFile.WriteLineAsync(serverApp.CertificateUrl);
+                        await requestFile.WriteLineAsync("certificateFile");
+                        await requestFile.WriteLineAsync(serverApp.CertificateFile);
                         requestFile.Close();
                     }
                 }
@@ -442,6 +479,7 @@ namespace OrgPortalMonitor
                     app.PackageFamilyName = obj["PackageFamilyName"] != null ? obj["PackageFamilyName"] : "";
                     app.AppxUrl = obj["AppxUrl"] != null ? obj["AppxUrl"] : "";
                     app.CertificateUrl = obj["CertificateUrl"] != null ? obj["CertificateUrl"] : "";
+                    app.CertificateFile = obj["CertificateFile"] != null ? obj["CertificateFile"] : "";
                     app.Version = obj["Version"] != null ? obj["Version"] : "";
                     app.Description = obj["Description"] != null ? obj["Description"] : "";
                     app.ImageUrl = obj.ContainsKey("LogoUrl") && obj["LogoUrl"] != null ? obj["LogoUrl"] : "Assets/DarkGray.png";

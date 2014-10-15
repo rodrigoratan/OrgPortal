@@ -56,7 +56,7 @@ namespace OrgPortal.ViewModels
 
         public async Task Install()
         {
-            await _fileManager.RequestAppInstall(Item.AppxUrl, Item.CertificateUrl);
+            await _fileManager.RequestAppInstall(Item.AppxUrl, Item.CertificateUrl, Item.CertificateFile);
             await _messageBox.ShowAsync("Install request sent", "Install App");
         }
 
