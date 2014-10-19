@@ -8,6 +8,8 @@
         {
             <div class="formLabel">Application</div>
             <input type="file" name="appxFile" class="formInput">
+            <div class="formLabel">Certificate (.cer [preferred] or .pfx)</div>
+            <input type="file" name="certificateFile" class="formInput">
             <div class="formLabel">Category</div>
             <select name="categoryID">
                 @foreach (var category in OrgPortal.Domain.IoCContainerFactory.Current.GetInstance<OrgPortal.Domain.Repositories.CategoryRepository>().Categories)
@@ -67,7 +69,7 @@
     <script type="text/javascript">
         $(document).on('click', 'button.delete', function () {
             var element = $(this);
-            $.post('@Url.Action("Delete")', { id: $(this).closest('tr').find('td:eq(0)').text() })
+            $.post('@Url.Action("Delete")', { id: $(this).closest('tr').find('td:eq(0)').text(), version: $(this).closest('tr').find('td:eq(2)').text() })
              .fail(function (result) { showWarning('Failed to delete application.'); })
              .done(function (result) {
                  element.closest('tr').slideUp(400, function () {

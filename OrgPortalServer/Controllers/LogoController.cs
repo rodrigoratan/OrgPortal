@@ -16,7 +16,27 @@ namespace OrgPortalServer.Controllers
         //// GET api/<controller>/packagefamilyname
         public HttpResponseMessage Get(string id)
         {
-            var logo = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().GetLogo(id);
+            var applicationLastVersion =
+                    IoCContainerFactory
+                    .Current
+                    .GetInstance<ApplicationRepository>()
+                    .Applications
+                    .ToList()
+                    .Where(a => a.PackageFamilyName == id)
+                    .OrderByDescending(a => a.Version)
+                    .First();
+
+            var logo = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().GetLogo(id, applicationLastVersion.Version);
+            var response = new HttpResponseMessage(HttpStatusCode.OK);
+            response.Content = new StreamContent(new MemoryStream(logo));
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+            response.Content.Headers.ContentLength = logo.Length;
+            return response;
+        }
+
+        public HttpResponseMessage Get(string id, string version)
+        {
+            var logo = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().GetLogo(id, version);
             var response = new HttpResponseMessage(HttpStatusCode.OK);
             response.Content = new StreamContent(new MemoryStream(logo));
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("image/png");

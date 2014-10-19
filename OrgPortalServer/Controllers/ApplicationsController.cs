@@ -17,24 +17,39 @@ namespace OrgPortalServer.Controllers
         }
 
         [HttpPost]
-        public ActionResult Application(int categoryID, string installMode, HttpPostedFileBase appxFile, HttpPostedFileBase certificateFile)
+        public ActionResult Application(int categoryID, 
+                                        string installMode, 
+                                        HttpPostedFileBase appxFile, 
+                                        HttpPostedFileBase certificateFile)
         {
             using (var uow = IoCContainerFactory.Current.GetInstance<UnitOfWork>())
             {
-                uow.ApplicationRepository.Add(new Application(appxFile.InputStream, certificateFile.InputStream, categoryID, installMode));
+                uow.ApplicationRepository.Add(
+                    new Application(
+                        appxFile.InputStream,
+                       (appxFile.FileName.Contains("\\") ? appxFile.FileName.Substring(appxFile.FileName.LastIndexOf("\\") + 1) : appxFile.FileName)
+                       ,certificateFile.InputStream,
+                       (certificateFile.FileName.Contains("\\") ? certificateFile.FileName.Substring(certificateFile.FileName.LastIndexOf("\\") + 1) : certificateFile.FileName)
+                       ,categoryID
+                       ,installMode));
+
                 uow.Commit();
             }
-            TempData["WarningMessage"] = "Application saved.";
+            TempData["WarningMessage"] = "Application " + appxFile.FileName + " saved.";
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public ActionResult Delete(string id)
+        public ActionResult Delete(string id, string version)
         {
             using (var uow = IoCContainerFactory.Current.GetInstance<UnitOfWork>())
             {
-                uow.ApplicationRepository.Remove(uow.ApplicationRepository.Applications.Single(a => a.PackageFamilyName == id));
-                uow.Commit();
+                var app = uow.ApplicationRepository.Applications.Single(a => a.PackageFamilyName == id && a.Version == version);
+                if (app != null)
+                {
+                    uow.ApplicationRepository.Remove(app);
+                    uow.Commit();
+                }
             }
             return Json(true);
         }

@@ -13,10 +13,10 @@ namespace OrgPortal.Domain.Repositories
         void Add(Application model);
         void Remove(Application model);
 
-        byte[] GetAppx(string packageFamilyName);
-        byte[] GetCertificate(string packageFamilyName);
-        byte[] GetLogo(string packageFamilyName);
-        byte[] GetSmallLogo(string packageFamilyName);
+        byte[] GetAppx(string packageFamilyName, string packageFile, string version);
+        byte[] GetCertificate(string packageFamilyName, string certificateFile, string version);
+        byte[] GetLogo(string packageFamilyName, string version);
+        byte[] GetSmallLogo(string packageFamilyName, string version);
 
     }
 }

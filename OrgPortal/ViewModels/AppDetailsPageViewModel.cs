@@ -56,8 +56,13 @@ namespace OrgPortal.ViewModels
 
         public async Task Install()
         {
-            await _fileManager.RequestAppInstall(Item.AppxUrl, Item.CertificateUrl, Item.CertificateFile);
-            await _messageBox.ShowAsync("Install request sent", "Install App");
+            await _fileManager.RequestAppInstall(
+                                Item.AppxUrl,
+                                Item.PackageFile, 
+                                Item.CertificateUrl, 
+                                Item.CertificateFile);
+
+            await _messageBox.ShowAsync("Install request sent", "Install App " + Item.Name);
         }
 
         //public async Task Update()
@@ -74,7 +79,7 @@ namespace OrgPortal.ViewModels
         {
             var apps = await _fileManager.GetInstalledApps();
 
-            _installedItem = apps.FirstOrDefault(a => a.PackageFamilyName == Item.PackageFamilyName);
+            _installedItem = apps.FirstOrDefault(a => a.PackageFamilyName == Item.PackageFamilyName && a.Version == Item.Version);
             NotifyOfPropertyChange(() => IsInstalled);
 
             CheckUpdate();

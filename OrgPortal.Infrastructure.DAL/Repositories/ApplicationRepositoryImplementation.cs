@@ -35,32 +35,34 @@ namespace OrgPortal.Infrastructure.DAL.Repositories
         }
 
         // TODO: Move file system operations to another infrastructure dependency assembly
-        public byte[] GetAppx(string packageFamilyName)
+        public byte[] GetAppx(string packageFamilyName, string packageFile, string version)
         {
-            if (!File.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName + ".appx")))
-                throw new ArgumentException("Unable to find an app by that name.");
-            return File.ReadAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName + ".appx"));
+            //if (!File.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName + ".appx")))
+            if (!File.Exists(        Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName, version, packageFile)))
+                throw new ArgumentException("Unable to find the requested appx file.");
+            //return File.ReadAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName + ".appx" ));
+            return File.ReadAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName, version, packageFile));
         }
 
-        public byte[] GetCertificate(string certificateFile)
+        public byte[] GetCertificate(string packageFamilyName, string certificateFile, string version)
         {
-            if (!File.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], certificateFile)))
-                throw new ArgumentException("Unable to find an app by that name.");
-            return File.ReadAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], certificateFile));
+            if (!File.Exists(        Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName, version, certificateFile)))
+                throw new ArgumentException("Unable to find the request certficate file.");
+            return File.ReadAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName, version, certificateFile));
         }
 
-        public byte[] GetLogo(string packageFamilyName)
+        public byte[] GetLogo(string packageFamilyName, string version)
         {
-            if (!File.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName + ".png")))
+            if (!File.Exists(        Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName, version, packageFamilyName + ".png")))
                 return new byte[0];
-            return File.ReadAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName + ".png"));
+            return File.ReadAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName, version, packageFamilyName + ".png"));
         }
 
-        public byte[] GetSmallLogo(string packageFamilyName)
+        public byte[] GetSmallLogo(string packageFamilyName, string version)
         {
-            if (!File.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName + "-small.png")))
+            if (!File.Exists(        Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName, version, packageFamilyName + "-small.png")))
                 return new byte[0];
-            return File.ReadAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName + "-small.png"));
+            return File.ReadAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName, version, packageFamilyName + "-small.png"));
         }
     }
 }

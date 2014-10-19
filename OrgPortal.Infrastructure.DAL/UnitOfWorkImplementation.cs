@@ -75,17 +75,35 @@ namespace OrgPortal.Infrastructure.DAL
             {
                 if (entry.State == EntityState.Modified || entry.State == EntityState.Added)
                 {
-                    File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + ".appx"), entry.Entity.Package);
-                    File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.CertificateFile), entry.Entity.Certificate);
-                    File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + ".png"), entry.Entity.Logo);
-                    File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + "-small.png"), entry.Entity.SmallLogo);
+
+                    if (!Directory.Exists(        Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version)))
+                        Directory.CreateDirectory(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version));
+
+                  //File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + ".appx"), entry.Entity.Package);
+                    File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFile                     ), entry.Entity.Package);
+                    File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.CertificateFile                 ), entry.Entity.Certificate);
+                    File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFamilyName + ".png"      ), entry.Entity.Logo);
+                    File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFamilyName + "-small.png"), entry.Entity.SmallLogo);
                 }
                 else if (entry.State == EntityState.Deleted)
                 {
-                    File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + ".appx"));
-                    File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.CertificateFile));
-                    File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + ".png"));
-                    File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + "-small.png"));
+                    if (Directory.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version)))
+                    {
+                      //File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + ".appx"));
+                        File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFile));
+                        File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.CertificateFile));
+                        File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFamilyName + ".png"));
+                        File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFamilyName + "-small.png"));
+
+                        Directory.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version));
+                    }
+                    if (Directory.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName)))
+                    {
+                        if (Directory.GetFiles(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName)).Count() == 0)
+                            Directory.Delete(  Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName));
+
+                    }
+
                 }
             }
         }

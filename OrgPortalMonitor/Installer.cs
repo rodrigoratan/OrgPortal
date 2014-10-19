@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Threading;
 
 namespace OrgPortalMonitor
 {
@@ -80,7 +81,7 @@ namespace OrgPortalMonitor
 
                 if (command == "install")
                 {
-                    ProcessInstallRequest(outputDoc, input[1], input[3], input[5]);
+                    ProcessInstallRequest(outputDoc, input[1], input[3], input[5], input[7]);
                 }
                 else if (command == "getDevLicense")
                 {
@@ -117,11 +118,13 @@ namespace OrgPortalMonitor
 
         private /*async*/ void ProcessInstallRequest(XElement outputDoc,
                                                      string appxUrl,
+                                                     string appxFile,
                                                      string certificateUrl,
                                                      string certificateFile)
         {
             var appUriSegments = new System.Uri(appxUrl).Segments;
-            var appFileName = appUriSegments[appUriSegments.Length - 1] + ".appx";
+            //var appFileName = appUriSegments[appUriSegments.Length - 1] + ".appx";
+            var appFileName = appxFile;
             var appFilePath = TempPath + appFileName;
             var certificateFilePath = TempPath + certificateFile;
 
@@ -410,6 +413,8 @@ namespace OrgPortalMonitor
                     {
                         await requestFile.WriteLineAsync("install");
                         await requestFile.WriteLineAsync(serverApp.AppxUrl);
+                        await requestFile.WriteLineAsync("appxFile");
+                        await requestFile.WriteLineAsync(serverApp.PackageFile);
                         await requestFile.WriteLineAsync("certificateUrl");
                         await requestFile.WriteLineAsync(serverApp.CertificateUrl);
                         await requestFile.WriteLineAsync("certificateFile");
@@ -477,17 +482,19 @@ namespace OrgPortalMonitor
                     var app = new AppInfo();
                     app.Name = obj["Name"] != null ? obj["Name"] : "";
                     app.PackageFamilyName = obj["PackageFamilyName"] != null ? obj["PackageFamilyName"] : "";
+                    app.PackageFile = obj["PackageFile"] != null ? obj["PackageFile"] : "";
                     app.AppxUrl = obj["AppxUrl"] != null ? obj["AppxUrl"] : "";
                     app.CertificateUrl = obj["CertificateUrl"] != null ? obj["CertificateUrl"] : "";
                     app.CertificateFile = obj["CertificateFile"] != null ? obj["CertificateFile"] : "";
                     app.Version = obj["Version"] != null ? obj["Version"] : "";
                     app.Description = obj["Description"] != null ? obj["Description"] : "";
                     app.ImageUrl = obj.ContainsKey("LogoUrl") && obj["LogoUrl"] != null ? obj["LogoUrl"] : "Assets/DarkGray.png";
-                    if (string.IsNullOrEmpty(app.ImageUrl))
-                    {
-                        app.ImageUrl = "Assets/DarkGray.png";
-                    }
-                    app.InstallMode = obj["InstallMode"] != null ? obj["InstallMode"] : "";
+                    app.SmallImageUrl = obj.ContainsKey("LogoUrl") && obj["LogoUrl"] != null ? obj["LogoUrl"] : "Assets/DarkGray.png";
+                    app.InstallMode = obj["InstallMode"] != null ? obj["InstallMode"] : "AutoUpdate";
+                    app.BackgroundColor = obj["BackgroundColor"] != null ? obj["BackgroundColor"] : "";
+                    app.DateAdded = obj["DateAdded"] != null ? Convert.ToDateTime(obj["DateAdded"].ToString()) : DateTime.Now;
+                    app.Category = obj["Category"] != null ? obj["Category"] : "";
+
                     appList.Add(app);
                 }
             }

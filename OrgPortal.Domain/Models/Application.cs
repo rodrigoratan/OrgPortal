@@ -24,6 +24,7 @@ namespace OrgPortal.Domain.Models
         public string PublisherDisplayName { get; private set; }
         public string InstallMode { get; private set; }
         public string PackageFamilyName { get; private set; }
+        public string PackageFile { get; private set; }
         public string CertificateFile { get; private set; }
         public DateTime DateAdded { get; private set; }
         public string BackgroundColor { get; private set; }
@@ -41,7 +42,7 @@ namespace OrgPortal.Domain.Models
             get
             {
                 if (_package == null || _package.Length == 0)
-                    _package = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().GetAppx(PackageFamilyName);
+                    _package = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().GetAppx(PackageFamilyName, PackageFile, Version);
                 return _package;
             }
             set { _package = value; }
@@ -53,7 +54,7 @@ namespace OrgPortal.Domain.Models
             get
             {
                 if (_certificate == null || _certificate.Length == 0)
-                    _certificate = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().GetCertificate(CertificateFile);
+                    _certificate = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().GetCertificate(PackageFamilyName, CertificateFile, Version);
                 return _certificate;
             }
             set { _certificate = value; }
@@ -65,7 +66,7 @@ namespace OrgPortal.Domain.Models
             get
             {
                 if (_logo == null || _logo.Length == 0)
-                    _logo = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().GetLogo(PackageFamilyName);
+                    _logo = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().GetLogo(PackageFamilyName, Version);
                 return _logo;
             }
             set { _logo = value; }
@@ -77,7 +78,7 @@ namespace OrgPortal.Domain.Models
             get
             {
                 if (_smallLogo == null || _smallLogo.Length == 0)
-                    _smallLogo = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().GetSmallLogo(PackageFamilyName);
+                    _smallLogo = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().GetSmallLogo(PackageFamilyName, Version);
                 return _smallLogo;
             }
             set { _smallLogo = value; }
@@ -86,7 +87,12 @@ namespace OrgPortal.Domain.Models
         private Application() { }
 
         //public Application(Stream dataAppx, /*Stream dataCertificate,*/ int categoryID, string installMode)
-        public Application(Stream dataAppx, Stream dataCertificate, int categoryID, string installMode)
+        public Application(Stream dataAppx,
+                           string fileAppx,
+                           Stream certificateData,
+                           string certificateFile, 
+                           int categoryID, 
+                           string installMode)
         {
             CategoryID = categoryID;
             InstallMode = installMode;
@@ -96,14 +102,17 @@ namespace OrgPortal.Domain.Models
             dataAppx.Seek(0, SeekOrigin.Begin);
             Package = dataAppx.ReadFully();
 
-            dataCertificate.Seek(0, SeekOrigin.Begin);
-            Certificate = dataCertificate.ReadFully();
+            certificateData.Seek(0, SeekOrigin.Begin);
+            Certificate = certificateData.ReadFully();
 
             // TODO: This is not correct.  Publisher needs to be the Publisher ID, which is a hash of something.
             //       Need to figure out how to calculate/fetch the Publisher ID.
             //Agile for Windows_CN=C42B4C41-BEC2-494C-AFE8-5E95519F8A0C
-            PackageFamilyName = Name + "_" + Publisher;
-            CertificateFile = PackageFamilyName; //TODO: na duvida de usar o mesmo nome do package ou usar o nome original do certificado
+            PackageFamilyName = Name + "_" + Publisher; // + "_" + Version;
+            PackageFile = fileAppx;
+
+            //CertificateFile = PackageFamilyName; //TODO: na duvida de usar o mesmo nome do package ou usar o nome original do certificado
+            CertificateFile = certificateFile;
         }
 
         // TODO: Move all of this extraction logic into an infrastructure assembly to get the Zip references out of the domain?

@@ -15,6 +15,8 @@ namespace OrgPortalMonitor.DataModel
         [DataMember]
         public string PackageFamilyName { get; set; }
         [DataMember]
+        public string PackageFile { get; set; }
+        [DataMember]
         public string Description { get; set; }
         [DataMember]
         public string AppxUrl { get; set; }
@@ -34,5 +36,9 @@ namespace OrgPortalMonitor.DataModel
         public string Category { get; set; }
         [DataMember]
         public string BackgroundColor { get; set; }
+        [DataMember]
+        public DateTime DateAdded { get; set; }
+        [DataMember]
+        public string PublisherDisplayName { get; set; }
     }
 }

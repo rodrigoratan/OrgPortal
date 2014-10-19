@@ -21,12 +21,37 @@ namespace OrgPortalServer.Controllers
         // GET api/<controller>/packagefamilyname
         public HttpResponseMessage Get(string id)
         {
-            var application = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().Applications.Single(a => a.PackageFamilyName == id);
+            var applicationLastVersion = IoCContainerFactory
+                                        .Current
+                                        .GetInstance<ApplicationRepository>()
+                                        .Applications
+                                        .ToList()
+                                        .Where(a => a.PackageFamilyName == id)
+                                        .OrderByDescending(a => a.Version)
+                                        .First();
+
             var response = new HttpResponseMessage(HttpStatusCode.OK);
-            response.Content = new StreamContent(new MemoryStream(application.Certificate));
+            response.Content = new StreamContent(new MemoryStream(applicationLastVersion.Certificate));
             response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            response.Content.Headers.ContentLength = application.Certificate.Length;
-            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = application.CertificateFile };
+            response.Content.Headers.ContentLength = applicationLastVersion.Certificate.Length;
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = applicationLastVersion.CertificateFile };
+            return response;
+        }
+
+        public HttpResponseMessage GetVersion(string id, string version)
+        {
+            var applicationVersion = IoCContainerFactory
+                                    .Current
+                                    .GetInstance<ApplicationRepository>()
+                                    .Applications
+                                    .Single(a => a.PackageFamilyName == id   && 
+                                                 a.Version           == version);
+
+            var response = new HttpResponseMessage(HttpStatusCode.OK);
+            response.Content = new StreamContent(new MemoryStream(applicationVersion.Certificate));
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            response.Content.Headers.ContentLength = applicationVersion.Certificate.Length;
+            response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = applicationVersion.CertificateFile };
             return response;
         }
     }
