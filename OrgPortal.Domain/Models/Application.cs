@@ -16,12 +16,14 @@ namespace OrgPortal.Domain.Models
     public class Application
     {
         public string Name { get; private set; }
+        public string PackageName { get; private set; }
         public string Description { get; private set; }
-        public string Publisher { get; private set; }
         public string Version { get; private set; }
         public string ProcessorArchitecture { get; private set; }
         public string DisplayName { get; private set; }
         public string PublisherDisplayName { get; private set; }
+        public string PublisherId { get; private set; }
+        public string Publisher { get; private set; }
         public string InstallMode { get; private set; }
         public string PackageFamilyName { get; private set; }
         public string PackageFile { get; private set; }
@@ -86,11 +88,11 @@ namespace OrgPortal.Domain.Models
 
         private Application() { }
 
-        //public Application(Stream dataAppx, /*Stream dataCertificate,*/ int categoryID, string installMode)
         public Application(Stream dataAppx,
                            string fileAppx,
                            Stream certificateData,
-                           string certificateFile, 
+                           string certificateFile,
+                           string publisherId,
                            int categoryID, 
                            string installMode)
         {
@@ -98,6 +100,7 @@ namespace OrgPortal.Domain.Models
             InstallMode = installMode;
             DateAdded = DateTime.UtcNow;
 
+            PublisherId = publisherId;
             ExtractValuesFromPackage(dataAppx);
             dataAppx.Seek(0, SeekOrigin.Begin);
             Package = dataAppx.ReadFully();
@@ -105,29 +108,27 @@ namespace OrgPortal.Domain.Models
             certificateData.Seek(0, SeekOrigin.Begin);
             Certificate = certificateData.ReadFully();
 
-            // TODO: This is not correct.  Publisher needs to be the Publisher ID, which is a hash of something.
-            //       Need to figure out how to calculate/fetch the Publisher ID.
-            //Agile for Windows_CN=C42B4C41-BEC2-494C-AFE8-5E95519F8A0C
-            PackageFamilyName = Name + "_" + Publisher; // + "_" + Version;
+            //TODO: This is not correct.  Publisher needs to be the Publisher ID, which is a hash of something. Need to figure out how to calculate/fetch the Publisher ID.
+            //RESOLVED: For now this Hash (Publisher ID) is a required entry field to allow upload the app to the store so we can match the PackageFamilyName
+            PackageFamilyName = PackageName + "_" + PublisherId;
             PackageFile = fileAppx;
-
-            //CertificateFile = PackageFamilyName; //TODO: na duvida de usar o mesmo nome do package ou usar o nome original do certificado
             CertificateFile = certificateFile;
         }
 
-        // TODO: Move all of this extraction logic into an infrastructure assembly to get the Zip references out of the domain?
+        //TODO: Move all of this extraction logic into an infrastructure assembly to get the Zip references out of the domain?
         private void ExtractValuesFromPackage(Stream data)
         {
             using (var zipArchive = ZipFile.Read(data))
             {
                 var manifest = GetManifestFromZip(zipArchive);
                 ExtractName(manifest);
-                ExtractDescription(manifest);
-                ExtractPublisher(manifest);
-                ExtractVersion(manifest);
-                ExtractProcessorArchitecture(manifest);
+                ExtractPackageName(manifest);
                 ExtractDisplayName(manifest);
+                ExtractDescription(manifest);
+                ExtractVersion(manifest);
+                ExtractPublisher(manifest);
                 ExtractPublisherDisplayName(manifest);
+                ExtractProcessorArchitecture(manifest);
                 ExtractLogo(zipArchive, manifest);
                 ExtractStoreLogo(zipArchive, manifest);
                 ExtractBackgroundColor(manifest);
@@ -148,8 +149,23 @@ namespace OrgPortal.Domain.Models
 
         private void ExtractName(XDocument manifest)
         {
-            Name = ExtractValueFromVisualElementsNode(manifest, "DisplayName");
+            //Name = ExtractValueFromVisualElementsNode(manifest, "DisplayName");
+            Name = manifest
+                  .Descendants()
+                  .Single(d => d.Name.LocalName == "Properties")
+                  .Descendants().Single(d => d.Name.LocalName == "DisplayName")
+                  .Value;
         }
+
+        private void ExtractPackageName(XDocument manifest)
+        {
+            PackageName = manifest
+                  .Descendants()
+                  .Single(d => d.Name.LocalName == "Identity")
+                  .Attributes().Single(a => a.Name.LocalName == "Name")
+                  .Value;
+        }
+
 
         private void ExtractBackgroundColor(XDocument manifest)
         {
@@ -177,9 +193,10 @@ namespace OrgPortal.Domain.Models
 
         private void ExtractDisplayName(XDocument manifest)
         {
-            DisplayName = manifest.Descendants().Single(d => d.Name.LocalName == "Properties")
-                                  .Descendants().Single(d => d.Name.LocalName == "DisplayName")
-                                  .Value;
+            DisplayName = ExtractValueFromVisualElementsNode(manifest, "DisplayName");
+            //DisplayName = manifest.Descendants().Single(d => d.Name.LocalName == "Properties")
+            //                      .Descendants().Single(d => d.Name.LocalName == "DisplayName")
+            //                      .Value;
         }
 
         private void ExtractPublisherDisplayName(XDocument manifest)

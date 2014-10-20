@@ -35,12 +35,15 @@ namespace OrgPortalServer.Controllers
                         new AppInfo
                         {
                             Name = a.Name,
+                            DisplayName = a.DisplayName,
                             PackageFamilyName = a.PackageFamilyName,
                             PackageFile = a.PackageFile,
+                            PackageName = a.PackageName,
                             CertificateFile = a.CertificateFile,
                             Description = a.Description,
                             Version = a.Version,
                             PublisherDisplayName = a.PublisherDisplayName,
+                            PublisherId = a.PublisherId,
                             InstallMode = a.InstallMode,
                             Category = a.Category.Name,
                             DateAdded = a.DateAdded,

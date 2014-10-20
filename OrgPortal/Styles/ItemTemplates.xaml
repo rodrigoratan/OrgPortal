@@ -23,11 +23,11 @@
             <StackPanel Grid.Row="1"
                         Margin="0,10,0,0">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding Name}"
+                    <TextBlock Text="{Binding DisplayName}"
                                Style="{StaticResource TitleTextBlockStyle}"
                                TextWrapping="NoWrap"
                                TextTrimming="CharacterEllipsis"
-                               ToolTipService.ToolTip="{Binding Name}" />
+                               ToolTipService.ToolTip="{Binding DisplayName}" />
                     <TextBlock Text="("
                                Style="{StaticResource BodyTextBlockStyle}"
                                Margin="10,0,2,0" />

@@ -29,7 +29,7 @@ namespace OrgPortal.DataModel
             await WriteTempFile(app); 
         }
 
-         public async Task<List<AppInfo>> GetInstalledApps()
+        public async Task<List<AppInfo>> GetInstalledApps(List<AppInfo> apps)
         {
             var results = new List<AppInfo>();
             var folder = GetSyncFolder();
@@ -48,9 +48,23 @@ namespace OrgPortal.DataModel
                         info.Version = line.Substring(line.IndexOf(":") + 2);
                     else if (line.StartsWith("IsDevelopmentMode"))
                     {
-                        results.Add(info);
-                        info = new AppInfo();
+                        //results.Add(info);
+                        //info = new AppInfo();
+                        //PackageFamilyName
+                        //Publisher
+                        foreach (var app in apps)
+                        {
+                            if (app.Name == info.Name &&
+                               app.PublisherDisplayName == info.PublisherDisplayName)
+                            {
+                                //if()
+                                results.Add(info);
+                                info = new AppInfo();
+
+                            }
+                        }
                     }
+                    
                 }
             }
 

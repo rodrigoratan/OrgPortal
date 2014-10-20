@@ -16,14 +16,16 @@ namespace OrgPortal.Infrastructure.DAL.Mappings
             ToTable("Application").HasKey(a => a.PackageFamilyName).HasKey(a => a.Version).Ignore(a => a.Package).Ignore(a => a.Certificate).Ignore(a => a.Logo).Ignore(a => a.SmallLogo);
             Property(a => a.PackageFamilyName).IsUnicode().IsRequired().HasColumnName("PackageFamilyName");
             Property(a => a.PackageFile).IsUnicode().IsRequired().HasColumnName("PackageFile");
+            Property(a => a.PackageName).IsUnicode().IsRequired().HasColumnName("PackageName");
             Property(a => a.CertificateFile).IsUnicode().IsRequired().HasColumnName("CertificateFile");
             Property(a => a.CategoryID).IsRequired().HasColumnName("CategoryID");
             Property(a => a.Name).IsUnicode().IsRequired().HasColumnName("Name");
             Property(a => a.Publisher).IsUnicode().IsRequired().HasColumnName("Publisher");
+            Property(a => a.PublisherId).IsUnicode().IsRequired().HasColumnName("PublisherId");
+            Property(a => a.PublisherDisplayName).IsUnicode().IsRequired().HasColumnName("PublisherDisplayName");
             Property(a => a.Version).IsUnicode().IsRequired().HasColumnName("Version");
             Property(a => a.ProcessorArchitecture).IsUnicode().IsRequired().HasColumnName("ProcessorArchitecture");
             Property(a => a.DisplayName).IsUnicode().IsRequired().HasColumnName("DisplayName");
-            Property(a => a.PublisherDisplayName).IsUnicode().IsRequired().HasColumnName("PublisherDisplayName");
             Property(a => a.Description).IsUnicode().IsOptional().HasColumnName("Description");
             Property(a => a.InstallMode).IsUnicode().IsRequired().HasColumnName("InstallMode");
             Property(a => a.DateAdded).IsRequired().HasColumnName("DateAdded");

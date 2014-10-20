@@ -18,24 +18,40 @@ namespace OrgPortalServer.Controllers
 
         [HttpPost]
         public ActionResult Application(int categoryID, 
-                                        string installMode, 
+                                        string installMode,
+                                        string publisherId, 
                                         HttpPostedFileBase appxFile, 
                                         HttpPostedFileBase certificateFile)
         {
-            using (var uow = IoCContainerFactory.Current.GetInstance<UnitOfWork>())
+            if (!string.IsNullOrEmpty(publisherId))
             {
-                uow.ApplicationRepository.Add(
-                    new Application(
-                        appxFile.InputStream,
-                       (appxFile.FileName.Contains("\\") ? appxFile.FileName.Substring(appxFile.FileName.LastIndexOf("\\") + 1) : appxFile.FileName)
-                       ,certificateFile.InputStream,
-                       (certificateFile.FileName.Contains("\\") ? certificateFile.FileName.Substring(certificateFile.FileName.LastIndexOf("\\") + 1) : certificateFile.FileName)
-                       ,categoryID
-                       ,installMode));
+                if (appxFile == null || certificateFile == null)
+                {
+                    TempData["WarningMessage"] = "Application (.appx) and Certificate (.cer or .pfx) files are required.";
+                }
+                else
+                {
+                    using (var uow = IoCContainerFactory.Current.GetInstance<UnitOfWork>())
+                    {
+                        uow.ApplicationRepository.Add(
+                            new Application(
+                                appxFile.InputStream,
+                               (appxFile.FileName.Contains("\\") ? appxFile.FileName.Substring(appxFile.FileName.LastIndexOf("\\") + 1) : appxFile.FileName)
+                               , certificateFile.InputStream,
+                               (certificateFile.FileName.Contains("\\") ? certificateFile.FileName.Substring(certificateFile.FileName.LastIndexOf("\\") + 1) : certificateFile.FileName)
+                               , publisherId
+                               , categoryID
+                               , installMode));
 
-                uow.Commit();
+                        uow.Commit();
+                    }
+                    TempData["WarningMessage"] = "Application " + appxFile.FileName + " saved.";
+                }
             }
-            TempData["WarningMessage"] = "Application " + appxFile.FileName + " saved.";
+            else
+            {
+                TempData["WarningMessage"] = "PublisherId is required to save.";
+            }
             return RedirectToAction("Index");
         }
 

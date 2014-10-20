@@ -13,9 +13,13 @@ namespace OrgPortalMonitor.DataModel
         [DataMember]
         public string Name { get; set; }
         [DataMember]
+        public string DisplayName { get; set; }
+        [DataMember]
         public string PackageFamilyName { get; set; }
         [DataMember]
         public string PackageFile { get; set; }
+        [DataMember]
+        public string PackageName { get; set; }
         [DataMember]
         public string Description { get; set; }
         [DataMember]
@@ -40,5 +44,8 @@ namespace OrgPortalMonitor.DataModel
         public DateTime DateAdded { get; set; }
         [DataMember]
         public string PublisherDisplayName { get; set; }
+        [DataMember]
+        public string PublisherId { get; set; }
+        public bool UpdateAvailable { get; set; }
     }
 }

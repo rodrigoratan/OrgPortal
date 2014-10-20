@@ -1,5 +1,4 @@
 ﻿@model IEnumerable<OrgPortal.Domain.Models.Application>
-
 <div class="left">
     <div class="heading">Upload</div>
     @if (OrgPortal.Domain.IoCContainerFactory.Current.GetInstance<OrgPortal.Domain.Repositories.CategoryRepository>().Categories.Count() > 0)
@@ -10,6 +9,8 @@
             <input type="file" name="appxFile" class="formInput">
             <div class="formLabel">Certificate (.cer [preferred] or .pfx)</div>
             <input type="file" name="certificateFile" class="formInput">
+            <div class="formLabel">Publisher Id Hash (from PackageId.PublisherId)</div>
+            <input type="text" name="publisherId" class="formInput" value="">
             <div class="formLabel">Category</div>
             <select name="categoryID">
                 @foreach (var category in OrgPortal.Domain.IoCContainerFactory.Current.GetInstance<OrgPortal.Domain.Repositories.CategoryRepository>().Categories)
@@ -20,6 +21,8 @@
             <div class="formLabel">Install Mode</div>
             <select name="installMode">
                 <option>AutoUpdate</option>
+                <option>AutoInstall</option>
+                <option>InstallOnly</option>
             </select>
             <div class="pageButton">
                 <input type="submit" name="submit" value="Save" id="submit2" class="button" />
@@ -53,7 +56,7 @@
             {
                 <tr>
                     <td style="display:none;">@application.PackageFamilyName</td>
-                    <td>@application.Name</td>
+                    <td style="width:180px;">@application.DisplayName</td>
                     <td>@application.Version</td>
                     <td>@application.Category.Name</td>
                     <td>@application.DateAdded.ToShortDateString()</td>
@@ -63,7 +66,6 @@
         </tbody>
     </table>
 </div>
-
 @section scripts
 {
     <script type="text/javascript">

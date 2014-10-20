@@ -11,10 +11,9 @@ namespace OrgPortal.DataModel
                                string appxFile, 
                                string certificateUrl, 
                                string certificateFile);
-        Task<List<AppInfo>> GetInstalledApps();
+        Task<List<AppInfo>> GetInstalledApps(List<AppInfo> apps);
         Task UpdateDevLicense();
         Task<IReadOnlyList<StorageFile>> ReadFiles();
-
 
     }
 }

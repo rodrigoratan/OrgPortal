@@ -5,6 +5,7 @@ using System;
 using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace OrgPortal.ViewModels
 {
@@ -77,9 +78,10 @@ namespace OrgPortal.ViewModels
 
         private async Task LoadData()
         {
-            var apps = await _fileManager.GetInstalledApps();
+            var apps = await _fileManager.GetInstalledApps(new List<AppInfo>()); //TODO: feed with server app list
 
-            _installedItem = apps.FirstOrDefault(a => a.PackageFamilyName == Item.PackageFamilyName && a.Version == Item.Version);
+            _installedItem = apps.FirstOrDefault(a => a.PackageFamilyName == Item.PackageFamilyName && 
+                                                      a.Version           == Item.Version);
             NotifyOfPropertyChange(() => IsInstalled);
 
             CheckUpdate();

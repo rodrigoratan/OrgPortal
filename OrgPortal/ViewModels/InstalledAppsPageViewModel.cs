@@ -60,7 +60,7 @@ namespace OrgPortal.ViewModels
 
         private async Task LoadData()
         {
-            var apps = await _fileManager.GetInstalledApps();
+            var apps = await _fileManager.GetInstalledApps(new List<AppInfo>()); //TODO: feed with server app list
             if (apps != null)
             {
                 InstalledApps = new List<AppInfo>(apps);

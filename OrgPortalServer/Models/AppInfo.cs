@@ -9,8 +9,10 @@ namespace OrgPortalServer.Models
     public class AppInfo
     {
         public string Name { get; set; }
+        public string DisplayName { get; set; }
         public string PackageFamilyName { get; set; }
         public string PackageFile { get; set; }
+        public string PackageName { get; set; }
         public string CertificateFile { get; set; }
         public string Description { get; set; }
         public string Version { get; set; }
@@ -19,6 +21,7 @@ namespace OrgPortalServer.Models
         public string Category { get; set; }
         public string BackgroundColor { get; set; }
         public string PublisherDisplayName { get; set; }
+        public string PublisherId { get; set; }
 
         public string AppxUrl
         {
@@ -26,7 +29,7 @@ namespace OrgPortalServer.Models
             {
                 // TODO: There must be better ways to construct these URLs
                 var uri = new Uri(ConfigurationManager.AppSettings["OrgUrl"]);
-                return "http://" + uri.Authority + "/api/appx/" + PackageFamilyName + "?version=" + Version;
+                return "http://" + uri.Authority + "/api/appx/" + PackageFamilyName + "/?version=" + Version;
             }
         }
 
@@ -35,7 +38,7 @@ namespace OrgPortalServer.Models
             get
             {
                 var uri = new Uri(ConfigurationManager.AppSettings["OrgUrl"]);
-                return "http://" + uri.Authority + "/api/certificate/" + PackageFamilyName + "?version=" + Version; //PackageFamilyName é o id correto ao inves de //CertificateFile; 
+                return "http://" + uri.Authority + "/api/certificate/" + PackageFamilyName + "/?version=" + Version; //PackageFamilyName é o id correto ao inves de //CertificateFile; 
             }
         }
 
@@ -44,7 +47,7 @@ namespace OrgPortalServer.Models
             get
             {
                 var uri = new Uri(ConfigurationManager.AppSettings["OrgUrl"]);
-                return "http://" + uri.Authority + "/api/logo/" + PackageFamilyName + "?version=" + Version;
+                return "http://" + uri.Authority + "/api/logo/" + PackageFamilyName + "/?version=" + Version;
             }
         }
 
@@ -53,7 +56,7 @@ namespace OrgPortalServer.Models
             get
             {
                 var uri = new Uri(ConfigurationManager.AppSettings["OrgUrl"]);
-                return "http://" + uri.Authority + "/api/smalllogo/" + PackageFamilyName + "?version=" + Version;
+                return "http://" + uri.Authority + "/api/smalllogo/" + PackageFamilyName + "/?version=" + Version;
             }
         }
     }

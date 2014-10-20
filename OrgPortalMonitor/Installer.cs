@@ -481,8 +481,10 @@ namespace OrgPortalMonitor
                 {
                     var app = new AppInfo();
                     app.Name = obj["Name"] != null ? obj["Name"] : "";
+                    app.DisplayName = obj["DisplayName"] != null ? obj["DisplayName"] : "";
                     app.PackageFamilyName = obj["PackageFamilyName"] != null ? obj["PackageFamilyName"] : "";
                     app.PackageFile = obj["PackageFile"] != null ? obj["PackageFile"] : "";
+                    app.PackageName = obj["PackageName"] != null ? obj["PackageName"] : "";
                     app.AppxUrl = obj["AppxUrl"] != null ? obj["AppxUrl"] : "";
                     app.CertificateUrl = obj["CertificateUrl"] != null ? obj["CertificateUrl"] : "";
                     app.CertificateFile = obj["CertificateFile"] != null ? obj["CertificateFile"] : "";
@@ -523,6 +525,7 @@ namespace OrgPortalMonitor
                         appList.Add(info);
                         info = new AppInfo();
                     }
+
                 }
             }
             return appList;
