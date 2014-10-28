@@ -32,11 +32,10 @@
                                Style="{StaticResource BodyTextBlockStyle}"
                                Margin="10,0,2,0" />
                     <TextBlock Text="{Binding Category}"
-                               Style="{StaticResource BodyTextBlockStyle}"
-                               />
+                               Style="{StaticResource BodyTextBlockStyle}" />
                     <TextBlock Text=")"
                                Style="{StaticResource BodyTextBlockStyle}"
-                               Margin="2,0,5,0" />
+                               Margin="3,0,5,0" />
                 </StackPanel>
                 <TextBlock Text="{Binding Version}"
                            Style="{StaticResource BodyTextBlockStyle}" />
@@ -72,12 +71,21 @@
 
             <StackPanel Grid.Column="1"
                         Margin="20,0,0,0">
-                <TextBlock Text="{Binding Name}"
+                <TextBlock Text="{Binding DisplayName}"
                            Style="{StaticResource TitleTextBlockStyle}"
                            TextWrapping="NoWrap"
                            TextTrimming="CharacterEllipsis"
-                           ToolTipService.ToolTip="{Binding Name}" />
+                           ToolTipService.ToolTip="{Binding DisplayName}" />
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Available:" />
+                    <TextBlock Text="{Binding NewVersionAvailable}" />
+                </StackPanel>
                 <!--<TextBlock Text="{Binding Version}" Style="{StaticResource BodyTextBlockStyle}" />-->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Installed:" />
+                    <TextBlock Text="{Binding Version}"
+                               Margin="4,0,0,0" />
+                </StackPanel>
                 <TextBlock Text="{Binding Category}"
                            Style="{StaticResource BodyTextBlockStyle}" />
             </StackPanel>

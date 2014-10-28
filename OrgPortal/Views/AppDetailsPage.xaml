@@ -82,11 +82,18 @@
                                    Margin="0,10,0,5" />
                         <TextBlock Text="{Binding Item.Version}"
                                    Margin="0,5" />
-                        <TextBlock Text="IsInstalled"
+                        <TextBlock Text="Is Installed?"
                                    Style="{StaticResource TitleTextBlockStyle}"
                                    Margin="0,10,0,5" />
-                        <TextBlock Text="{Binding IsInstalled}"
+                        <TextBlock Text="{Binding IsInstalledVersion}"
                                    Margin="0,5" />
+
+                        <TextBlock Text="Update Available?"
+                                   Style="{StaticResource TitleTextBlockStyle}"
+                                   Margin="0,10,0,5" />
+                        <TextBlock Text="{Binding UpdateAvailable}"
+                                   Margin="0,5" />
+                        
                         <TextBlock Text="Install Mode"
                                    Style="{StaticResource TitleTextBlockStyle}"
                                    Margin="0,10,0,5" />

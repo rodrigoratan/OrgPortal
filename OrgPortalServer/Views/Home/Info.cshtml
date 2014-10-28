@@ -8,9 +8,10 @@
 <head>
   <meta name="viewport" content="width=device-width" />
   <title>OrgPortal Info</title>
+
 </head>
-<body style="font-family: 'Segoe UI', Verdana, Arial">
-  <h2>OrgPortal Info</h2>
+<body style="font-family: 'Segoe UI', Verdana, Arial; font-size:12px;" >
+  @*<h2>OrgPortal Info</h2>
   <div>
     <p>Portal for finding and installing WinRT business apps via side-loading.</p>
     <p>This solution includes three parts:</p>
@@ -19,6 +20,497 @@
       <li>An ASP.NET service providing metadata and the appx files for your apps</li>
       <li>A Windows Desktop system tray app that performs the actual install via PowerShell</li>
     </ol><p>The WinRT app and system tray app interact with each other via the file system. When the user wants to install an app, the WinRT portal creates a request file with the URL to the appx file on the server. The system tray app monitors the same folder for request files and when a request file is discovered it downloads the appx file and installs it by executing a PowerShell command. The results (success or fail) are written to a log file so the WinRT app can display status to the user.</p><p>The end user deploys OrgPortal via ClickOnce from the ASP.NET server. The ClickOnce installer deploys the system tray app, which will automatically install the WinRT client app.</p><p>Apps can be designated as auto-install, meaning the system tray app will automatically install the app. Or they can be designated as auto-update, meaning the app won't automatically install, but the system tray app will automatically update the app when newer versions become available on the server. By default the system tray app checks for new apps and/or versions roughly once per day.</p><p>The WinRT client app displays content from a URL, allowing the app to function as an informational portal as well as a private store. It also lists private apps available for installation based on information provided by the ASP.NET server.</p><p>Note: This solution does not bypass the need to unlock your device for side-loading, or alter the requirement for the appx package to be signed using a trusted certificate. You will need to meet those two requirements before OrgPortal will function on a device.</p><p>Note: OrgPortal only works with Intel-based devices. There is no way to run a system tray app on an ARM device, so they are not supported by this solution.</p><p>&nbsp;</p>
-  </div>
+  </div>*@
+
+    <div class=WordSection1>
+
+        <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal'>
+            <b><i><span style='color:black'>Benefícios</span></i></b><span style='color:black'>:</span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><span style='color:black'>
+                Oferece controle na publicação e
+                atualização de aplicativos
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><span style='color:black'>
+                Permite download de multiplos apps com
+                apenas 1 infraestrutura
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><span style='color:black'>
+                Permite tracking de usuario/maquina que
+                baixou qual app e quando
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><span style='color:black'>
+                Permite updates baseado em versões dos
+                apps
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><span style='color:black'>
+                Permite fazer backups do
+                AppData\Local\Packages dos apps para manter &quot;estado&quot; do app mesmo com
+                clean (re)install do app
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><span style='color:black'>Instala e atualiza certificados em TrustedPeople</span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><span style='color:black'>
+                Não exige certificação na Store e
+                portanto o app não esta restrito as APIs oficiais dando mais flexibilidade aos
+                apps LOB.
+            </span>
+        </p>
+
+        
+
+        <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal'>
+            <b><i><span style='color:black'>Requerimentos</span></i></b><span style='color:black'>(Contras em relação a Windows Store oficial):</span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><span style='color:black'>
+                Requer que a maquina client seja
+                x86/x64 (não suporta ARM)
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><span style='color:black'>
+                Requer que a maquina client seja
+                Windows 8 Enterprise ou Windows 8 Pro, ambos com Sideloading enabled (pode já
+                ser, ou até 100$ por empresa para qualquer quantidade de maquinas)
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><span style='color:black'>
+                Projeto OSS (versão original) esta
+                quase 1 ano sem manutenção e também:
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:54.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:"Courier New";
+color:black'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp; </span></span><span style='color:black'>
+                não lida com certificados (ainda requer passos manuais) <br>
+                - <b>
+                    <i>
+                        <s>em implementação</s> done (importPfx.exe e Certutil)<br>
+                    </i>
+                </b><i>
+                    &gt; Ok mas .pfx exige que DSS Monitor rode como Admin e apenas
+                    RunAs+ClickOnce não resolve<br>
+                    &gt; Com .cer é possivel rodar o DSS Monitor sem Admin com RunAs que ele eleva
+                    a permissão
+                </i>
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:54.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:"Courier New";
+color:black'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp; </span></span><span style='color:black'>
+                Só trabalha com localhost (precisa instalar server asp.net,
+                sql, monitor, tudo na mesma maquina) <br>
+                - <b><i>em implementação (url será configuravel)</i></b>
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:54.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:"Courier New";
+color:black'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp; </span></span><span style='color:black'>
+                Instalação do App OrgPortal é manual e contraria o
+                proposito de facilitar a instação de apps sem intervenção manual.
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:54.0pt;margin-bottom:.0001pt;line-height:normal'>
+            <span style='color:black'>
+                - <b>
+                    <i>
+                        em estudo (baixar e instalar novas versões pelo DSS
+                        Monitor)
+                    </i>
+                </b>
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:54.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:"Courier New";
+color:black'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp; </span></span><span style='color:black'>
+                Não possui autenticação no backoffice <br>
+                - <b><i>aguarda solução (procurar solução MVC)</i></b>
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:54.0pt;margin-bottom:.0001pt;line-height:normal'>
+            <span style='color:black'>&nbsp;</span>
+        </p>
+
+
+        <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal'>
+            <b><i><span style='color:black'>Arquitetura</span></i></b><span style='color:black'>:</span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><b><i><span style='color:black'>Sideloading Store (<u>SS</u>) - </span></i></b><i>
+                <span style='color:black'>Armazena apps e certificados.</span>
+            </i>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><b><i><span style='color:black'>ASP.Net MVC Backoffice (<u>BO</u>)</span></i></b><span style='color:black'>para cadastrar e gerenciar os apps na<b><i>SS</i></b>.</span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><b><i><span style='color:black'>ASP.Net <u>WebAPI</u></span></i></b><span style='color:black'>que expoe a<b><i>SS</i></b>para consumo do<b><i>WSS:</i></b></span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><b><i><span style='color:black'>WindowsApp da Sideloading Store (<u>WSS</u>)</span></i></b><span style='color:black'>
+                que exibe os Apps disponiveis (pode se conectar em
+                diferentes <b><i>SS</i></b> informando a Url do Endpoint <b><i>WebAPI</i></b>
+                da <b><i>SS</i></b>, url padrão <a href="http://orgportal/">http://orgportal/</a>).<br>
+                &gt; Idealmente deverá ser distribuído e atualizado pelo DSS Monitor em tempo
+                de execução.
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><b>
+                <i>
+                    <span style='color:black'>
+                        DesktopApp Sideloading Store (<u>DSS</u>)
+                        Monitor
+                    </span>
+                </i>
+            </b><span style='color:black'>
+                que monitora o download de
+                cada app pelo <b><i>WSS</i></b>, instalando primeiro o Certificado e depois o
+                App. Idealmente esse Software será instalado via ClickOnce* pelo Browser. <br>
+                &gt; <i>Deverá ser executado em paralelo ao app <b>WSS</b></i>. <br>
+                <i>
+                    &gt; Deverá ser capaz de atualizar o <b>WSS</b> automaticamente.<br>
+                    &gt; Deverá ter configuração de qual Sideloading Store (<b>SS</b>) utilizar,
+                    junto com qual Path deverá monitorar (do WSS ou do proprio app, ou talvez
+                    ambos).
+                </i>
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><b><i><span style='color:black'>ImportSfx.exe</span></i></b><span style='color:black'>
+                - Utilitario usado pelo <b><i>DSS Monitor</i></b> para
+                instalar certificados .sfx na TrustedPeople da maquina do usuário. <br>
+                &gt; Deverá ser distribuido junto com o <b><i>DSS Monitor</i></b>. <br>
+            </span><i>
+                <s>
+                    <span style='color:#7F7F7F'>
+                        *Falta verificar se é possivel incluir
+                        esse utilitario com o deploy ClickOnce do <b>DSS Monitor</b>. Caso contrario o <b>
+                            DSS
+                            Monitor
+                        </b> irá precisar de um Setup Deploy tradicional (MSI ou similar)
+                    </span>
+                </s>
+            </i>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><b><i><span style='color:black'>Import-PfxCertificate</span></i></b><i>
+                <span style='color:black'>(PowerShell Script, incluso) -</span>
+            </i><span style='color:black'>Alternativa de instalação de Certificado com formato .pfx</span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><b><i><span style='color:black'>CertUtil</span></i></b><i>
+                <span style='color:black'>(Command line util, incluso)</span>
+            </i><span style='color:black'>- Alternativa de instalação de Certificado com formato .cer</span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;line-height:normal'>
+            <span style='color:black'>&nbsp;</span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;line-height:normal'>
+            <span style='color:black'>&nbsp;</span>
+        </p>
+
+        <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal'><b><i><span style='color:black'>POCs:</span></i></b></p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;line-height:normal'>
+            <span style='color:black'>
+                20 - poc 1 (estudo conceito e base orgportal rodando fora de
+                localhost)
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;line-height:normal'>
+            <span style='color:black'>
+                20 - poc 2 (c/ instalação de certificado  formatos .cer
+                (preferido) ou .pfx {requer admin != clickonce} )
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;line-height:normal'>
+            <i>
+                <span style='color:black'>
+                    18 - poc 3 (backoffice adaptado para upload de certificado
+                    e publisherId)
+                </span>
+            </i>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;line-height:normal'>
+            <b>
+                <i>
+                    <span style='color:black'>
+                        16 - poc 4 (baixar, instalar e atualizar o WSS pelo DSS
+                        Monitor - conceito de AutoInstall apps)
+                    </span>
+                </i>
+            </b>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;line-height:normal'>
+            <b>
+                <i>
+                    <span style='color:black'>
+                        18 - poc 5 (DSS Monitor verifica quais apps instalados
+                        localmente possuem atualização na SS e os atualiza)
+                    </span>
+                </i>
+            </b>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;line-height:normal'>
+            <span style='color:black'>
+                16 - poc 6 (DSS Monitor pode monitorar e atualizar os apps
+                com requisições feitas a partir dos proprios Apps)
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;line-height:normal'>
+            <span style='color:black'>
+                06 - poc 7 (testar expiração de certificado do WSS e tb
+                certificado dos Apps instalados a partir da SS para verificar se basta gerar
+                novos certificados e subir para a SS e pedir atualização do app para que os
+                certificados sejam atualizados. - <i>duvida: como expirar um certificado?</i>)
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal'><span style='color:black'>&nbsp;</span></p>
+
+        <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal'><b><i><span style='color:black'>Perfumarias:</span></i></b></p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><span style='color:black'>Toast quando instalação foi concluida</span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><span style='color:black'>Tentar abrir o app após instalacao</span>
+        </p>
+
+        <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:27.0pt;margin-bottom:.0001pt;text-indent:-18.0pt;line-height:normal;
+vertical-align:middle'>
+            <span style='font-size:10.0pt;font-family:Symbol;
+color:black'>
+                ·<span style='font:7.0pt "Times New Roman"'>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </span>
+            </span><span style='color:black'>
+                Avisar no detalhe do app na loja se
+                aquela versao é a mais atual, mas mesmo que não seja permitir instalação
+                (downgrade)
+            </span>
+        </p>
+
+        <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt;line-height:
+normal'><span style='color:black'>&nbsp;</span></p>
+
+        <p class=MsoNormal>&nbsp;</p>
+
+    </div>
+
 </body>
 </html>
