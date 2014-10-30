@@ -31,44 +31,69 @@ namespace OrgPortal.DataModel
 
         public async Task<List<AppInfo>> GetInstalledApps(List<AppInfo> apps)
         {
-            var results = new List<AppInfo>();
-            var folder = GetSyncFolder();
+            var appList = new List<AppInfo>();
+            var folder = GetLocalFolder();
             var file = await folder.TryGetItemAsync("InstalledPackages.txt") as IStorageFile;
             if (file != null)
             {
                 var installedPackages = await FileIO.ReadLinesAsync(file);
-                AppInfo info = new AppInfo();
+                AppInfo appLocal = new AppInfo();
                 foreach (var line in installedPackages)
                 {
                     if (line.StartsWith("Name"))
-                        info.Name = line.Substring(line.IndexOf(":") + 2);
+                        appLocal.Name = line.Substring(line.IndexOf(":") + 2);
+                    if (line.StartsWith("Publisher"))
+                        appLocal.Publisher = line.Substring(line.IndexOf(":") + 2);
+                    if (line.StartsWith("PublisherId"))
+                        appLocal.PublisherId = line.Substring(line.IndexOf(":") + 2);
                     else if (line.StartsWith("PackageFamilyName"))
-                        info.PackageFamilyName = line.Substring(line.IndexOf(":") + 2);
+                        appLocal.PackageFamilyName = line.Substring(line.IndexOf(":") + 2);
                     else if (line.StartsWith("Version"))
-                        info.Version = line.Substring(line.IndexOf(":") + 2);
-                    else if (line.StartsWith("IsDevelopmentMode"))
+                        appLocal.Version = line.Substring(line.IndexOf(":") + 2);
+                    else if (line.StartsWith("IsDevelopmentMode")) //last line
                     {
-                        //results.Add(info);
-                        //info = new AppInfo();
-                        //PackageFamilyName
-                        //Publisher
-                        foreach (var app in apps)
+                        foreach (var appRemote in apps)
                         {
-                            if (app.Name == info.Name &&
-                               app.PublisherDisplayName == info.PublisherDisplayName)
+                            if (appRemote.PackageFamilyName == appLocal.PackageFamilyName)
                             {
-                                //if()
-                                results.Add(info);
-                                info = new AppInfo();
-
+                                appLocal.UpdateAvailable = UpdateAvailable(appRemote, appLocal);
+                                if (appLocal.UpdateAvailable) appLocal.NewVersionAvailable = appRemote.Version;
+                                appLocal.ImageUrl = appRemote.ImageUrl;
+                                appLocal.AppxUrl = appRemote.AppxUrl;
+                                appLocal.CertificateUrl = appRemote.CertificateUrl;
+                                appLocal.CertificateFile = appRemote.CertificateFile;
+                                appLocal.Category = appRemote.Category;
+                                appLocal.Description = appRemote.Description;
+                                appLocal.BackgroundColor = appRemote.BackgroundColor;
+                                appLocal.DisplayName = appRemote.DisplayName;
+                                appLocal.PublisherDisplayName = appRemote.PublisherDisplayName;
+                                appLocal.InstallMode = appRemote.InstallMode;
+                                appLocal.SmallImageUrl = appRemote.SmallImageUrl;
+                                appList.Add(appLocal);
+                                appLocal = new AppInfo();
                             }
                         }
                     }
-                    
                 }
             }
+            return appList;
+        }
 
-            return results;
+        //TODO: code is duplicated from Installer.cs , plan to add a Shared Project for shared code
+        private bool UpdateAvailable(AppInfo serverApp, AppInfo installedApp)
+        {
+            var result = false;
+            var serverVersion = serverApp.Version.Split('.');
+            var installedVersion = installedApp.Version.Split('.');
+            if (int.Parse(serverVersion[0]) > int.Parse(installedVersion[0]))
+                result = true;
+            else if (int.Parse(serverVersion[1]) > int.Parse(installedVersion[1]))
+                result = true;
+            else if (int.Parse(serverVersion[2]) > int.Parse(installedVersion[2]))
+                result = true;
+            else if (int.Parse(serverVersion[3]) > int.Parse(installedVersion[3]))
+                result = true;
+            return result;
         }
 
         public async Task UpdateDevLicense()
@@ -93,6 +118,11 @@ namespace OrgPortal.DataModel
         private StorageFolder GetSyncFolder()
         {
             return ApplicationData.Current.TemporaryFolder;
+        }
+
+        private StorageFolder GetLocalFolder()
+        {
+            return ApplicationData.Current.LocalFolder;
         }
 
         private string GenerateFileName()

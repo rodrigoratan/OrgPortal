@@ -98,7 +98,9 @@ namespace OrgPortal.ViewModels
                 AppList = new List<AppInfo>(apps);
             }
 
-            var installed = await _fileManager.GetInstalledApps(apps);
+            var distinctApps = await _dataSource.GetDistinctAppListAsync();
+
+            var installed = await _fileManager.GetInstalledApps(distinctApps);
             if (installed != null)
             {
                 InstalledList = new List<AppInfo>(installed);

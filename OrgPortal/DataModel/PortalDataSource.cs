@@ -33,6 +33,44 @@ namespace OrgPortal.DataModel
             return null;
         }
 
+        public async Task<List<AppInfo>> GetDistinctAppListAsync()
+        {
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync(_serviceURI + "Apps");
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    var apps = JsonConvert.DeserializeObject<List<AppInfo>>(data);
+                    List<AppInfo> returnApps = new List<AppInfo>();
+                    returnApps = apps.OrderBy(a => a.PackageFamilyName)
+                                     .ThenByDescending(a=>a.Version)
+                                     .GroupBy(a => a.PackageFamilyName)
+                                     .Select(x => x.First()).ToList();
+                    return returnApps;
+                }
+            }
+
+            return null;
+        }
+
+        //TODO: code is duplicated from Installer.cs , plan to add a Shared Project for shared code
+        private bool UpdateAvailable(AppInfo serverApp, AppInfo installedApp)
+        {
+            var result = false;
+            var serverVersion = serverApp.Version.Split('.');
+            var installedVersion = installedApp.Version.Split('.');
+            if (int.Parse(serverVersion[0]) > int.Parse(installedVersion[0]))
+                result = true;
+            else if (int.Parse(serverVersion[1]) > int.Parse(installedVersion[1]))
+                result = true;
+            else if (int.Parse(serverVersion[2]) > int.Parse(installedVersion[2]))
+                result = true;
+            else if (int.Parse(serverVersion[3]) > int.Parse(installedVersion[3]))
+                result = true;
+            return result;
+        }
+
         public async Task<List<AppInfo>> SearchAppsAsync(string query)
         {
             using (var client = new HttpClient())

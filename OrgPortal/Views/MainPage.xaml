@@ -14,11 +14,11 @@
         <Image Source="{Binding Path=Branding.HeaderImage}" VerticalAlignment="Top" HorizontalAlignment="Stretch" Stretch="Uniform" />
         
         <Grid>
-            <Grid.ChildrenTransitions>
+            <!--<Grid.ChildrenTransitions>
                 <TransitionCollection>
                     <EntranceThemeTransition/>
                 </TransitionCollection>
-            </Grid.ChildrenTransitions>
+            </Grid.ChildrenTransitions>-->
             
             <Hub HorizontalContentAlignment="Stretch">
                 <Hub.Header>                

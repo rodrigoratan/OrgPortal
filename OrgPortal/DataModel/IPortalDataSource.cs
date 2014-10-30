@@ -8,6 +8,7 @@ namespace OrgPortal.DataModel
     public interface IPortalDataSource
     {
         Task<List<AppInfo>> GetAppListAsync();
+        Task<List<AppInfo>> GetDistinctAppListAsync();
         Task<OrgInfo> LoadPortalDataAsync();
         Task<BrandingInfo> GetBrandingDataAsync();
         Task<List<AppInfo>> SearchAppsAsync(string query);

@@ -14,18 +14,21 @@ namespace OrgPortal.ViewModels
     public class InstalledAppsPageViewModel : PageViewModelBase
     {
         private readonly IMessageBox _messageBox;
+        private readonly IPortalDataSource _dataSource;
         private readonly IFileSyncManager _fileManager;
 
 
         [ImportingConstructor]
         public InstalledAppsPageViewModel(INavigation navigation, 
             IMessageBox messageBox, 
-            INavigationBar navBar, 
+            INavigationBar navBar,
+            IPortalDataSource dataSource,
             IFileSyncManager fileManager,
             BrandingViewModel branding)
             : base(navigation, navBar, branding)
         {
             this._messageBox = messageBox;
+            this._dataSource = dataSource;
             this._fileManager = fileManager;
         }
 
@@ -60,14 +63,25 @@ namespace OrgPortal.ViewModels
 
         private async Task LoadData()
         {
-            var apps = await _fileManager.GetInstalledApps(new List<AppInfo>()); //TODO: feed with server app list
-            if (apps != null)
-            {
-                InstalledApps = new List<AppInfo>(apps);
 
+            var distinctApps = await _dataSource.GetDistinctAppListAsync();
+
+            var installed = await _fileManager.GetInstalledApps(distinctApps);
+            if (installed != null)
+            {
+                InstalledApps = new List<AppInfo>(installed);
                 string format = InstalledApps.Count == 1 ? "{0} app" : "{0} apps";
                 AppCount = string.Format(format, InstalledApps.Count);
-            }            
+            }
+
+            //var apps = await _fileManager.GetInstalledApps(new List<AppInfo>()); //TODO: feed with server app list
+            //if (apps != null)
+            //{
+            //    InstalledApps = new List<AppInfo>(apps);
+
+            //    string format = InstalledApps.Count == 1 ? "{0} app" : "{0} apps";
+            //    AppCount = string.Format(format, InstalledApps.Count);
+            //}            
         }
 
         public void ShowAppDetails(Windows.UI.Xaml.Controls.ItemClickEventArgs param)

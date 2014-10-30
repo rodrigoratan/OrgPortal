@@ -13,18 +13,22 @@ namespace OrgPortal.ViewModels
     public class AppDetailsPageViewModel : PageViewModelBase
     {
         private readonly IMessageBox _messageBox;
+        private readonly IPortalDataSource _dataSource;
         private readonly IFileSyncManager _fileManager;
         private AppInfo _installedItem;
+        private AppInfo _installedItemVersion;
 
         [ImportingConstructor]
         public AppDetailsPageViewModel(INavigation navigation, 
             IMessageBox messageBox, 
-            INavigationBar navBar, 
+            INavigationBar navBar,
+            IPortalDataSource dataSource,
             IFileSyncManager fileManager,
             BrandingViewModel branding)
             : base(navigation, navBar, branding)
         {
             this._messageBox = messageBox;
+            this._dataSource = dataSource;
             this._fileManager = fileManager;
         }
 
@@ -44,15 +48,21 @@ namespace OrgPortal.ViewModels
             get { return _installedItem != null; }
         }
 
+        public bool IsInstalledVersion
+        {
+            get { return _installedItemVersion != null; }
+        }
+
         private bool _updateAvailable = false;
         public bool UpdateAvailable
         {
             get { return _updateAvailable; }
         }
 
-        protected override void DeserializeParameter(string value)
+        protected override async void DeserializeParameter(string value)
         {
             Item = Serializer.Deserialize<AppInfo>(value);
+            await LoadData();
         }
 
         public async Task Install()
@@ -78,21 +88,31 @@ namespace OrgPortal.ViewModels
 
         private async Task LoadData()
         {
-            var apps = await _fileManager.GetInstalledApps(new List<AppInfo>()); //TODO: feed with server app list
+            var distinctApps = await _dataSource.GetDistinctAppListAsync();
 
-            _installedItem = apps.FirstOrDefault(a => a.PackageFamilyName == Item.PackageFamilyName && 
-                                                      a.Version           == Item.Version);
+            var installed = await _fileManager.GetInstalledApps(distinctApps); 
+
+            _installedItem = 
+                 installed
+                .FirstOrDefault(a => a.PackageFamilyName == Item.PackageFamilyName);
+
+            _installedItemVersion =
+                 installed
+                .FirstOrDefault(a => a.PackageFamilyName == Item.PackageFamilyName &&
+                                     a.Version == Item.Version);
+
             NotifyOfPropertyChange(() => IsInstalled);
+            NotifyOfPropertyChange(() => IsInstalledVersion);
 
             CheckUpdate();
         }
 
         private void CheckUpdate()
         {
-            if (IsInstalled)
+            if (IsInstalledVersion)
             {
                 Version itemVersion = new Version(Item.Version);
-                Version installedVersion = new Version(_installedItem.Version);
+                Version installedVersion = new Version(_installedItemVersion.Version);
 
                 _updateAvailable = itemVersion > installedVersion;
                 NotifyOfPropertyChange(() => UpdateAvailable);
