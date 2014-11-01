@@ -56,7 +56,20 @@
             {
                 <tr>
                     <td style="display:none;">@application.PackageFamilyName</td>
-                    <td style="width:180px;">@application.DisplayName</td>
+                    @*<td style="width:180px;">@Html.ActionLink(application.DisplayName, "Detail/" + application.PackageFamilyName + "/?version=" + application.Version)</td>*@
+                    <td style="width:180px;">
+                        @Html.ActionLink(
+                            application.DisplayName,
+                            "Detail",
+                            new
+                            {
+                                id = application.PackageFamilyName + "/",
+                                version = application.Version
+                            }
+                        )
+                    </td>
+
+
                     <td>@application.Version</td>
                     <td>@application.Category.Name</td>
                     <td>@application.DateAdded.ToShortDateString()</td>
@@ -70,20 +83,22 @@
 {
     <script type="text/javascript">
         $(document).on('click', 'button.delete', function () {
-            var element = $(this);
-            $.post('@Url.Action("Delete")', { id: $(this).closest('tr').find('td:eq(0)').text(), version: $(this).closest('tr').find('td:eq(2)').text() })
-             .fail(function (result) { showWarning('Failed to delete application.'); })
-             .done(function (result) {
-                 element.closest('tr').slideUp(400, function () {
-                     $(this).remove();
-                     showWarning('Application deleted.');
-                     if ($('#applicationTable tbody tr').length == 0) {
-                         $('#applicationTable').slideUp(400, function () {
-                             $('#noApplicationsMessage').slideDown();
-                         });
-                     }
+            if (confirm('Are you sure you wish to delete this package version?')) {
+                var element = $(this);
+                $.post('@Url.Action("Delete")', { id: $(this).closest('tr').find('td:eq(0)').text(), version: $(this).closest('tr').find('td:eq(2)').text() })
+                 .fail(function (result) { showWarning('Failed to delete application.'); })
+                 .done(function (result) {
+                     element.closest('tr').slideUp(400, function () {
+                         $(this).remove();
+                         showWarning('Application deleted.');
+                         if ($('#applicationTable tbody tr').length == 0) {
+                             $('#applicationTable').slideUp(400, function () {
+                                 $('#noApplicationsMessage').slideDown();
+                             });
+                         }
+                     });
                  });
-             });
+            }
         });
     </script>
 }

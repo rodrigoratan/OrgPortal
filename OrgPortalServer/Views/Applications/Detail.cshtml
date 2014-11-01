@@ -1,0 +1,88 @@
+﻿@model OrgPortal.Domain.Models.Application
+
+@{
+    ViewBag.Title = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 style="margin-left:30px;">Detail</h2>
+<div style="margin-left:30px;">
+    <h4>Application</h4>
+    <hr />
+    <p>
+        <dl class="dl-horizontal">
+            <dt><p>@Html.ActionLink("Back to Application List", "Index")</p></dt>
+            <dd>&nbsp;</dd>
+            <dt>@Html.DisplayNameFor(model => model.Name)</dt>
+            <dd>@Html.DisplayFor(model => model.Name)</dd>
+            <dt>@Html.DisplayNameFor(model => model.PackageName)</dt>
+            <dd>@Html.DisplayFor(model => model.PackageName)</dd>
+            <dt>@Html.DisplayNameFor(model => model.Description)</dt>
+            <dd>@Html.DisplayFor(model => model.Description)</dd>
+            <dt>@Html.DisplayNameFor(model => model.Version)</dt>
+            <dd>@Html.DisplayFor(model => model.Version)</dd>
+            <dt>@Html.DisplayNameFor(model => model.ProcessorArchitecture)</dt>
+            <dd>@Html.DisplayFor(model => model.ProcessorArchitecture)</dd>
+            <dt>@Html.DisplayNameFor(model => model.DisplayName)</dt>
+            <dd>@Html.DisplayFor(model => model.DisplayName)</dd>
+            <dt>@Html.DisplayNameFor(model => model.PublisherDisplayName)</dt>
+            <dd>@Html.DisplayFor(model => model.PublisherDisplayName)</dd>
+            <dt>@Html.DisplayNameFor(model => model.PublisherId)</dt>
+            <dd>@Html.DisplayFor(model => model.PublisherId)</dd>
+            <dt>@Html.DisplayNameFor(model => model.Publisher)</dt>
+            <dd>@Html.DisplayFor(model => model.Publisher)</dd>
+            <dt>@Html.DisplayNameFor(model => model.InstallMode)</dt>
+            <dd>@Html.DisplayFor(model => model.InstallMode)</dd>
+            <dt>@Html.DisplayNameFor(model => model.PackageFamilyName)</dt>
+            <dd>@Html.DisplayFor(model => model.PackageFamilyName)</dd>
+            <dt>@Html.DisplayNameFor(model => model.PackageFile)</dt>
+            <dd>@Html.DisplayFor(model => model.PackageFile)</dd>
+            <dt>@Html.DisplayNameFor(model => model.CertificateFile)</dt>
+            <dd>@Html.DisplayFor(model => model.CertificateFile)</dd>
+            <dt>@Html.DisplayNameFor(model => model.DateAdded)</dt>
+            <dd>@Html.DisplayFor(model => model.DateAdded)</dd>
+            <dt>@Html.DisplayNameFor(model => model.BackgroundColor)</dt>
+            <dd>@Html.DisplayFor(model => model.BackgroundColor)</dd>
+            <dt>@Html.DisplayNameFor(model => model.CategoryID)</dt>
+            <dd>@Html.DisplayFor(model => model.CategoryID)</dd>
+        </dl>
+    </p>
+    @*<button tag="model.PackageFamilyName" class="delete" onclick="if (!confirm('Delete?')) return; else alert('Deleting (not yet)');">Delete</button>*@
+    @Html.ActionLink("Delete"
+                    , "DeleteWithRedirect"
+                    , new { id = Model.PackageFamilyName + "/", version = Model.Version }
+                    , new { onclick = "return confirm('Are you sure you wish to delete this package version?');", @class = "delete", style = "border:1px dashed black;margin-left:100px;padding:5px;" }
+                    )
+    <br />
+
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    <div style="clear:both;margin-left:50px;">
+        <div class="heading">Images</div>
+        @foreach (var image in OrgPortal.Domain.IoCContainerFactory.Current.GetInstance<OrgPortal.Domain.Repositories.PictureRepository>().GetImages(Model.PackageFamilyName, Model.Version))
+        {
+            <img src="/api/Picture/@Model.PackageFamilyName/?version=@Model.Version&filename=@image" /> <br /><br />
+        }
+
+    </div>
+    <div class="left">
+        @using (Html.BeginForm("ApplicationImage", "Applications", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <div class="formLabel">Add a new application Image</div>
+            <input type="file" name="imageFile" class="formInput">
+            @Html.Hidden("packageFamilyName", Model.PackageFamilyName)
+            @Html.Hidden("version", Model.Version)
+            <div class="pageButton">
+                <input type="submit" name="submit" value="Save" id="submit2" class="button" />
+            </div>
+        }
+    </div>
+
+</div>
+
+
+@section scripts
+{
+    <script type="text/javascript">
+    </script>
+}

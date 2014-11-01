@@ -21,11 +21,11 @@ namespace OrgPortalServer.Controllers
         public ActionResult Branding(string name, string primaryColor, string secondaryColor, HttpPostedFileBase logo, HttpPostedFileBase header)
         {
             // TODO: Improve overall model binding and use better error reporting in the UI
-            if (!IsValid(logo, 200, 60) || !IsValid(header, 1366, 48))
-            {
-                TempData["WarningMessage"] = "Invalid image file.";
-                return RedirectToAction("Index");
-            }
+            //if (!IsValid(logo, 200, 60) || !IsValid(header, 1366, 48))
+            //{
+            //    TempData["WarningMessage"] = "Invalid image file.";
+            //    return RedirectToAction("Index");
+            //}
 
             Configuration.BrandingName = name;
             Configuration.BrandingPrimaryColor = primaryColor;

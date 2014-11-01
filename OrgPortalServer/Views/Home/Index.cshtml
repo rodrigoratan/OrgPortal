@@ -1,35 +1,22 @@
 ﻿<div class="jumbotron">
-  <h1>OrgPortal</h1>
+  <h1>Zollie OrgPortal</h1>
   <p class="lead">OrgPortal is a way of deploying WinRT apps to client workstations without using the public store.</p>
-  <p><a href="https://github.com/Magenic/OrgPortal" class="btn btn-primary btn-large">View project on GitHub &raquo;</a></p>
+  <p><a href="/Applications" class="btn btn-primary btn-large">Manage Applications &raquo;</a></p>
 </div>
-<div class="row">
-  <div class="col-md-4">
-    <h2>Getting started</h2>
-    <p>
-      You will need to set up a web server from which client devices can download your WinRT apps.
-    </p>
-  </div>
-</div>
+
 <div class="row">
     <div class="col-md-4">
         <table id="appList">
             <thead>
                 <tr>
-                    <th>Application</th>
-                    <th></th>
+                    <th>Applications</th>
                 </tr>
             </thead>
             <tbody>
-                <tr></tr>
+                <tr><td>Loading...</td></tr>
             </tbody>
         </table>
-        Add Appx File:
-        <form enctype="multipart/form-data" method="post" action="@Url.RouteUrl("DefaultApi", new { httproute = true, controller = "appx" })">
-            <input name="file" type="file" />
-            <select name="categoryID"></select>
-            <input type="submit" id="upload" value="Upload" />
-        </form>
+
     </div>
 </div>
 
@@ -43,11 +30,7 @@
                 results.forEach(function(result) {
                     $('#appList tbody').append(
                         '<tr>' +
-                          '<td>' +
-                            '<a href="' + result.AppxUrl + '">' + result.PackageFamilyName + '</a>' +
-                          '</td>' +
-                          '<td>' +
-                            '<button class="deleteApp">Delete</button>' +
+                          '<td>'  + '<a href="' + result.AppxUrl + '">' + result.DisplayName + '('+ result.Version +')</a>' +
                           '</td>' +
                         '</tr>');
                 });
@@ -68,32 +51,6 @@
         getApps();
         getCategories();
 
-        $(document).on('click', 'button.deleteApp', function () {
-            var appName = $(this).closest('tr').find('a').text();
-            var button = $(this);
-            $.ajax({
-                url: '@Url.RouteUrl("DefaultApi", new { httproute = true, controller = "apps" })/' + appName,
-                type: 'DELETE'
-            }).done(function (result) {
-                button.closest('tr').slideUp(500, function () {
-                    button.closest('tr').remove();
-                })
-            });
-        });
-
-        @*$('#upload').click(function () {
-            var formData = new FormData($('form')[0]);
-            $.ajax({
-                url: '@Url.RouteUrl("DefaultApi", new { httproute = true, controller = "appx" })',
-                type: 'POST',
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false
-            }).done(function () {
-                getApps();
-            })
-        });*@
     })
 </script>
 }

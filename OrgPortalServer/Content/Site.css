@@ -127,7 +127,7 @@ table  {
     margin-bottom:5px;
 }
 
-.tableBorder:foucus {
+.tableBorder:focus {
     background-color: #eee;
 }
 
@@ -481,7 +481,7 @@ select:focus
 .pageButton 
 {
     float:right;
-    padding-top:80px;
+    padding-top:50px;
     }
 
 .pageButtonBranding

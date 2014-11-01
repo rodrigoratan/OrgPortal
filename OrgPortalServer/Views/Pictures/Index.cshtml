@@ -1,0 +1,38 @@
+﻿@model OrgPortal.Domain.Models.Application
+
+@*@model IEnumerable<string>*@
+
+<div class="right">
+    <div class="heading">Application List</div>
+    <div id="noApplicationsMessage" @(Model != null ? "style=display:none;" : string.Empty)>
+        <div class="subHeading">application invalid.</div>
+        <p>Please go back and click in a valid link.</p>
+    </div>
+    <table id="applicationTable" @(Model ==  null ? string.Empty : "style=display:none;")>
+        <thead>
+            <tr>
+                <th style="display:none;"></th>
+                <th>Name</th>
+                <th>Version</th>
+                <th>Category</th>
+                <th>Date Added</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="display:none;">@Model.PackageFamilyName</td>
+                <td style="width:180px;">@Model.DisplayName</td>
+                <td>@Model.Version</td>
+                <td>@Model.Category.Name</td>
+                <td>@Model.DateAdded.ToShortDateString()</td>
+                <td><button class="delete">Delete</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+    </script>
+}

@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Mappings\ApplicationMap.cs" />
     <Compile Include="Mappings\CategoryMap.cs" />
+    <Compile Include="Repositories\PictureRepositoryImplementation.cs" />
     <Compile Include="Repositories\ApplicationRepositoryImplementation.cs" />
     <Compile Include="Repositories\CategoryRepositoryImplementation.cs" />
     <Compile Include="Repositories\ConfigurationRepositoryImplementation.cs" />

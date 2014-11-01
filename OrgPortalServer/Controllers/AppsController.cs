@@ -17,37 +17,38 @@ namespace OrgPortalServer.Controllers
         // GET api/<controller>
         public IEnumerable<AppInfo> Get()
         {
-
-            //List<Application> listApp = 
-            return 
-                IoCContainerFactory
-                .Current
-                .GetInstance<ApplicationRepository>()
-                .Applications
-                .ToList()
-            //;
-            //IEnumerable<AppInfo> retorno =
-            //        listApp
-                   .Select(a =>
-                           new AppInfo
-                           {
-                               Name = a.Name,
-                               DisplayName = a.DisplayName,
-                               PackageFamilyName = a.PackageFamilyName,
-                               PackageFile = a.PackageFile,
-                               PackageName = a.PackageName,
-                               CertificateFile = a.CertificateFile,
-                               Description = a.Description,
-                               Version = a.Version,
-                               PublisherDisplayName = a.PublisherDisplayName,
-                               PublisherId = a.PublisherId,
-                               InstallMode = a.InstallMode,
-                               Category = a.Category.Name,
-                               DateAdded = a.DateAdded,
-                               BackgroundColor = a.BackgroundColor
-                           });
-            //return retorno;
+            List<Application> listApp = new List<Application>();
+            listApp =
+            IoCContainerFactory
+            .Current
+            .GetInstance<ApplicationRepository>()
+            .Applications
+            .ToList();
+            IEnumerable<AppInfo> retorno =
+                 listApp
+                .Select(a =>
+                        new AppInfo
+                        {
+                            Name = a.Name,
+                            DisplayName = a.DisplayName,
+                            PackageFamilyName = a.PackageFamilyName,
+                            PackageFile = a.PackageFile,
+                            PackageName = a.PackageName,
+                            CertificateFile = a.CertificateFile,
+                            Description = a.Description,
+                            Version = a.Version,
+                            PublisherDisplayName = a.PublisherDisplayName,
+                            PublisherId = a.PublisherId,
+                            InstallMode = a.InstallMode,
+                            Category = a.Category.Name,
+                            DateAdded = a.DateAdded,
+                            BackgroundColor = a.BackgroundColor,
+                            AppPictures = ApplicationsController.GetAppPicturesByPackage(a.PackageFamilyName, a.Version)
+                        });
+            return retorno;
         }
+
+
 
         // GET api/<controller>/packagefamilyname
         public AppInfo Get(string id)
@@ -79,13 +80,14 @@ namespace OrgPortalServer.Controllers
                                    InstallMode = a.InstallMode,
                                    Category = a.Category.Name,
                                    DateAdded = a.DateAdded,
-                                   BackgroundColor = a.BackgroundColor
+                                   BackgroundColor = a.BackgroundColor,
+                                   AppPictures = ApplicationsController.GetAppPicturesByPackage(a.PackageFamilyName, a.Version)
                                }).First();
                       //.Single(a => a.PackageFamilyName == id);
 
                 return retorno;
             }
-            catch (Exception ex)
+            catch /*(Exception ex)*/
             {
                 return default(AppInfo);
             }
@@ -116,7 +118,8 @@ namespace OrgPortalServer.Controllers
                                 InstallMode = a.InstallMode,
                                 Category = a.Category.Name,
                                 DateAdded = a.DateAdded,
-                                BackgroundColor = a.BackgroundColor
+                                BackgroundColor = a.BackgroundColor,
+                                AppPictures = ApplicationsController.GetAppPicturesByPackage(a.PackageFamilyName, a.Version)
                            });
         }
     }

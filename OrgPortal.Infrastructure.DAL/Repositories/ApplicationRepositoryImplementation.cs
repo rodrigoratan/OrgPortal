@@ -60,9 +60,92 @@ namespace OrgPortal.Infrastructure.DAL.Repositories
 
         public byte[] GetSmallLogo(string packageFamilyName, string version)
         {
-            if (!File.Exists(        Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName, version, packageFamilyName + "-small.png")))
+            if (!File.Exists(        Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName, version, packageFamilyName + "-small.png"))) 
+            {
                 return new byte[0];
-            return File.ReadAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName, version, packageFamilyName + "-small.png"));
+            }
+            else
+            {
+                return File.ReadAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName, version, packageFamilyName + "-small.png"));
+            }
         }
+
+        #region Moving to PictureRepositoryImplementation
+        //public void AddImage(string packageFamilyName
+        //                    , string version
+        //                    , string imageName
+        //                    , byte[] imageData)
+        //{
+        //    var folderPath =
+        //        Path.Combine(ConfigurationManager.AppSettings["AppFolder"]
+        //                    , packageFamilyName
+        //                    , version
+        //                    , "Album");
+
+        //    if (!System.IO.Directory.Exists(folderPath))
+        //    {
+        //        System.IO.Directory.CreateDirectory(folderPath);
+        //    }
+        //    //TODO: add file to FS
+        //}
+
+        //public List<string> GetImages(string packageFamilyName, string version)
+        //{
+        //    var retorno = new List<string>();
+        //    try
+        //    {
+        //        var folderPath =
+        //            Path.Combine(ConfigurationManager.AppSettings["AppFolder"]
+        //                        , packageFamilyName
+        //                        , version
+        //                        , "Album");
+
+        //        if (System.IO.Directory.Exists(folderPath))
+        //        {
+        //            var existingFiles = Directory.EnumerateFiles(folderPath, "*.*");
+        //            foreach (var item in existingFiles)
+        //            {
+        //                retorno.Add(item);
+        //            }
+        //        }
+        //        return retorno;
+
+        //    }
+        //    catch
+        //    {
+        //        return new List<string>();
+        //    }
+        //}
+
+        //public byte[] GetImage(string packageFamilyName, string version, string image)
+        //{
+        //    try
+        //    {
+        //        var folderPath =
+        //            Path.Combine(ConfigurationManager.AppSettings["AppFolder"]
+        //                        , packageFamilyName
+        //                        , version
+        //                        , "Album");
+
+        //        if (!System.IO.Directory.Exists(folderPath) ||
+        //            !File.Exists(Path.Combine(folderPath, image)))
+        //        {
+        //            return new byte[0];
+        //        }
+        //        else
+        //        {
+        //            return File.ReadAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], packageFamilyName, version, packageFamilyName + ".png"));
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        return new byte[0];
+        //    }
+
+        //}
+        #endregion
+
+
+
     }
 }

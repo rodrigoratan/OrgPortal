@@ -47,7 +47,8 @@ namespace OrgPortalServer.Controllers
                             InstallMode = a.InstallMode,
                             Category = a.Category.Name,
                             DateAdded = a.DateAdded,
-                            BackgroundColor = a.BackgroundColor
+                            BackgroundColor = a.BackgroundColor,
+                            AppPictures = ApplicationsController.GetAppPicturesByPackage(a.PackageFamilyName, a.Version)
                         })
                 })
                 .Single(c => c.ID == id);

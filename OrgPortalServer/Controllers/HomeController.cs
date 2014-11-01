@@ -10,7 +10,8 @@ namespace OrgPortalServer.Controllers
     {
         public ActionResult Index()
         {
-            return RedirectToAction("Index", "Applications");
+            //return RedirectToAction("Index", "Applications");
+            return View();
         }
 
         public ActionResult Info()

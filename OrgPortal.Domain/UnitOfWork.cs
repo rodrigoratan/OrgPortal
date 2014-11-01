@@ -11,6 +11,7 @@ namespace OrgPortal.Domain
     {
         CategoryRepository CategoryRepository { get; }
         ApplicationRepository ApplicationRepository { get; }
+        PictureRepository PictureRepository { get; }
         void Commit();
     }
 }

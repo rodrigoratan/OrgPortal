@@ -12,6 +12,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Diagnostics;
 
 namespace OrgPortal.Infrastructure.DAL
 {
@@ -39,6 +41,17 @@ namespace OrgPortal.Infrastructure.DAL
                 if (_applicationRepository == null)
                     _applicationRepository = new ApplicationRepositoryImplementation(this);
                 return _applicationRepository;
+            }
+        }
+
+        private PictureRepository _pictureRepository;
+        public PictureRepository PictureRepository
+        {
+            get
+            {
+                if (_pictureRepository == null)
+                    _pictureRepository = new PictureRepositoryImplementation(this);
+                return _pictureRepository;
             }
         }
 
@@ -75,37 +88,76 @@ namespace OrgPortal.Infrastructure.DAL
             {
                 if (entry.State == EntityState.Modified || entry.State == EntityState.Added)
                 {
+                    try
+                    {
+                        if (!Directory.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version)))
+                            Directory.CreateDirectory(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version));
 
-                    if (!Directory.Exists(        Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version)))
-                        Directory.CreateDirectory(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version));
+                        if (!Directory.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, "Album")))
+                            Directory.CreateDirectory(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, "Album"));
 
-                  //File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + ".appx"), entry.Entity.Package);
-                    File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFile                     ), entry.Entity.Package);
-                    File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.CertificateFile                 ), entry.Entity.Certificate);
-                    File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFamilyName + ".png"      ), entry.Entity.Logo);
-                    File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFamilyName + "-small.png"), entry.Entity.SmallLogo);
+                        //File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + ".appx"), entry.Entity.Package);
+                        File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFile), entry.Entity.Package);
+                        File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.CertificateFile), entry.Entity.Certificate);
+                        File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFamilyName + ".png"), entry.Entity.Logo);
+                        File.WriteAllBytes(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFamilyName + "-small.png"), entry.Entity.SmallLogo);
+                    }
+                    catch 
+                    {
+                        
+                    }
+
                 }
                 else if (entry.State == EntityState.Deleted)
                 {
-                    if (Directory.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version)))
+                    try
                     {
-                      //File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + ".appx"));
-                        File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFile));
-                        File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.CertificateFile));
-                        File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFamilyName + ".png"));
-                        File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFamilyName + "-small.png"));
+                       //Album Delete
+                        if (Directory.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, "Album")))
+                        {
+                            #region hard try, might not be needed because Directory.Delete have a recursive parameter
+                            ////int maxInterations = 100;
+                            ////int i = 0;
+                            ////while (Directory.GetFiles(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName,entry.Entity.Version, "Album")).Count() = !0)
+                            ////{
+                            ////    i++;
+                            ////    if (i > 1) Thread.Sleep(500);
+                            ////    if (i > maxInterations) break;
+                            //foreach (var file in Directory.GetFiles(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, "Album")))
+                            //{
+                            //    File.Delete(file);
+                            //}
+                            ////}
+                            #endregion
+                            Directory.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, "Album"), true);
+                        }
+                        //Version Delete
+                        if (Directory.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version)))
+                        {
+                            //File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName + ".appx"));
+                            File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFile));
+                            File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.CertificateFile));
+                            File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFamilyName + ".png"));
+                            File.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version, entry.Entity.PackageFamilyName + "-small.png"));
+                            Directory.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version), true);
+                        }
+                        //Parent PackageFamily Delete (if no sub folders)
+                        if (Directory.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName)))
+                        {
+                            if (Directory.EnumerateDirectories(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName)).Count() == 0)
+                                Directory.Delete(  Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName));
+                        }
 
-                        Directory.Delete(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName, entry.Entity.Version));
                     }
-                    if (Directory.Exists(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName)))
+                    catch (Exception ex)
                     {
-                        if (Directory.GetFiles(Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName)).Count() == 0)
-                            Directory.Delete(  Path.Combine(ConfigurationManager.AppSettings["AppFolder"], entry.Entity.PackageFamilyName));
-
+                        Debug.WriteLine("Error: "+ex.Message);
                     }
-
                 }
             }
         }
+
+
+        
     }
 }

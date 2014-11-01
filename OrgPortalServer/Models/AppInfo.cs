@@ -23,6 +23,12 @@ namespace OrgPortalServer.Models
         public string PublisherDisplayName { get; set; }
         public string PublisherId { get; set; }
 
+        public IEnumerable<string> AppPictures { get; set; }
+
+        public AppInfo()
+        {
+            AppPictures = new List<string>();
+        }
         public string AppxUrl
         {
             get

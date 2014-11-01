@@ -18,15 +18,72 @@ namespace OrgPortal.DataModel
 
         public async Task<List<AppInfo>> GetAppListAsync()
         {
+            try
+            {
+                List<AppInfo> retorno = new List<AppInfo>();
+                using (var client = new HttpClient())
+                {
+                    var response = await client.GetAsync(_serviceURI + "Apps");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var data = await response.Content.ReadAsStringAsync();
+                        var apps = JsonConvert.DeserializeObject<List<AppInfo>>(data);
+
+                        //return apps;
+                        retorno = apps;
+                    }
+                }
+
+                return retorno;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<AppInfo>> GetAppListWithPicturesAsync()
+        {
+            try
+            {
+                List<AppInfo> retorno = new List<AppInfo>();
+                using (var client = new HttpClient())
+                {
+                    var response = await client.GetAsync(_serviceURI + "Apps");
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var data = await response.Content.ReadAsStringAsync();
+                        var apps = JsonConvert.DeserializeObject<List<AppInfo>>(data);
+
+                        //return apps;
+                        retorno = apps;
+                    }
+                }
+
+                foreach (var item in retorno)
+                {
+                    item.Pictures = await GetAppPicturesAsync(item.PackageFamilyName, item.Version);
+                }
+
+                return retorno;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<string>> GetAppPicturesAsync(string id, string version)
+        {
             using (var client = new HttpClient())
             {
-                var response = await client.GetAsync(_serviceURI + "Apps");
+                var response = await client.GetAsync(_serviceURI + "Pictures?version=" + version);
                 if (response.IsSuccessStatusCode)
                 {
                     var data = await response.Content.ReadAsStringAsync();
-                    var apps = JsonConvert.DeserializeObject<List<AppInfo>>(data);
+                    var pictures = JsonConvert.DeserializeObject<List<string>>(data);
 
-                    return apps;
+                    return pictures;
                 }
             }
 

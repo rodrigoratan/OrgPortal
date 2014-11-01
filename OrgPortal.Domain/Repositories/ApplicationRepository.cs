@@ -17,6 +17,8 @@ namespace OrgPortal.Domain.Repositories
         byte[] GetCertificate(string packageFamilyName, string certificateFile, string version);
         byte[] GetLogo(string packageFamilyName, string version);
         byte[] GetSmallLogo(string packageFamilyName, string version);
-
+        //byte[] GetImage(string packageFamilyName, string version, string image);
+        //List<string> GetImages(string packageFamilyName, string version);
+        //void AddImage(string packageFamilyName, string version, string imageName, byte[] imageData);
     }
 }

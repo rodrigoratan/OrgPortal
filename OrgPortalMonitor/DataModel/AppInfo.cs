@@ -48,8 +48,8 @@ namespace OrgPortalMonitor.DataModel
         public string PublisherId { get; set; }
         [DataMember]
         public string Publisher { get; set; } //?
-
         public bool UpdateAvailable { get; set; }
         public string NewVersionAvailable { get; set; }
+        public List<string> Pictures { get; set; }
     }
 }

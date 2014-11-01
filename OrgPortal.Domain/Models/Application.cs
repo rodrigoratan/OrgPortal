@@ -15,21 +15,21 @@ namespace OrgPortal.Domain.Models
 {
     public class Application
     {
-        public string Name { get; private set; }
-        public string PackageName { get; private set; }
-        public string Description { get; private set; }
-        public string Version { get; private set; }
-        public string ProcessorArchitecture { get; private set; }
-        public string DisplayName { get; private set; }
-        public string PublisherDisplayName { get; private set; }
-        public string PublisherId { get; private set; }
-        public string Publisher { get; private set; }
-        public string InstallMode { get; private set; }
-        public string PackageFamilyName { get; private set; }
-        public string PackageFile { get; private set; }
-        public string CertificateFile { get; private set; }
-        public DateTime DateAdded { get; private set; }
-        public string BackgroundColor { get; private set; }
+        public string Name { get; set; }
+        public string PackageName { get; set; }
+        public string Description { get; set; }
+        public string Version { get; set; }
+        public string ProcessorArchitecture { get; set; }
+        public string DisplayName { get; set; }
+        public string PublisherDisplayName { get; set; }
+        public string PublisherId { get; set; }
+        public string Publisher { get; set; }
+        public string InstallMode { get; set; }
+        public string PackageFamilyName { get; set; }
+        public string PackageFile { get; set; }
+        public string CertificateFile { get; set; }
+        public DateTime DateAdded { get; set; }
+        public string BackgroundColor { get; set; }
         public int CategoryID { get; set; }
 
         // TODO: Make this into a proper navigation property somehow
@@ -44,7 +44,12 @@ namespace OrgPortal.Domain.Models
             get
             {
                 if (_package == null || _package.Length == 0)
-                    _package = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().GetAppx(PackageFamilyName, PackageFile, Version);
+                    _package = IoCContainerFactory
+                                .Current
+                                .GetInstance<ApplicationRepository>()
+                                .GetAppx(PackageFamilyName
+                                        ,PackageFile
+                                        ,Version);
                 return _package;
             }
             set { _package = value; }
@@ -86,7 +91,12 @@ namespace OrgPortal.Domain.Models
             set { _smallLogo = value; }
         }
 
-        private Application() { }
+
+        public Application() { }
+        //public Application(Application appRef)
+        //{
+        //    this = appRef;
+        //}
 
         public Application(Stream dataAppx,
                            string fileAppx,

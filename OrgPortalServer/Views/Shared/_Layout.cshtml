@@ -1,4 +1,5 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+﻿<!DOCTYPE html>
+@*<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">*@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
@@ -9,13 +10,14 @@
 </head>
 <body>
     <div class="topBar">
-        <div class="siteHeader">OrgPortal</div>
+        <div class="siteHeader">Zollie OrgPortal</div>
         <div class="logo"></div>
     </div>  
     <div class="navBar">
         <nav>
             <ul>
                 <li>@Html.ActionLink("HOME", "Index", "Home")</li>
+                <li>@Html.ActionLink("APPS BACKOFFICE", "Index", "Applications")</li>
                 <li>@Html.ActionLink("FEATURES", "Index", "Features")</li>
                 <li>@Html.ActionLink("CATEGORY", "Index", "Categories")</li>
                 <li>@Html.ActionLink("BRANDING", "Index", "Admin")</li>
