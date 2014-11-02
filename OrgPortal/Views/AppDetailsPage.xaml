@@ -76,7 +76,8 @@
                                    Style="{StaticResource TitleTextBlockStyle}"
                                    Margin="0,10,0,5" />
                         <TextBlock Text="{Binding Item.Description}"
-                                   Margin="0,5" />
+                                   Margin="0,5"
+                                   TextWrapping="Wrap" />
                         <TextBlock Text="Version"
                                    Style="{StaticResource TitleTextBlockStyle}"
                                    Margin="0,10,0,5" />
@@ -126,11 +127,22 @@
                 <!-- Second Column -->
                 <Grid Grid.Column="1"
                       VerticalAlignment="Stretch">
-                    <Image Source="{Binding Item.ImageUrl}"
+                    <!--<Image Source="{Binding Item.ImageUrl}"
                            Stretch="Uniform"
                            HorizontalAlignment="Stretch"
                            VerticalAlignment="Top"
-                           Margin="0,0,40,40" />
+                           Margin="0,0,40,40" />-->
+                    <FlipView HorizontalAlignment="Stretch"
+                              ItemsSource="{Binding AlbumApp}"
+                              VerticalAlignment="Top"
+                              ItemTemplate="{StaticResource FlipAppImage}"
+                              Margin="0,0,0,0">
+                        <FlipView.Transitions>
+                            <TransitionCollection>
+                                <EdgeUIThemeTransition Edge="Right" />
+                            </TransitionCollection>
+                        </FlipView.Transitions>
+                    </FlipView>
                 </Grid>
             </Grid>
 

@@ -143,6 +143,9 @@
     <Compile Include="Controllers\FeaturesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PictureController.cs" />
+    <Compile Include="Controllers\PicturesController.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Controllers\SmallLogoController.cs" />
     <Compile Include="Controllers\LogoController.cs" />
     <Compile Include="Controllers\OrgPortalController.cs" />

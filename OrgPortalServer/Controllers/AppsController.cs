@@ -48,14 +48,11 @@ namespace OrgPortalServer.Controllers
             return retorno;
         }
 
-
-
         // GET api/<controller>/packagefamilyname
         public AppInfo Get(string id)
         {
             //var applicationLastVersion = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().Applications.Where(a => a.PackageFamilyName == id).OrderByDescending(a => a.Version).Single();
             //return IoCContainerFactory.Current.GetInstance<ApplicationRepository>().Applications.ToList()
-
             try
             {
                 List<Application> listApp = IoCContainerFactory.Current.GetInstance<ApplicationRepository>().Applications.ToList();
@@ -93,6 +90,7 @@ namespace OrgPortalServer.Controllers
             }
         }
 
+
         // POST api/<controller>/?search=<string>
         public IEnumerable<AppInfo> Post(string search)
         {
@@ -122,5 +120,10 @@ namespace OrgPortalServer.Controllers
                                 AppPictures = ApplicationsController.GetAppPicturesByPackage(a.PackageFamilyName, a.Version)
                            });
         }
+
+        //http://orgportal/api/apps/Pictures/34993Zollie.UnimedAgile_mcdpzngym7t32/?version=1.1.0.16
+        // GET api/apps/packagefamilyname
+
+        
     }
 }

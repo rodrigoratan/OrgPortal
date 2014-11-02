@@ -92,4 +92,56 @@
         </Grid>
     </DataTemplate>
 
+    <DataTemplate x:Key="FlipAppImage">
+        <Grid MaxHeight="900"
+              Margin="5,10,5,10"
+              MinWidth="320"
+              MinHeight="240"
+              x:Name="FlipAppGrid"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+            <Grid Background="{Binding BackgroundColor}"
+                  MinHeight="100"
+                  Margin="0,0,0,60">
+                <Image Source="{Binding PictureUrl}"
+                       VerticalAlignment="Top"
+                       HorizontalAlignment="Left"
+                       AutomationProperties.Name="{Binding Title}" />
+                <!--<Grid Margin="0"
+                      Background="#4C000000"
+                      VerticalAlignment="Bottom">
+                    <TextBlock Text="{Binding Title}"
+                               Style="{StaticResource BodyTextBlockStyle}"
+                               VerticalAlignment="Center"
+                               Foreground="White"
+                               Margin="10,0,0,0" />
+                </Grid>-->
+            </Grid>
+            <StackPanel Background="Gray"
+                        MinHeight="60"
+                        Margin="0"
+                        VerticalAlignment="Bottom">
+                <TextBlock Text="{Binding Title}"
+                           Style="{StaticResource TitleTextBlockStyle}"
+                           TextWrapping="WrapWholeWords"
+                           TextTrimming="CharacterEllipsis"
+                           ToolTipService.ToolTip="{Binding Title}"
+                           Foreground="White"
+                           Margin="10,4,10,0" />
+                <TextBlock Text="{Binding SubTitle}"
+                           Style="{StaticResource BodyTextBlockStyle}"
+                           TextWrapping="WrapWholeWords"
+                           TextTrimming="CharacterEllipsis"
+                           ToolTipService.ToolTip="{Binding SubTitle}"
+                           Foreground="White"
+                           Margin="10,0,10,5" />
+
+
+            </StackPanel>
+
+
+
+        </Grid>
+    </DataTemplate>
+
 </ResourceDictionary>

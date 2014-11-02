@@ -49,21 +49,24 @@
     </p>
     @*<button tag="model.PackageFamilyName" class="delete" onclick="if (!confirm('Delete?')) return; else alert('Deleting (not yet)');">Delete</button>*@
     @Html.ActionLink("Delete"
-                    , "DeleteWithRedirect"
+                    ,"DeleteWithRedirect"
                     , new { id = Model.PackageFamilyName + "/", version = Model.Version }
                     , new { onclick = "return confirm('Are you sure you wish to delete this package version?');", @class = "delete", style = "border:1px dashed black;margin-left:100px;padding:5px;" }
                     )
     <br />
-
     <p>&nbsp;</p>
     <p>&nbsp;</p>
     <div style="clear:both;margin-left:50px;">
         <div class="heading">Images</div>
-        @foreach (var image in OrgPortal.Domain.IoCContainerFactory.Current.GetInstance<OrgPortal.Domain.Repositories.PictureRepository>().GetImages(Model.PackageFamilyName, Model.Version))
+        @*@foreach (var image in OrgPortal.Domain.IoCContainerFactory.Current.GetInstance<OrgPortal.Domain.Repositories.PictureRepository>().GetImages(Model.PackageFamilyName, Model.Version))
         {
             <img src="/api/Picture/@Model.PackageFamilyName/?version=@Model.Version&filename=@image" /> <br /><br />
-        }
+        }*@
 
+        @foreach (var image in OrgPortal.Domain.IoCContainerFactory.Current.GetInstance<OrgPortal.Domain.Repositories.PictureRepository>().GetImagesApi(Model.PackageFamilyName, Model.Version))
+        {
+            <img src="@image" /> <br /><br />
+        }
     </div>
     <div class="left">
         @using (Html.BeginForm("ApplicationImage", "Applications", FormMethod.Post, new { enctype = "multipart/form-data" }))
@@ -77,9 +80,7 @@
             </div>
         }
     </div>
-
 </div>
-
 
 @section scripts
 {

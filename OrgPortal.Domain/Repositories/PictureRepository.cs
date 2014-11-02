@@ -17,5 +17,6 @@ namespace OrgPortal.Domain.Repositories
         byte[] GetImage(Picture picture);
 
         List<string> GetImages(string packageFamilyName, string version);
+        List<string> GetImagesApi(string packageFamilyName, string version);
     }
 }

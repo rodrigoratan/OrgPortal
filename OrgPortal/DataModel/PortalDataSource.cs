@@ -62,7 +62,7 @@ namespace OrgPortal.DataModel
 
                 foreach (var item in retorno)
                 {
-                    item.Pictures = await GetAppPicturesAsync(item.PackageFamilyName, item.Version);
+                    item.AppPictures = await GetAppPicturesAsync(item.PackageFamilyName, item.Version);
                 }
 
                 return retorno;
@@ -77,7 +77,7 @@ namespace OrgPortal.DataModel
         {
             using (var client = new HttpClient())
             {
-                var response = await client.GetAsync(_serviceURI + "Pictures?version=" + version);
+                var response = await client.GetAsync(string.Format("{0}Pictures/{1}/?version={2}", _serviceURI, id, version));
                 if (response.IsSuccessStatusCode)
                 {
                     var data = await response.Content.ReadAsStringAsync();

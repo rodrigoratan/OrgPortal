@@ -6,6 +6,8 @@ using System.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Windows.UI.Xaml.Media;
+using Windows.UI;
 
 namespace OrgPortal.ViewModels
 {
@@ -62,9 +64,33 @@ namespace OrgPortal.ViewModels
         protected override async void DeserializeParameter(string value)
         {
             Item = Serializer.Deserialize<AppInfo>(value);
+            AlbumApp = new List<PictureInfo>();
+            if (Item.AppPictures != null)
+            {
+                foreach (var imageUrl in Item.AppPictures)
+                {
+                    AlbumApp.Add(new PictureInfo(imageUrl, ColorToBrush(Item.BackgroundColor)));
+                }
+            }
             await LoadData();
         }
 
+        //TODO: "Convert" it to a Converter so Hex codes can be used directly on the binding #<3Converters
+        public static SolidColorBrush ColorToBrush(string color)
+        {
+            color = color.Replace("#", "");
+            if (color.Length == 6)
+            {
+                return new SolidColorBrush(ColorHelper.FromArgb(255,
+                    byte.Parse(color.Substring(0, 2), System.Globalization.NumberStyles.HexNumber),
+                    byte.Parse(color.Substring(2, 2), System.Globalization.NumberStyles.HexNumber),
+                    byte.Parse(color.Substring(4, 2), System.Globalization.NumberStyles.HexNumber)));
+            }
+            else
+            {
+                return null;
+            }
+        }
         public async Task Install()
         {
             await _fileManager.RequestAppInstall(
@@ -119,5 +145,6 @@ namespace OrgPortal.ViewModels
             }
         }
 
+        public List<PictureInfo> AlbumApp { get; set; }
     }
 }

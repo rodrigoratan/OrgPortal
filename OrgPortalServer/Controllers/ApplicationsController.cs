@@ -28,7 +28,7 @@ namespace OrgPortalServer.Controllers
                                                  a.Version           == version);
                 if (appList != null && appList.Count() > 0)
                 {
-                    var app = appList.Take(1).ToList()[0];
+                    var app = appList.Take(1).ToList()[0]; //TODO: better way?
                     return View(app);
                 }
                 else
@@ -179,7 +179,7 @@ namespace OrgPortalServer.Controllers
             listPictures =
             IoCContainerFactory
             .Current
-            .GetInstance<PictureRepository>().GetImages(packageFamilyName, version);
+            .GetInstance<PictureRepository>().GetImagesApi(packageFamilyName, version);
             return listPictures;
         }
 

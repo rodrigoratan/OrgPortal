@@ -13,7 +13,7 @@ namespace OrgPortalServer.Controllers
 {
     public class PictureController : ApiController
     {
-        //// GET api/<controller>/packagefamilyname
+        //// GET api/picture/packagefamilyname/?version=1.0&filename=arquivo1.png
         public HttpResponseMessage Get(string id, string version, string filename)
         {
             //var picture = new OrgPortal.Domain.Models.Picture();

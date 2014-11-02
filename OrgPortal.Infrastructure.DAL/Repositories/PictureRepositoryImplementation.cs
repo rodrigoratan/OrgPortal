@@ -75,13 +75,45 @@ namespace OrgPortal.Infrastructure.DAL.Repositories
             }
         }
 
+        public string ImageApiBaseUrl
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(PackageFamilyName))
+                {
+                    // TODO: There must be better ways to construct these URLs (indeed;)
+                    var uri = new Uri(ConfigurationManager.AppSettings["OrgUrl"]);
+                    return "http://" + uri.Authority + 
+                           "/api/picture/" + PackageFamilyName + 
+                           "/?version=" + this.Version;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+        }
+
         public List<string> GetImages(string packageFamilyName, string version)
         {
             var retorno = new List<string>();
-
+  
             foreach (var path in GetImagesPath(packageFamilyName, version))
             {
                 retorno.Add(path.Substring(path.LastIndexOf('\\') + 1));
+            }
+            return retorno;
+        }
+        public List<string> GetImagesApi(string packageFamilyName, string version)
+        {
+            var retorno = new List<string>();
+
+            foreach (var filename in GetImages(packageFamilyName, version))
+            {
+
+                retorno.Add((!string.IsNullOrEmpty(ImageApiBaseUrl) ? 
+                             ImageApiBaseUrl + "&filename=" : 
+                             string.Empty)   +   filename);
             }
             return retorno;
         }
@@ -91,6 +123,9 @@ namespace OrgPortal.Infrastructure.DAL.Repositories
             var retorno = new List<string>();
             try
             {
+                PackageFamilyName = packageFamilyName;
+                Version = version;
+
                 var folderPath =
                     Path.Combine(ConfigurationManager.AppSettings["AppFolder"]
                                 , packageFamilyName
@@ -159,5 +194,9 @@ namespace OrgPortal.Infrastructure.DAL.Repositories
                 return new byte[0];
             }
         }
+
+        public string PackageFamilyName { get; set; }
+
+        public string Version { get; set; }
     }
 }
