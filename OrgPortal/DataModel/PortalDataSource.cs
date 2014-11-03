@@ -14,7 +14,8 @@ namespace OrgPortal.DataModel
     [Shared]
     public class PortalDataSource : IPortalDataSource
     {
-        private /*static readonly*/ string _serviceURI = "http://orgportal/api/";
+        //TODO: Get ServiceURI from OrgPortal Monitor
+        private /*static readonly*/ string _serviceURI = "http://store.zollie.com.br/api/"; //"http://orgportal/api/";
 
         public async Task<List<AppInfo>> GetAppListAsync()
         {

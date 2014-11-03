@@ -37,7 +37,7 @@ namespace OrgPortalMonitor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://orgportal/api/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://store.zollie.com.br/api/")]
         public string OrgPortalUrl {
             get {
                 return ((string)(this["OrgPortalUrl"]));

@@ -64,16 +64,17 @@
             this.clPackageFamilyName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.monitorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.autoConnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.appsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshInstalledListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unlockDeviceForSideloadingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.getDeveloperLicenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.v54ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.autoConnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -167,7 +168,6 @@
             this.txtOrgPortalUrl.Name = "txtOrgPortalUrl";
             this.txtOrgPortalUrl.Size = new System.Drawing.Size(284, 20);
             this.txtOrgPortalUrl.TabIndex = 5;
-            this.txtOrgPortalUrl.Text = "http://orgportal/api/";
             this.txtOrgPortalUrl.TextChanged += new System.EventHandler(this.txtOrgPortalUrl_TextChanged);
             // 
             // label1
@@ -309,7 +309,7 @@
             this.tabInstalled.Location = new System.Drawing.Point(4, 22);
             this.tabInstalled.Name = "tabInstalled";
             this.tabInstalled.Padding = new System.Windows.Forms.Padding(3);
-            this.tabInstalled.Size = new System.Drawing.Size(616, 415);
+            this.tabInstalled.Size = new System.Drawing.Size(616, 391);
             this.tabInstalled.TabIndex = 2;
             this.tabInstalled.Text = "Installed Apps";
             this.tabInstalled.UseVisualStyleBackColor = true;
@@ -328,7 +328,7 @@
             this.dgvInstalled.Location = new System.Drawing.Point(3, 3);
             this.dgvInstalled.Name = "dgvInstalled";
             this.dgvInstalled.ReadOnly = true;
-            this.dgvInstalled.Size = new System.Drawing.Size(610, 409);
+            this.dgvInstalled.Size = new System.Drawing.Size(610, 385);
             this.dgvInstalled.TabIndex = 0;
             // 
             // DisplayName
@@ -361,7 +361,7 @@
             this.tabMultiple.Controls.Add(this.dgvPackages);
             this.tabMultiple.Location = new System.Drawing.Point(4, 22);
             this.tabMultiple.Name = "tabMultiple";
-            this.tabMultiple.Size = new System.Drawing.Size(616, 415);
+            this.tabMultiple.Size = new System.Drawing.Size(616, 391);
             this.tabMultiple.TabIndex = 3;
             this.tabMultiple.Text = "Multiple Packages (Beta)";
             this.tabMultiple.UseVisualStyleBackColor = true;
@@ -376,7 +376,7 @@
             this.dgvPackages.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvPackages.Location = new System.Drawing.Point(0, 0);
             this.dgvPackages.Name = "dgvPackages";
-            this.dgvPackages.Size = new System.Drawing.Size(616, 415);
+            this.dgvPackages.Size = new System.Drawing.Size(616, 391);
             this.dgvPackages.TabIndex = 1;
             // 
             // dataGridViewCheckBoxColumn1
@@ -415,19 +415,13 @@
             this.monitorToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
             this.monitorToolStripMenuItem.Text = "Monitor";
             // 
-            // helpToolStripMenuItem
+            // autoConnectToolStripMenuItem
             // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.aboutToolStripMenuItem.Text = "About";
+            this.autoConnectToolStripMenuItem.CheckOnClick = true;
+            this.autoConnectToolStripMenuItem.Name = "autoConnectToolStripMenuItem";
+            this.autoConnectToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.autoConnectToolStripMenuItem.Text = "Auto Connect";
+            this.autoConnectToolStripMenuItem.CheckedChanged += new System.EventHandler(this.autoConnectToolStripMenuItem_CheckedChanged);
             // 
             // startToolStripMenuItem
             // 
@@ -469,13 +463,26 @@
             this.getDeveloperLicenseToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
             this.getDeveloperLicenseToolStripMenuItem.Text = "Get developer license";
             // 
-            // autoConnectToolStripMenuItem
+            // helpToolStripMenuItem
             // 
-            this.autoConnectToolStripMenuItem.CheckOnClick = true;
-            this.autoConnectToolStripMenuItem.Name = "autoConnectToolStripMenuItem";
-            this.autoConnectToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
-            this.autoConnectToolStripMenuItem.Text = "Auto Connect";
-            this.autoConnectToolStripMenuItem.CheckedChanged += new System.EventHandler(this.autoConnectToolStripMenuItem_CheckedChanged);
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem,
+            this.v54ToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.aboutToolStripMenuItem.Text = "About";
+            // 
+            // v54ToolStripMenuItem
+            // 
+            this.v54ToolStripMenuItem.Name = "v54ToolStripMenuItem";
+            this.v54ToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
+            this.v54ToolStripMenuItem.Text = "OrgPortal 1.x.57";
             // 
             // Form1
             // 
@@ -561,6 +568,7 @@
     private System.Windows.Forms.ToolStripMenuItem getDeveloperLicenseToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem autoConnectToolStripMenuItem;
     private System.ComponentModel.BackgroundWorker backgroundWorker1;
+    private System.Windows.Forms.ToolStripMenuItem v54ToolStripMenuItem;
   }
 }
 

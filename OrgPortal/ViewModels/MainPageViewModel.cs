@@ -90,6 +90,12 @@ namespace OrgPortal.ViewModels
             await LoadAppList();
         }
 
+        private async Task LoadPortalData()
+        {
+            var org = await _dataSource.LoadPortalDataAsync();
+            FeatureUrl = org.FeatureURL;
+        }
+
         private async Task LoadAppList()
         {
             var apps = await _dataSource.GetAppListAsync();
@@ -107,12 +113,6 @@ namespace OrgPortal.ViewModels
             }
         }
 
-        private async Task LoadPortalData()
-        {
-            var org = await _dataSource.LoadPortalDataAsync();
-            FeatureUrl = org.FeatureURL;
-        }
-
         public void ShowAppDetails(Windows.UI.Xaml.Controls.ItemClickEventArgs param)
         {
             if (param.ClickedItem is AppInfo)
@@ -126,6 +126,7 @@ namespace OrgPortal.ViewModels
             await _fileManager.UpdateDevLicense();
             await _messageBox.ShowAsync("License key request sent; you may need to switch to the Desktop to complete the process", "Get Dev License");
         }
+
 
         public void RunSearch()
         {

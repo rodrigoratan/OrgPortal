@@ -6,7 +6,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="OrgPortalUrl" Type="System.String" Scope="User">
-      <Value Profile="(Default)">http://orgportal/api/</Value>
+      <Value Profile="(Default)">http://store.zollie.com.br/api/</Value>
     </Setting>
     <Setting Name="PackageFamilyName" Type="System.String" Scope="User">
       <Value Profile="(Default)">OrgPortal_m64ba5zfsemg0</Value>

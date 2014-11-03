@@ -13,7 +13,8 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <PublishUrl>C:\_GitHub\Ratan\OrgPortal\trunk\OrgPortalServer\OrgPortalMonitor\</PublishUrl>
+    <PublishUrl>ftp://store.zollie.com.br/OrgPortalMonitor/</PublishUrl>
+<!--<PublishUrl>C:\_GitHub\Ratan\OrgPortal\trunk\OrgPortalServer\OrgPortalMonitor\</PublishUrl>-->
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -23,16 +24,19 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://orgportal/OrgPortalMonitor/</InstallUrl>
+    <InstallUrl>http://store.zollie.com.br/OrgPortalMonitor/</InstallUrl>
+    <UpdateUrl>http://store.zollie.com.br/OrgPortalMonitor/</UpdateUrl>
+    <SupportUrl>http://store.zollie.com.br</SupportUrl>
+<!--<InstallUrl>http://orgportal/OrgPortalMonitor/</InstallUrl>
     <UpdateUrl>http://orgportal/OrgPortalMonitor/</UpdateUrl>
-    <SupportUrl>http://orgportal</SupportUrl>
+    <SupportUrl>http://orgportal</SupportUrl>-->
     <ProductName>Zollie OrgPortal</ProductName>
     <PublisherName>Zollie</PublisherName>
     <SuiteName>Zollie Apps</SuiteName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
-    <WebPage>index.html</WebPage>
+    <WebPage>publish.htm</WebPage>
     <TrustUrlParameters>true</TrustUrlParameters>
-    <ApplicationRevision>51</ApplicationRevision>
+    <ApplicationRevision>58</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>

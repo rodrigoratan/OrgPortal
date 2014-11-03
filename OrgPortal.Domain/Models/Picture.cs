@@ -34,18 +34,6 @@ namespace OrgPortal.Domain.Models
         }
         
         public Picture() { }
-        //public Picture(Application app) : base(app)
-        //{
-        //    App = app;
-        //}
-
-        //public Picture(Stream imageData, string fileName)
-        //{
-        //    //App = app;
-        //    FileName = fileName;
-        //    imageData.Seek(0, SeekOrigin.Begin);
-        //    Image = imageData.ReadFully();
-        //}
 
         public Picture(string packageFamilyName
                       ,string version

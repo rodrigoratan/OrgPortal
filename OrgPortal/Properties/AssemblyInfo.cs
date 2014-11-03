@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("OrgPortal")]
 [assembly: AssemblyDescription("v1.x improved by Ratan")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Magenic")]
+[assembly: AssemblyCompany("original work by Magenic / improved by Zollie")]
 [assembly: AssemblyProduct("OrgPortal")]
-[assembly: AssemblyCopyright("Copyright © Magenic 2013")]
+[assembly: AssemblyCopyright("Copyright © - Magenic 2013 / Zollie 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
