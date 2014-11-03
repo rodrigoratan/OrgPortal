@@ -186,6 +186,7 @@
     <Content Include="Images\custom_rgb_g.png" />
     <Content Include="Images\custom_rgb_r.png" />
     <Content Include="Images\custom_submit.png" />
+    <Content Include="Images\LogoImage.png" />
     <Content Include="Images\magenicLogo.png" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
