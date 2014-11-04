@@ -1,4 +1,4 @@
-OrgPortal
+Org Portal
 =========
 
 Portal for finding and installing WinRT business apps via side-loading.
