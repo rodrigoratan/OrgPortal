@@ -5,7 +5,8 @@
     xmlns:local="using:OrgPortal.Views"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+      Loaded="Page_Loaded">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -13,9 +14,29 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="27" />
         </Grid.RowDefinitions>
-        <Grid.Background>
-            <ImageBrush x:Name="BackImageBrush" ImageSource="../Assets/splash_bg.png" Stretch="Uniform" />
-        </Grid.Background>
+
+        <Grid Grid.RowSpan="3">
+            <Grid.Resources>
+                <Storyboard x:Name="ImageFadeInStoryboard">
+                    <DoubleAnimation From="0"
+                                     To="1"
+                                     Storyboard.TargetName="BackImageBrush"
+                                     Storyboard.TargetProperty="Opacity"
+                                     Duration="0:0:4" />
+                </Storyboard>
+            </Grid.Resources>
+            <Image x:Name="BackImageBrush"
+                   Source="ms-appx:///Assets/splash_bg.png"
+                   Opacity="0"
+                   Stretch="UniformToFill"
+                   Margin="0,0,0,0"
+                    />
+            <!--<Grid.Background>
+                <ImageBrush x:Name="BackImageBrush" Opacity="0"
+                            ImageSource="../Assets/splash_bg.png"
+                            Stretch="UniformToFill" />
+            </Grid.Background>-->
+        </Grid>
         <Image Grid.Row="1" 
                Source="../Assets/splash_logo.png" 
                Stretch="Uniform" Width="472" Height="116"
@@ -26,7 +47,15 @@
                       Foreground="#93b5a3"
                       HorizontalAlignment="Center" 
                       VerticalAlignment="Center"
-                      Margin="0,250,0,0" />
+                      Margin="663,529,663,145"
+                      Width="40"
+                      Height="40">
+            <ProgressRing.Transitions>
+                <TransitionCollection>
+                    <EntranceThemeTransition FromVerticalOffset="60" />
+                </TransitionCollection>
+            </ProgressRing.Transitions>
+        </ProgressRing>
         <!--<Image Grid.Row="2" 
                Source="../Assets/splash_headerbottombg.png"
                VerticalAlignment="Top" 

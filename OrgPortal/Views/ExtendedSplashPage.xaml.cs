@@ -8,5 +8,10 @@ namespace OrgPortal.Views
         {
             this.InitializeComponent();
         }
+
+        private void Page_Loaded(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            ImageFadeInStoryboard.Begin();
+        }
     }
 }

@@ -33,7 +33,7 @@ namespace OrgPortal.ViewModels
             {
                 await _brandingViewModel.UpdateAsync(branding);
             }
-
+            await Task.Delay(5000);
             Navigation.NavigateToViewModel<MainPageViewModel>();
         }
     }
