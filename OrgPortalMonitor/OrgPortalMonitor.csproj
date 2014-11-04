@@ -14,7 +14,6 @@
     <TargetFrameworkProfile />
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <PublishUrl>ftp://store.zollie.com.br/OrgPortalMonitor/</PublishUrl>
-<!--<PublishUrl>C:\_GitHub\Ratan\OrgPortal\trunk\OrgPortalServer\OrgPortalMonitor\</PublishUrl>-->
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -27,21 +26,22 @@
     <InstallUrl>http://store.zollie.com.br/OrgPortalMonitor/</InstallUrl>
     <UpdateUrl>http://store.zollie.com.br/OrgPortalMonitor/</UpdateUrl>
     <SupportUrl>http://store.zollie.com.br</SupportUrl>
-<!--<InstallUrl>http://orgportal/OrgPortalMonitor/</InstallUrl>
-    <UpdateUrl>http://orgportal/OrgPortalMonitor/</UpdateUrl>
-    <SupportUrl>http://orgportal</SupportUrl>-->
     <ProductName>Zollie OrgPortal</ProductName>
     <PublisherName>Zollie</PublisherName>
     <SuiteName>Zollie Apps</SuiteName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <TrustUrlParameters>true</TrustUrlParameters>
-    <ApplicationRevision>58</ApplicationRevision>
+    <ApplicationRevision>61</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <!--<PublishUrl>C:\_GitHub\Ratan\OrgPortal\trunk\OrgPortalServer\OrgPortalMonitor\</PublishUrl>-->
+    <!--<InstallUrl>http://orgportal/OrgPortalMonitor/</InstallUrl>
+    <UpdateUrl>http://orgportal/OrgPortalMonitor/</UpdateUrl>
+    <SupportUrl>http://orgportal</SupportUrl>-->
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -108,6 +108,7 @@
     </Compile>
     <Compile Include="Installer.cs" />
     <Compile Include="InstallResult.cs" />
+    <Compile Include="LogException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnlockKeyDialog.cs">

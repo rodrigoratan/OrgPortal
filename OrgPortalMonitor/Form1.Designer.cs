@@ -75,6 +75,10 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.v54ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.fileSystemWatcher2 = new System.IO.FileSystemWatcher();
+            this.extraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.processExistingAppRequestsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.processExistingAutoInstallAndAutoUpdateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -87,6 +91,7 @@
             this.tabMultiple.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvPackages)).BeginInit();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher2)).BeginInit();
             this.SuspendLayout();
             // 
             // notifyIcon1
@@ -440,7 +445,8 @@
             this.appsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.refreshInstalledListToolStripMenuItem,
             this.unlockDeviceForSideloadingToolStripMenuItem,
-            this.getDeveloperLicenseToolStripMenuItem});
+            this.getDeveloperLicenseToolStripMenuItem,
+            this.extraToolStripMenuItem});
             this.appsToolStripMenuItem.Name = "appsToolStripMenuItem";
             this.appsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.appsToolStripMenuItem.Text = "Apps";
@@ -482,7 +488,34 @@
             // 
             this.v54ToolStripMenuItem.Name = "v54ToolStripMenuItem";
             this.v54ToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.v54ToolStripMenuItem.Text = "OrgPortal 1.x.57";
+            this.v54ToolStripMenuItem.Text = "OrgPortal 1.x.61";
+            // 
+            // fileSystemWatcher2
+            // 
+            this.fileSystemWatcher2.EnableRaisingEvents = true;
+            this.fileSystemWatcher2.Filter = "*.rt2win";
+            this.fileSystemWatcher2.SynchronizingObject = this;
+            // 
+            // extraToolStripMenuItem
+            // 
+            this.extraToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.processExistingAppRequestsToolStripMenuItem,
+            this.processExistingAutoInstallAndAutoUpdateToolStripMenuItem});
+            this.extraToolStripMenuItem.Name = "extraToolStripMenuItem";
+            this.extraToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
+            this.extraToolStripMenuItem.Text = "Extra";
+            // 
+            // processExistingAppRequestsToolStripMenuItem
+            // 
+            this.processExistingAppRequestsToolStripMenuItem.Name = "processExistingAppRequestsToolStripMenuItem";
+            this.processExistingAppRequestsToolStripMenuItem.Size = new System.Drawing.Size(313, 22);
+            this.processExistingAppRequestsToolStripMenuItem.Text = "Process Existing App Requests";
+            // 
+            // processExistingAutoInstallAndAutoUpdateToolStripMenuItem
+            // 
+            this.processExistingAutoInstallAndAutoUpdateToolStripMenuItem.Name = "processExistingAutoInstallAndAutoUpdateToolStripMenuItem";
+            this.processExistingAutoInstallAndAutoUpdateToolStripMenuItem.Size = new System.Drawing.Size(313, 22);
+            this.processExistingAutoInstallAndAutoUpdateToolStripMenuItem.Text = "Process Existing Auto Install and Auto Update";
             // 
             // Form1
             // 
@@ -498,7 +531,7 @@
             this.Name = "Form1";
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
-            this.Text = "OrgPortal Monitor";
+            this.Text = "Zollie R2 - OrgPortal Monitor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResizeEnd += new System.EventHandler(this.Form1_ResizeEnd);
@@ -518,6 +551,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvPackages)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher2)).EndInit();
             this.ResumeLayout(false);
 
     }
@@ -569,6 +603,10 @@
     private System.Windows.Forms.ToolStripMenuItem autoConnectToolStripMenuItem;
     private System.ComponentModel.BackgroundWorker backgroundWorker1;
     private System.Windows.Forms.ToolStripMenuItem v54ToolStripMenuItem;
+    private System.IO.FileSystemWatcher fileSystemWatcher2;
+    private System.Windows.Forms.ToolStripMenuItem extraToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem processExistingAppRequestsToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem processExistingAutoInstallAndAutoUpdateToolStripMenuItem;
   }
 }
 

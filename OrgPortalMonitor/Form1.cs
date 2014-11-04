@@ -102,6 +102,22 @@ namespace OrgPortalMonitor
                 this.Close();
             };
 
+            processExistingAppRequestsToolStripMenuItem.Click += (o, a) =>
+            {
+                if (_installer != null)
+                {
+                    _installer.ProcessExistingRequestFiles1();
+                }
+            };
+
+            processExistingAutoInstallAndAutoUpdateToolStripMenuItem.Click += (o, a) =>
+            {
+                if (_installer != null)
+                {
+                    _installer.ProcessExistingRequestFiles2();
+                }
+            };
+
             BlockAllTabsExceptOneIfNotStarted("tabSettings");
 
             var RequestQueryString = GetQueryStringParameters();
@@ -167,6 +183,28 @@ namespace OrgPortalMonitor
                 this.Size = Settings.Default.WindowSize;
             }
             #endregion
+
+            OrgPortalStatus();
+
+        }
+
+        private void OrgPortalStatus()
+        {
+
+            string extraInfo = "";
+            extraInfo += "OrgPortalUrl[" + txtOrgPortalUrl.Text + "]";
+            extraInfo += "PackageFamilyName[" + txtPackageFamilyName.Text + "]";
+            if (_installer != null)
+            {
+                extraInfo += "serviceURI[" + _installer._serviceURI + "]";
+                extraInfo += "PackageTempPath[" + _installer.PackageTempPath + "]";
+                extraInfo += "PackageLocalPath[" + _installer.PackageLocalPath + "]";
+            }
+            extraInfo += Environment.NewLine;
+
+            string fileName = "OrgPortalMonitor-StartupInfo-T" + Environment.CurrentManagedThreadId.ToString() + ".log";
+            ExceptionLogger.ExtraLog(extraInfo, fileName);
+            //ExceptionLogger.PurgeLogFiles();
         }
 
         private void BlockAllTabsExceptOneIfNotStarted(string tabName)
@@ -284,15 +322,22 @@ namespace OrgPortalMonitor
                 _installer = new Installer(txtPackageFamilyName.Text,
                                            this.notifyIcon1,
                                            this.txtLogOutput,
-                                           this.fileSystemWatcher1);
+                                           this.fileSystemWatcher1,
+                                           this.fileSystemWatcher2
+                                          );
 
-                _installer.StartFileWatcher(_installer.PackageTempPath);
+                _installer.StartFileWatcher1(_installer.PackageTempPath);
+                //_installer.StartFileWatcher2(_installer.CachePath);
+                if (!_installer.IsAutoInstalling)
+                {
+                    _installer.ProcessExistingRequestFiles2();
+                }
 
                 await RefreshInstalledApps();
             }
             else
             {
-                _installer.StopFileWatcher();
+                _installer.StopFileWatcher1();
                 _installer = null;
                 IsStarted = false;
                 btnStartStop.Text = btnStartStopOriginalTextBuffer;
@@ -395,7 +440,16 @@ namespace OrgPortalMonitor
         private void OutputException(Exception ex)
         {
             try 
-	        {	        
+	        {
+                if (_installer != null)
+                {
+                    ExceptionLogger.LogException(ex, _installer.PackageTempPath);
+                }
+                else
+                {
+                    ExceptionLogger.LogException(ex);
+                }
+   
                 txtLogOutput.Text += "---------------------------"
                                   + "Erro: " 
                                   + System.Environment.NewLine
@@ -432,6 +486,16 @@ namespace OrgPortalMonitor
 		        txtLogOutput.Text += "Erro: " 
                                       + System.Environment.NewLine
                                       + exc.Message;
+
+                if (_installer != null)
+                {
+                    ExceptionLogger.LogException(exc, _installer.PackageTempPath);
+                }
+                else
+                {
+                    ExceptionLogger.LogException(exc);
+                }
+
 	        }
 
         }

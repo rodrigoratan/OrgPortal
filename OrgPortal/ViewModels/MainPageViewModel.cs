@@ -29,7 +29,6 @@ namespace OrgPortal.ViewModels
             this._fileManager = fileManager;
         }
 
-
         private string _featureUrl;
         public string FeatureUrl
         {
@@ -73,9 +72,6 @@ namespace OrgPortal.ViewModels
                 NotifyOfPropertyChange(() => SearchQueryText);
             }
         }
-
-
-
 
         protected override async void OnInitialize()
         {

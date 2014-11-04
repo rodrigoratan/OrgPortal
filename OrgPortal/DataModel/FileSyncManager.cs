@@ -24,7 +24,8 @@ namespace OrgPortal.DataModel
             var app = new string[] { "install",         appxUrl, 
                                      "appxFile",        appxFile, 
                                      "certificateUrl",  certificateUrl, 
-                                     "certificateFile", certificateFile 
+                                     "certificateFile", certificateFile,
+                                     "saveAt",          string.Empty  
                                    };
             await WriteTempFile(app); 
         }
