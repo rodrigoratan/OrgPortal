@@ -56,10 +56,5 @@
                 </TransitionCollection>
             </ProgressRing.Transitions>
         </ProgressRing>
-        <!--<Image Grid.Row="2" 
-               Source="../Assets/splash_headerbottombg.png"
-               VerticalAlignment="Top" 
-               HorizontalAlignment="Left" 
-               Stretch="None" />-->
     </Grid>
 </Page>
