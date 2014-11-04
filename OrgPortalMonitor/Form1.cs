@@ -212,7 +212,7 @@ namespace OrgPortalMonitor
             for (int i = 0; i < tabControl1.TabPages.Count; i++)
             {
                 TabPage tp = tabControl1.TabPages[i];
-                tp.Enabled = (tp.Name == tabName) || IsStarted;
+                tp.Enabled = (tp.Name == tabName || tp.Name == "tabLog") || IsStarted;
                 //tp.Visible = (tp.Name == tabName) || IsStarted;
             }
         }
@@ -500,7 +500,52 @@ namespace OrgPortalMonitor
 
         }
 
-        
+        private async void dgvServerApps_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                var senderGrid = (DataGridView)sender;
+                if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
+                    e.RowIndex >= 0 && (e.ColumnIndex - 1) >= 0)
+                {
+
+                    //MessageBox.Show("Not implemented yet. Please use the OrgPortal app to request app installs.");
+
+                    var packageFamilyNameColumn = senderGrid.Columns[e.ColumnIndex - 1];
+
+                    if (packageFamilyNameColumn != null && 
+                        packageFamilyNameColumn is DataGridViewTextBoxColumn &&
+                        e.RowIndex >= 0)
+                    {
+                        string package = senderGrid[e.ColumnIndex - 1, e.RowIndex].Value as string;
+                        string version = senderGrid[e.ColumnIndex - 4, e.RowIndex].Value as string;
+                        if (_installer != null)
+                        {
+                            var serverApps = _installer.ServerAppList;
+                            var requestApp = serverApps
+                                            .Where(a => a.Version == version &&
+                                                        a.PackageFamilyName == package).FirstOrDefault();
+
+                            var fileNamePath = _installer.CachePath +
+                                               System.Guid.NewGuid().ToString() +
+                                               ".rt2win";
+                            await Installer.RequestApp(
+                                requestApp,
+                                _installer.CachePath,
+                                fileNamePath);
+                            
+                            _installer.ProcessRequest(fileNamePath); 
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.LogException(ex);
+            }
+
+        }
 
     }
 }

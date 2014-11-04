@@ -265,6 +265,7 @@
             this.dgvServerApps.ReadOnly = true;
             this.dgvServerApps.Size = new System.Drawing.Size(610, 385);
             this.dgvServerApps.TabIndex = 1;
+            this.dgvServerApps.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvServerApps_CellContentClick);
             // 
             // dataGridViewTextBoxColumn2
             // 
@@ -488,7 +489,7 @@
             // 
             this.v54ToolStripMenuItem.Name = "v54ToolStripMenuItem";
             this.v54ToolStripMenuItem.Size = new System.Drawing.Size(157, 22);
-            this.v54ToolStripMenuItem.Text = "OrgPortal 1.x.61";
+            this.v54ToolStripMenuItem.Text = "OrgPortal 1.x.63";
             // 
             // fileSystemWatcher2
             // 

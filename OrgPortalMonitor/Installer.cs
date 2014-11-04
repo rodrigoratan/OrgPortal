@@ -157,7 +157,7 @@ namespace OrgPortalMonitor
         }
 
 
-        private void ProcessRequest(string inputFilePath)
+        public void ProcessRequest(string inputFilePath)
         {
             if (!IsProcessing)
             {
@@ -172,8 +172,13 @@ namespace OrgPortalMonitor
                 try
                 {
                     var input = File.ReadAllLines(inputFilePath);
-                    var command = input[0];
-                    outputDoc.Add(new XElement("command", command));
+                    string command = string.Empty;
+
+                    if (input.Count() > 0)
+                    {
+                        command = input[0];
+                        outputDoc.Add(new XElement("command", command));
+                    }
 
                     if (command == "install")
                     {
@@ -618,25 +623,12 @@ namespace OrgPortalMonitor
                         string requestFileName = SavePath 
                                                  + System.Guid.NewGuid().ToString() + ".rt2win";
 
-                        var requestFile = System.IO.File.CreateText(requestFileName);
-                        using (requestFile)
-                        {
-                            await requestFile.WriteLineAsync("install");
-                            await requestFile.WriteLineAsync(serverApp.AppxUrl);
-                            await requestFile.WriteLineAsync("appxFile");
-                            await requestFile.WriteLineAsync(serverApp.PackageFile);
-                            await requestFile.WriteLineAsync("certificateUrl");
-                            await requestFile.WriteLineAsync(serverApp.CertificateUrl);
-                            await requestFile.WriteLineAsync("certificateFile");
-                            await requestFile.WriteLineAsync(serverApp.CertificateFile);
-                            await requestFile.WriteLineAsync("saveAt");
-                            await requestFile.WriteLineAsync(SavePath);
-                            requestFile.Close();
-                        }
-                        if (serverApp.PackageFamilyName == OrgPortalPackageFamilyName)
-                        {
-                            ProcessRequest(requestFileName); //not needed because file watcher will process it 
-                        }
+                        await RequestApp(serverApp, SavePath, requestFileName);
+
+                        //if (serverApp.PackageFamilyName == OrgPortalPackageFamilyName)
+                        //{
+                            ProcessRequest(requestFileName); 
+                        //}
                     }
                 }
 
@@ -644,11 +636,33 @@ namespace OrgPortalMonitor
                 //Ideally here we would restore PackageTempPath and GetInstalledPackages but we are no sure that it finished
                 //RestorePackageTempPathIfChanged();
 
-                //IsAutoInstalling = false;
+                IsAutoInstalling = false;
 
             }
             //GetInstalledPackages();
 
+        }
+
+        public static async Task RequestApp(AppInfo serverApp, string SavePath, string requestFileName)
+        {
+            if (serverApp != null)
+            {
+                var requestFile = System.IO.File.CreateText(requestFileName);
+                using (requestFile)
+                {
+                    await requestFile.WriteLineAsync("install");
+                    await requestFile.WriteLineAsync(serverApp.AppxUrl);
+                    await requestFile.WriteLineAsync("appxFile");
+                    await requestFile.WriteLineAsync(serverApp.PackageFile);
+                    await requestFile.WriteLineAsync("certificateUrl");
+                    await requestFile.WriteLineAsync(serverApp.CertificateUrl);
+                    await requestFile.WriteLineAsync("certificateFile");
+                    await requestFile.WriteLineAsync(serverApp.CertificateFile);
+                    await requestFile.WriteLineAsync("saveAt");
+                    await requestFile.WriteLineAsync(SavePath);
+                    requestFile.Close();
+                }
+            }
         }
 
         private void RestorePackageTempPathIfChanged()
@@ -873,8 +887,6 @@ namespace OrgPortalMonitor
         public bool IsInstalling { get; set; }
 
         public bool IsProcessing { get; set; }
-
-
 
         public bool IsAutoInstalling { get; set; }
     }
