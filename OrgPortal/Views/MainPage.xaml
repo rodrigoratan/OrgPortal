@@ -16,55 +16,72 @@
                Stretch="Uniform" />
 
         <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="91" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            
+            <Grid Grid.Row="0">
+                <Grid.Background>
+                    <ImageBrush x:Name="BackImageBrush"
+                            ImageSource="../Assets/header_bg.png"
+                            Stretch="UniformToFill" />
+                </Grid.Background>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Image Source="{Binding Path=Branding.LogoImage}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Margin="0,0,20,0" />
+
+                <SearchBox Grid.Column="2"
+                                   Margin="0,0,30,0"
+                                   Width="350"
+                                   Height="35"
+                                   PlaceholderText="Search for apps"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   FocusOnKeyboardInput="True"
+                                   QueryText="{Binding Path=SearchQueryText, Mode=TwoWay}"
+                                   cal:Message.Attach="[Event QuerySubmitted] = [RunSearch()]" />
+            </Grid>
+            
             <!--<Grid.ChildrenTransitions>
                 <TransitionCollection>
                     <EntranceThemeTransition/>
                 </TransitionCollection>
             </Grid.ChildrenTransitions>-->
 
-            <Hub HorizontalContentAlignment="Stretch">
-                <Hub.Header>
+            <Hub Grid.Row="1" HorizontalContentAlignment="Stretch">
+                
+                <!--<Hub.Header>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-
-                        <Image Source="{Binding Path=Branding.LogoImage}"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Left"
-                               Margin="0,0,20,0" />
-
-                        <!-- Page title -->
-                        <TextBlock Grid.Column="1"
+                        <TextBlock Grid.Column="0"
                                    Style="{StaticResource AccentHeaderTextBlockStyle}"
                                    Text="{Binding Path=Branding.Name}"
                                    IsHitTestVisible="false"
                                    TextWrapping="NoWrap"
-                                   VerticalAlignment="Center" />
-
-                        <SearchBox Grid.Column="2"
-                                   Margin="0"
-                                   Width="350"
-                                   Height="35"
-                                   PlaceholderText="Search for apps"
-                                   VerticalAlignment="Bottom"
-                                   HorizontalAlignment="Right"
-                                   FocusOnKeyboardInput="True"
-                                   QueryText="{Binding Path=SearchQueryText, Mode=TwoWay}"
-                                   cal:Message.Attach="[Event QuerySubmitted] = [RunSearch()]" />
+                                   VerticalAlignment="Center" HorizontalAlignment="Right" Width="916" />
                     </Grid>
-                </Hub.Header>
+                </Hub.Header>-->
 
-                <HubSection Width="650"
+                <!--<HubSection Width="650"
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Stretch">
                     <DataTemplate>
                         <WebView Source="{Binding Path=FeatureUrl}"
                                  ScrollViewer.VerticalScrollBarVisibility="Auto" />
                     </DataTemplate>
-                </HubSection>
+                </HubSection>-->
 
                 <HubSection Header="Recently Updated">
                     <DataTemplate>

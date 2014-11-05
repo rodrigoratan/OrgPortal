@@ -10,7 +10,7 @@
     d:DesignHeight="300"
     d:DesignWidth="800">
 	
-    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}" DataContext="{Binding Path=NavigationBar}">
+    <Grid Background="#101010" DataContext="{Binding Path=NavigationBar}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
