@@ -29,7 +29,7 @@
         </Border>
 
         <Border Grid.Row="1" Background="#262a2d" BorderThickness="0,0,0,0">
-            <ListView Margin="20,0,20,0"
+            <ListView Margin="10,0,10,0"
                   VerticalAlignment="Stretch"
                   HorizontalAlignment="Stretch"
                   ItemsSource="{Binding Path=CategoryList}"
@@ -37,20 +37,19 @@
                   cal:Message.Attach="[Event ItemClick] = [GoToCategory($eventArgs)]">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <ItemsWrapGrid Orientation="Horizontal" MaxHeight="45" />
+                    <ItemsWrapGrid Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
-                    <Setter Property="MinWidth" Value="190" />
-                    <Setter Property="Padding" Value="10,0" />
-                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                        <Setter Property="MinWidth" Value="190" />
+                        <Setter Property="VerticalContentAlignment" Value="Center" />
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Border Background="#1d2022" Width="200" Height="45">
-                            <TextBlock Text="{Binding Path=Name}" Foreground="#93b5a3" FontSize="14" />
+                    <Border Background="#1d2022" Width="200" Height="40">
+                            <TextBlock Text="{Binding Path=Name}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#93b5a3" FontSize="14" />
                     </Border>
                 </DataTemplate>
             </ListView.ItemTemplate>

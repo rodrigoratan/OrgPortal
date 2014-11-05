@@ -9,7 +9,7 @@
     </ResourceDictionary.MergedDictionaries>
     
     <Style x:Key="TopAppBarStyle" TargetType="AppBar">
-        <Setter Property="BorderBrush" Value="{StaticResource AccentColorBrush}" />
+        <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0,0,0,0" />        
         <Setter Property="ContentTemplate">
             <Setter.Value>
