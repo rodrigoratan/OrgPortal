@@ -24,7 +24,42 @@
             </StackPanel>
         </Grid>
 
-        <Grid Visibility="{Binding Path=IsSearching, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="65" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.Background>
+                    <ImageBrush x:Name="BackImageBrush"
+                            ImageSource="../Assets/header_bg.png"
+                            Stretch="UniformToFill" />
+                </Grid.Background>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Image Source="{Binding Path=Branding.LogoImage}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Margin="0,0,20,0" />
+
+                <SearchBox Grid.Column="2"
+                                   Margin="0,0,30,0"
+                                   Width="350"
+                                   Height="35"
+                                   PlaceholderText="Search for apps"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   FocusOnKeyboardInput="True"
+                                   QueryText="{Binding Path=SearchQueryText, Mode=TwoWay}"
+                                   cal:Message.Attach="[Event QuerySubmitted] = [RunSearch()]" />
+            </Grid>
+
+            <Grid Grid.Row="1" Visibility="{Binding Path=IsSearching, Converter={StaticResource InverseBoolToVisibilityConverter}}">
             <Grid.ChildrenTransitions>
                 <TransitionCollection>
                     <EntranceThemeTransition />
@@ -53,12 +88,11 @@
 
             <!-- Back button and page title -->
             <Grid Margin="0,0,40,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="120"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
                 <Button x:Name="GoBack" Margin="39,59,39,0" 
                         Style="{StaticResource NavigationBackButtonNormalStyle}"
                         VerticalAlignment="Top"
@@ -66,21 +100,14 @@
                         AutomationProperties.AutomationId="BackButton"
                         AutomationProperties.ItemType="Navigation Button"/>
 
-                <TextBlock Text="{Binding Path=LastSearchQuery}" Style="{StaticResource AccentHeaderTextBlockStyle}" Grid.Column="1" 
+                    <TextBlock Text="{Binding Path=LastSearchQuery}" Style="{StaticResource AccentHeaderTextBlockStyle}" Foreground="#666666" Grid.Column="1" 
                            IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40" />
 
-                <TextBlock Text="{Binding Path=ResultCount}" Style="{StaticResource SubheaderTextBlockStyle}" Grid.Column="2" 
+                    <TextBlock Text="{Binding Path=ResultCount}" Style="{StaticResource SubheaderTextBlockStyle}" Foreground="#70887a" Grid.Column="2" 
                            IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="20,0,30,40" />
 
-                <SearchBox Grid.Column="3"
-                           Width="350" Height="35"
-                           Margin="0,65,0,0"
-                           PlaceholderText="Search for apps"
-                           VerticalAlignment="Top" 
-                           HorizontalAlignment="Right"
-                           QueryText="{Binding Path=SearchQueryText, Mode=TwoWay}"
-                           cal:Message.Attach="[Event QuerySubmitted] = [RunSearch()]"/>
             </Grid>
+        </Grid>
         </Grid>
     </Grid>
 

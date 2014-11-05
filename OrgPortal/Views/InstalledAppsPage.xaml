@@ -12,21 +12,56 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Image Source="{Binding Path=Branding.HeaderImage}" VerticalAlignment="Top" HorizontalAlignment="Stretch" Stretch="Uniform" />
-        
+
         <Grid>
-            <Grid.ChildrenTransitions>
-                <TransitionCollection>
-                    <EntranceThemeTransition/>
-                </TransitionCollection>
-            </Grid.ChildrenTransitions>
-        
             <Grid.RowDefinitions>
-                <RowDefinition Height="140"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="65" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- Horizontal scrolling grid -->
-            <GridView
+            <Grid Grid.Row="0">
+                <Grid.Background>
+                    <ImageBrush x:Name="BackImageBrush"
+                            ImageSource="../Assets/header_bg.png"
+                            Stretch="UniformToFill" />
+                </Grid.Background>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Image Source="{Binding Path=Branding.LogoImage}"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               Margin="0,0,20,0" />
+
+                <SearchBox Grid.Column="2"
+                                   Margin="0,0,30,0"
+                                   Width="350"
+                                   Height="35"
+                                   PlaceholderText="Search for apps"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Right"
+                                   FocusOnKeyboardInput="True"
+                                   QueryText="{Binding Path=SearchQueryText, Mode=TwoWay}"
+                                   cal:Message.Attach="[Event QuerySubmitted] = [RunSearch()]" />
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.ChildrenTransitions>
+                    <TransitionCollection>
+                        <EntranceThemeTransition/>
+                    </TransitionCollection>
+                </Grid.ChildrenTransitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="140"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Horizontal scrolling grid -->
+                <GridView
                 x:Name="itemGridView"
                 AutomationProperties.AutomationId="ItemsGridView"
                 AutomationProperties.Name="Items"
@@ -40,26 +75,27 @@
                 IsItemClickEnabled="True"
                 cal:Message.Attach="[Event ItemClick] = [ShowAppDetails($eventArgs)]"/>
 
-            <!-- Back button and page title -->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="120"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Button x:Name="GoBack" Margin="39,59,39,0" 
+                <!-- Back button and page title -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="GoBack" Margin="39,59,39,0" 
                         Style="{StaticResource NavigationBackButtonNormalStyle}"
                         VerticalAlignment="Top"
                         AutomationProperties.Name="Back"
                         AutomationProperties.AutomationId="BackButton"
                         AutomationProperties.ItemType="Navigation Button"/>
 
-                <TextBlock x:Name="pageTitle" Text="Your Apps" Style="{StaticResource AccentHeaderTextBlockStyle}" Grid.Column="1" 
+                    <TextBlock x:Name="pageTitle" Text="Your Apps" Style="{StaticResource AccentHeaderTextBlockStyle}" Foreground="#666666" Grid.Column="1" 
                             IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
-            
-                <TextBlock Text="{Binding Path=AppCount}" Style="{StaticResource SubheaderTextBlockStyle}" Grid.Column="2" 
+
+                    <TextBlock Text="{Binding Path=AppCount}" Style="{StaticResource SubheaderTextBlockStyle}" Foreground="#70887a" Grid.Column="2" 
                             IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="20,0,30,40"/>
 
+                </Grid>
             </Grid>
         </Grid>
     </Grid>

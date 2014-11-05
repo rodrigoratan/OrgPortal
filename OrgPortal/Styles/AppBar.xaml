@@ -10,7 +10,7 @@
     
     <Style x:Key="TopAppBarStyle" TargetType="AppBar">
         <Setter Property="BorderBrush" Value="{StaticResource AccentColorBrush}" />
-        <Setter Property="BorderThickness" Value="0,0,0,1" />        
+        <Setter Property="BorderThickness" Value="0,0,0,0" />        
         <Setter Property="ContentTemplate">
             <Setter.Value>
                 <DataTemplate>
