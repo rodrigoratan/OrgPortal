@@ -9,23 +9,23 @@ body
     margin: 0px;
     padding: 0px;
     line-height: 16px;
-    color: #3c3c3c; /*Dark Gray */
+    color: #666666;
 }
 
 a:link, a:visited
 {
-    color: #9ae74a; /*Light Green */
+    color: #666666;
 }
 
 a:hover
 {
-    color: #83c341; /*Dark Green */
+    color: #666666;
     text-decoration: none;
 }
 
 a:active
 {
-    color: #034af3;
+    color: #666666;
 }
 
 p
@@ -64,12 +64,12 @@ hr
 
 .logo 
 {
-    margin:0px 20px 0px 0px;
-    background-image:url('/Images/LogoImage.png');
+    margin:0px 20px 0px 20px;
+    background-image:url('/Images/header_logo_portal.png');
     background-repeat:no-repeat;
-    height:108px;
-    width:300px;
-    float:right;
+    height:68px;
+    width:266px;
+    float:left;
     vertical-align:top;
 }
 
@@ -221,23 +221,22 @@ th
 
 .topBar 
 {
-    height:78px;
-    background-color: #ffffff;
+    height:68px;
+    background-image:url('/Images/header_bg.png');
+    background-repeat:repeat-x;
     
 }
 
 .navBar
 {
-    height:78px;
-    background-color: #83c341;
-    margin-top:30px;
-    padding-left:20px;
+    margin-left:30px;
+    float:left;
 }
 
 .warning
 {
     height:54px;
-    background-color: #3c3c3c;
+    background-color: #262a2d;
 }
 
 .warningText
@@ -289,7 +288,7 @@ nav ul li:hover > ul {
 }
 
 nav ul {
-	background: #83c341; 
+	background: #1d2022; 
 	margin:0px;
 	list-style: none;
 	position: relative;
@@ -308,13 +307,13 @@ nav ul:after {
 
 nav ul li {
 	float: left;
-	height:78px;
+	height:45px;
 
 
 }
 
 nav ul li a:link {
-	color: #fff;
+	color: #93b5a3;
 }
 
 nav ul li:hover {
@@ -322,24 +321,24 @@ nav ul li:hover {
 }
 		
 nav ul li:hover a {
-	color: #3c3c3c;
+	color: #ffffff;
 }
 	
 nav ul li a {
 	display: block; 
 	text-decoration: none;
-	padding: 30px 30px 30px 30px;
+	padding: 4px 12px 4px 12px;
 }
 	
 nav ul ul {
-	background: #83c341;  
+	background: #1d2022;  
 	padding: 0;
 	position: absolute; 
 	top: 100%;
 }
 			
 nav ul ul {
-	background: #83c341; 
+	background: #1d2022; 
 	padding: 0;
 	position: absolute; 
 	top: 100%;
@@ -353,7 +352,7 @@ nav ul ul li {
 }
 
 nav ul ul li a {
-	padding: 30px 65px 30px 30px;
+	padding: 4px 24px 4px 12px;
 	margin-left:0px;
 }	
 

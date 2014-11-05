@@ -4,26 +4,27 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>OrgPortal Web</title>
+    <title>Zollie OrgPortal</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
     <div class="topBar">
-        <div class="siteHeader">Zollie OrgPortal</div>
         <div class="logo"></div>
+        <!--<div class="siteHeader">Zollie OrgPortal</div>-->
+        <div class="navBar">
+            <nav>
+                <ul>
+                    <li>@Html.ActionLink("HOME", "Index", "Home")</li>
+                    <li>@Html.ActionLink("APPS BACKOFFICE", "Index", "Applications")</li>
+                    <li>@Html.ActionLink("FEATURES", "Index", "Features")</li>
+                    <li>@Html.ActionLink("CATEGORY", "Index", "Categories")</li>
+                    <li>@Html.ActionLink("BRANDING", "Index", "Admin")</li>
+                </ul>
+            </nav>
+        </div>
     </div>  
-    <div class="navBar">
-        <nav>
-            <ul>
-                <li>@Html.ActionLink("HOME", "Index", "Home")</li>
-                <li>@Html.ActionLink("APPS BACKOFFICE", "Index", "Applications")</li>
-                <li>@Html.ActionLink("FEATURES", "Index", "Features")</li>
-                <li>@Html.ActionLink("CATEGORY", "Index", "Categories")</li>
-                <li>@Html.ActionLink("BRANDING", "Index", "Admin")</li>
-            </ul>
-        </nav>
-    </div>
+    
     <div class="warning">
         <div class="warningText">@TempData["WarningMessage"]</div>
     </div>
