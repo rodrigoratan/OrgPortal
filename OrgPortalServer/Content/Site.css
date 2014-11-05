@@ -45,7 +45,7 @@ hr
   color: #e4e4e4;
 }
 
-.height {height:400px;}
+.height {clear:both;height:400px;}
 .heightSmall {height:40px;}
 .theme {padding-top:66px;}
 
@@ -260,16 +260,22 @@ th
     font-weight:bold;
 }
 .left
-{ float:left;
-  padding-left:50px;
+{ 
+float:left;
+ margin: 50px 0 50px 30px;
+    width: 420px;
+ /*padding-left:50px;
   padding-top:50px;
-  position:absolute;
+  position:absolute;*/
 }
 
 .right
 { 
-  padding-left:600px;
-  padding-top:50px;
+  float:left;
+  margin:50px 0px 50px 50px;
+  width:400px;
+  /*padding-left:600px;
+  padding-top:50px;*/
 
 }
 
@@ -291,7 +297,15 @@ th
 
 .row{width:900px;margin:0px 20px;}
 a.btn-primary:link, a.btn-primary:visited {color: #ffffff;}
-
+.jumbotron {
+    background-color: #eee;
+    color: inherit;
+    font-size: 21px;
+    font-weight: 200;
+    line-height: 2.14286;
+    margin-bottom: 30px;
+    padding: 20px;
+}
 /* NAVIGATION 
 ----------------------------------------------------------*/
 
@@ -393,7 +407,7 @@ nav ul ul li a:hover {
     font-size: 14px;
     font-family: "Helvetica Neue", "Lucida Grande", "Segoe UI", Arial, Helvetica, Verdana, sans-serif;
     color: #3c3c3c; /*Dark Gray*/
-    width: 300px;
+    width: 269px;
     border: 1px solid #83c341;
 }
 
@@ -501,8 +515,10 @@ select:focus
 
 .pageButtonBranding
 {
-    padding-top:250px;
-    padding-left:232px;
+    clear:both;
+	margin:0px 0px 0px 50px;
+	/*padding-top:250px;
+    padding-left:232px;*/
     }
 
 /* PREVIEW  
