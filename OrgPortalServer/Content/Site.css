@@ -156,15 +156,23 @@ table  {
 }
 
 .delete  
-{
-    font-size: 16px;
-    color:#83c341;
-    cursor:pointer; 
+{ 
+
+	background-color: #1d2022;
+    color: #93b5a3;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    border:none;
+    padding:4px 12px 4px 12px;
+    margin-left:10px;
+    font-weight:bold;
 }
 
 .delete:hover  
 {
-    color:#9ae74a;
+    color:#ffffff;
+	background-color: #ff0000;
     cursor:pointer;   
 }
 
@@ -282,6 +290,7 @@ th
 }
 
 .row{width:900px;margin:0px 20px;}
+a.btn-primary:link, a.btn-primary:visited {color: #ffffff;}
 
 /* NAVIGATION 
 ----------------------------------------------------------*/
@@ -323,7 +332,7 @@ nav ul li a:link, nav ul li a:visited {
 }
 
 nav ul li:hover {
-    background: #9ae74a;
+    background: #1d2022;
 }
 		
 nav ul li:hover a {
@@ -363,7 +372,7 @@ nav ul ul li a {
 }	
 
 nav ul ul li a:hover {
-	background: #9ae74a;
+	background: #1d2022;
 	color: #fff;
 }		
 
@@ -407,8 +416,8 @@ nav ul ul li a:hover {
 
 
 .button {
-    background-color: #83c341;
-    color: #fff;
+    background-color: #1d2022;
+    color: #93b5a3;
     font-size: 16px;
     text-decoration: none;
     cursor: pointer;
@@ -420,8 +429,8 @@ nav ul ul li a:hover {
 
 .button:hover {
     border: none;
-    background:#9ae74a;
-    color: #3c3c3c;
+    background:#1d2022;
+    color: #ffffff;
 }
 
 .button[disabled]:active, .button[disabled]:hover, .button[disabled] {
