@@ -64,7 +64,7 @@ hr
 
 .logo 
 {
-    margin:0px 20px 0px 20px;
+    margin:-5px 10px 0px 20px;
     background-image:url('/Images/header_logo_portal.png');
     background-repeat:no-repeat;
     height:68px;
@@ -224,12 +224,16 @@ th
     height:68px;
     background-image:url('/Images/header_bg.png');
     background-repeat:repeat-x;
-    
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 10;
 }
-
+.topBarcontent{width:900px;}
 .navBar
 {
-    margin-left:30px;
+    margin:12px 0px 0px 20px;
     float:left;
 }
 
@@ -237,6 +241,7 @@ th
 {
     height:54px;
     background-color: #262a2d;
+	margin: 55px 0 0 0;
 }
 
 .warningText
@@ -276,6 +281,8 @@ th
 
 }
 
+.row{width:900px;margin:0px 20px;}
+
 /* NAVIGATION 
 ----------------------------------------------------------*/
 
@@ -288,12 +295,11 @@ nav ul li:hover > ul {
 }
 
 nav ul {
-	background: #1d2022; 
 	margin:0px;
 	list-style: none;
 	position: relative;
 	display: inline-table;
-	font-size: 21px;
+	font-size: 14px;
 	padding:0px;
 	vertical-align:middle;
 
@@ -307,12 +313,12 @@ nav ul:after {
 
 nav ul li {
 	float: left;
-	height:45px;
-
-
+	height:30px;
+	background: #1d2022; 
+	margin:0px 10px 0px 0px;
 }
 
-nav ul li a:link {
+nav ul li a:link, nav ul li a:visited {
 	color: #93b5a3;
 }
 
@@ -327,7 +333,7 @@ nav ul li:hover a {
 nav ul li a {
 	display: block; 
 	text-decoration: none;
-	padding: 4px 12px 4px 12px;
+	padding: 6px 12px 6px 12px;
 }
 	
 nav ul ul {
