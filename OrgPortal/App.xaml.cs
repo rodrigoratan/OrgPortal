@@ -9,6 +9,7 @@ using System.Reflection;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml;
 
 namespace OrgPortal
 {
@@ -18,7 +19,18 @@ namespace OrgPortal
 
         public App()
         {
+            Application.Current.UnhandledException += Current_UnhandledException;
+
+            Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = Windows.Globalization.Language.CurrentInputMethodLanguageTag;
+
             this.InitializeComponent();
+
+        }
+
+        void Current_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            //ExceptionLogger.LogException(e.Exception); //tbi
+            e.Handled = true; // avoid app closing
         }
 
         /// <summary>
@@ -119,6 +131,6 @@ namespace OrgPortal
             await SuspensionManager.SaveAsync();
             deferral.Complete();
         }
-
+        
     }
 }

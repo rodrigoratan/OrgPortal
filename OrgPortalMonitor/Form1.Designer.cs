@@ -280,9 +280,9 @@
             this.txtPackageFamilyName.Location = new System.Drawing.Point(221, 39);
             this.txtPackageFamilyName.Name = "txtPackageFamilyName";
             this.txtPackageFamilyName.ReadOnly = true;
-            this.txtPackageFamilyName.Size = new System.Drawing.Size(200, 20);
+            this.txtPackageFamilyName.Size = new System.Drawing.Size(354, 20);
             this.txtPackageFamilyName.TabIndex = 1;
-            this.txtPackageFamilyName.Text = "OrgPortal_m64ba5zfsemg0";
+            this.txtPackageFamilyName.Text = "34993Zollie.ZollieOrgPortal_mcdpzngym7t32";
             this.txtPackageFamilyName.TextChanged += new System.EventHandler(this.txtPackageFamilyName_TextChanged);
             // 
             // lblPackageFamilyName

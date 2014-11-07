@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="34993Zollie.ZollieOrgPortal" Publisher="CN=C42B4C41-BEC2-494C-AFE8-5E95519F8A0C" Version="1.1.0.1" />
+  <Identity Name="34993Zollie.ZollieOrgPortal" Publisher="CN=C42B4C41-BEC2-494C-AFE8-5E95519F8A0C" Version="1.1.0.3" />
   <Properties>
     <DisplayName>Zollie OrgPortal</DisplayName>
     <PublisherDisplayName>Zollie</PublisherDisplayName>

@@ -49,7 +49,7 @@ namespace OrgPortalMonitor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("OrgPortal_m64ba5zfsemg0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("34993Zollie.ZollieOrgPortal_mcdpzngym7t32")]
         public string PackageFamilyName {
             get {
                 return ((string)(this["PackageFamilyName"]));

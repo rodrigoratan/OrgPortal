@@ -9,7 +9,7 @@
       <Value Profile="(Default)">http://store.zollie.com.br/api/</Value>
     </Setting>
     <Setting Name="PackageFamilyName" Type="System.String" Scope="User">
-      <Value Profile="(Default)">OrgPortal_m64ba5zfsemg0</Value>
+      <Value Profile="(Default)">34993Zollie.ZollieOrgPortal_mcdpzngym7t32</Value>
     </Setting>
     <Setting Name="WindowLocation" Type="System.Drawing.Point" Scope="User">
       <Value Profile="(Default)">0, 0</Value>
