@@ -135,6 +135,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AppCategoriesController.cs" />
     <Compile Include="Controllers\ApplicationsController.cs" />
+    <Compile Include="Controllers\AppStoreController.cs" />
     <Compile Include="Controllers\AppsController.cs" />
     <Compile Include="Controllers\CertificateController.cs" />
     <Compile Include="Controllers\BrandingController.cs" />
@@ -228,8 +229,8 @@
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Views\Apps\Detail.cshtml" />
-    <Content Include="Views\Apps\Index.cshtml" />
+    <Content Include="Views\AppStore\Detail.cshtml" />
+    <Content Include="Views\AppStore\Index.cshtml" />
     <None Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />

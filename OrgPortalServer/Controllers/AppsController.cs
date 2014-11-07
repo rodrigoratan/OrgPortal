@@ -13,13 +13,8 @@ using System.Web.Mvc;
 
 namespace OrgPortalServer.Controllers
 {
-    public class AppsController : Controller
+    public class AppsController : ApiController
     {
-
-        public ActionResult Index()
-        {
-            return View(IoCContainerFactory.Current.GetInstance<ApplicationRepository>().Applications);
-        }
         // GET api/<controller>
         public IEnumerable<AppInfo> Get()
         {
@@ -128,31 +123,6 @@ namespace OrgPortalServer.Controllers
 
         //http://orgportal/api/apps/Pictures/34993Zollie.UnimedAgile_mcdpzngym7t32/?version=1.1.0.16
         // GET api/apps/packagefamilyname
-
-        public ActionResult Detail(string id, string version)
-        {
-            try
-            {
-                IEnumerable<Application> appList =
-                         IoCContainerFactory.Current
-                        .GetInstance<ApplicationRepository>()
-                        .Applications.Where(a => a.PackageFamilyName == id &&
-                                                 a.Version == version);
-                if (appList != null && appList.Count() > 0)
-                {
-                    var app = appList.Take(1).ToList()[0]; //TODO: better way?
-                    return View(app);
-                }
-                else
-                {
-                    return View();
-                }
-            }
-            catch
-            {
-                return View();
-            }
-        }
 
         public static IEnumerable<string> GetAppPicturesByPackage(string packageFamilyName, string version)
         {
