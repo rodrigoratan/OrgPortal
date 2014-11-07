@@ -1,4 +1,5 @@
 ﻿using OrgPortalMonitor.DataModel;
+using OrgPortal.Common;
 using System;
 using System.Collections.Generic;
 using System.Composition;
@@ -6,6 +7,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Search;
+using System.Diagnostics;
+using System.Linq;
 
 namespace OrgPortal.DataModel
 {
@@ -25,9 +28,21 @@ namespace OrgPortal.DataModel
                                      "appxFile",        appxFile, 
                                      "certificateUrl",  certificateUrl, 
                                      "certificateFile", certificateFile,
-                                     "saveAt",          string.Empty  
+                                     "saveAt",          "INetCache" /*string.Empty*/
                                    };
-            await WriteTempFile(app); 
+
+
+            //var machineInfo = await MachineInfo.GatherMachineInfoArray();
+
+            //Array.Resize(ref app, app.Length + 1);
+            //app[app.Length - 1] = "new string";
+
+            //TODO: instead sending stats to the monitor, send directly to the log endpoint
+            //await WriteTempFile(app.Concat(machineInfo).ToArray());
+
+            await WriteTempFile(app);
+
+
         }
 
         public async Task<List<AppInfo>> GetInstalledApps(List<AppInfo> apps)

@@ -14,11 +14,11 @@
     <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>OrgPortal_TemporaryKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>3D0D8C9B96F9AFCC021399C4A40DF9C6EFA423B6</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>OrgPortal_StoreKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>4D3CE1B3FF15E0A4C74E245A73B95737D5DB8578</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
-    <AppxBundle>Always</AppxBundle>
+    <AppxBundle>Auto</AppxBundle>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -118,10 +118,13 @@
     </Compile>
     <Compile Include="Common\IMessageBox.cs" />
     <Compile Include="Common\INavigation.cs" />
+    <Compile Include="Common\MachineInfo.cs" />
     <Compile Include="Common\MessageBox.cs" />
     <Compile Include="Common\Navigation.cs" />
     <Compile Include="Common\Serializer.cs" />
     <Compile Include="Common\ThemeManager.cs" />
+    <Compile Include="Common\WindowsStoreSystemInformation.cs" />
+    <Compile Include="Converters\GreaterThanIntToVisibilityConverter.cs" />
     <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="DataModel\BrandingInfo.cs" />
@@ -174,6 +177,8 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="OrgPortal_StoreKey.pfx" />
+    <None Include="Package.StoreAssociation.xml" />
     <None Include="OrgPortal_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <PRIResource Include="Strings\en-US\Resources.resw">
@@ -187,22 +192,43 @@
     <Content Include="Assets\SmallLogo.scale-140.png" />
     <Content Include="Assets\SmallLogo.scale-180.png" />
     <Content Include="Assets\SmallLogo.scale-80.png" />
+    <Content Include="Assets\small_logo.scale-100.png" />
+    <Content Include="Assets\small_logo.scale-140.png" />
     <Content Include="Assets\small_logo.scale-180.png" />
+    <Content Include="Assets\small_logo.scale-80.png" />
     <Content Include="Assets\Splash.scale-100.png" />
     <Content Include="Assets\Splash.scale-140.png" />
     <Content Include="Assets\Splash.scale-180.png" />
     <Content Include="Assets\splash_bg.png" />
     <Content Include="Assets\splash_logo.png" />
+    <Content Include="Assets\splash_page.scale-100.png" />
+    <Content Include="Assets\splash_page.scale-140.png" />
     <Content Include="Assets\splash_page.scale-180.png" />
+    <Content Include="Assets\Square310x310Logo.scale-100.png" />
+    <Content Include="Assets\Square310x310Logo.scale-140.png" />
+    <Content Include="Assets\Square310x310Logo.scale-180.png" />
+    <Content Include="Assets\Square310x310Logo.scale-80.png" />
+    <Content Include="Assets\Square70x70Logo.scale-100.png" />
+    <Content Include="Assets\Square70x70Logo.scale-140.png" />
+    <Content Include="Assets\Square70x70Logo.scale-180.png" />
+    <Content Include="Assets\Square70x70Logo.scale-80.png" />
+    <Content Include="Assets\square_logo.scale-100.png" />
+    <Content Include="Assets\square_logo.scale-140.png" />
     <Content Include="Assets\square_logo.scale-180.png" />
+    <Content Include="Assets\square_logo.scale-80.png" />
     <Content Include="Assets\StoreLogo.scale-140.png" />
     <Content Include="Assets\StoreLogo.scale-180.png" />
+    <Content Include="Assets\store_logo.scale-100.png" />
+    <Content Include="Assets\store_logo.scale-140.png" />
     <Content Include="Assets\store_logo.scale-180.png" />
     <Content Include="Assets\WideLogo.scale-100.png" />
     <Content Include="Assets\WideLogo.scale-140.png" />
     <Content Include="Assets\WideLogo.scale-180.png" />
     <Content Include="Assets\WideLogo.scale-80.png" />
+    <Content Include="Assets\wide_logo.scale-100.png" />
+    <Content Include="Assets\wide_logo.scale-140.png" />
     <Content Include="Assets\wide_logo.scale-180.png" />
+    <Content Include="Assets\wide_logo.scale-80.png" />
     <Content Include="DataModel\SampleData.json" />
   </ItemGroup>
   <ItemGroup>
@@ -298,6 +324,11 @@
     <Reference Include="System.Composition.TypedParts">
       <HintPath>..\packages\Microsoft.Composition.1.0.20\lib\portable-net45+win8\System.Composition.TypedParts.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="Callisto, Version=1.4.0">
+      <Name>Callisto</Name>
+    </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

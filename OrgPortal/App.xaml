@@ -1,26 +1,45 @@
 ﻿<caliburn:CaliburnApplication
-    x:Class="OrgPortal.App"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:caliburn="using:Caliburn.Micro"
-    xmlns:local="using:OrgPortal"
-    xmlns:localData="using:OrgPortal.Data"
-    xmlns:cal="using:Caliburn.Micro" RequestedTheme="Light">
+          x:Class="OrgPortal.App"
+          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          xmlns:caliburn="using:Caliburn.Micro"
+          xmlns:local="using:OrgPortal"
+          xmlns:localData="using:OrgPortal.Data"
+          xmlns:Converters="using:OrgPortal.Converters"
+          xmlns:cal="using:Caliburn.Micro" RequestedTheme="Light">
 
     <Application.Resources>
 
         <ResourceDictionary>
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Styles/Common.xaml" />
                 <ResourceDictionary Source="Styles/AppBar.xaml" />
                 <ResourceDictionary Source="Styles/ItemTemplates.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            
-        
+
+            <!--<Converters:GreaterThanIntToVisibilityConverter x:Key="GreaterThanIntToVisibilityConverter" />-->
+
+            <Converters:GreaterThanIntToVisibilityConverter x:Key="GreaterThanZeroToVisibilityConverter"
+                                                            IntValue="0" />
+            <Converters:GreaterThanIntToVisibilityConverter x:Key="GreaterThanOneToVisibilityConverter"
+                                                            IntValue="1" />
+            <Converters:GreaterThanIntToVisibilityConverter x:Key="GreaterThanOneToVisibilityConverterInversed"
+                                                            IntValue="1"
+                                                            IsInversed="True" />
+            <Converters:GreaterThanIntToVisibilityConverter x:Key="GreaterThanZeroToVisibilityConverterInversed"
+                                                            IntValue="0"
+                                                            IsInversed="True" />
+
             <Style x:Key="BasicTextStyle" TargetType="TextBlock" />
 
             <Style x:Key="AccentHeaderTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource HeaderTextBlockStyle}">
-                <Setter Property="Foreground" Value="{StaticResource AccentColorBrush}" />
+                <Setter Property="FontSize"
+                        Value="36" />
+                <Setter Property="LineHeight"
+                        Value="27" />
+                <Setter Property="Foreground"
+                        Value="{StaticResource AccentColorBrush}" />
             </Style>
 
             <Style x:Key="AppBarButtonStyle" TargetType="ButtonBase">

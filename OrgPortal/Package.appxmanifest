@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="OrgPortal" Publisher="CN=MarimerLLC" Version="1.0.0.7" />
+  <Identity Name="34993Zollie.ZollieOrgPortal" Publisher="CN=C42B4C41-BEC2-494C-AFE8-5E95519F8A0C" Version="1.1.0.1" />
   <Properties>
-    <DisplayName>OrgPortal</DisplayName>
-    <PublisherDisplayName>MarimerLLC</PublisherDisplayName>
+    <DisplayName>Zollie OrgPortal</DisplayName>
+    <PublisherDisplayName>Zollie</PublisherDisplayName>
     <Logo>Assets\store_logo.png</Logo>
   </Properties>
   <Prerequisites>
@@ -16,23 +16,14 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="OrgPortal.App">
       <m2:VisualElements DisplayName="Zollie OrgPortal" Square150x150Logo="Assets\square_logo.png" Square30x30Logo="Assets\small_logo.png" Description="Powered by OrgPortal" ForegroundText="light" BackgroundColor="#101010">
-        <m2:DefaultTile Wide310x150Logo="Assets\wide_logo.png">
+        <m2:DefaultTile Wide310x150Logo="Assets\wide_logo.png" Square310x310Logo="Assets\Square310x310Logo.png" ShortName="Zollie OrgPortal" Square70x70Logo="Assets\Square70x70Logo.png">
           <m2:ShowNameOnTiles>
             <m2:ShowOn Tile="square150x150Logo" />
-            <m2:ShowOn Tile="wide310x150Logo" />
+            <m2:ShowOn Tile="square310x310Logo" />
           </m2:ShowNameOnTiles>
         </m2:DefaultTile>
         <m2:SplashScreen Image="Assets\splash_page.png" BackgroundColor="#101010" />
       </m2:VisualElements>
-      <Extensions>
-        <Extension Category="windows.fileTypeAssociation">
-          <FileTypeAssociation Name="a001">
-            <SupportedFileTypes>
-              <FileType>.txt</FileType>
-            </SupportedFileTypes>
-          </FileTypeAssociation>
-        </Extension>
-      </Extensions>
     </Application>
   </Applications>
   <Capabilities>

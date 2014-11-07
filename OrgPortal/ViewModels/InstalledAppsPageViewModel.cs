@@ -92,5 +92,24 @@ namespace OrgPortal.ViewModels
             }
         }
 
+        private string _searchQueryText;
+        public string SearchQueryText
+        {
+            get { return _searchQueryText; }
+            set
+            {
+                _searchQueryText = value;
+                NotifyOfPropertyChange(() => SearchQueryText);
+            }
+        }
+
+        public void RunSearch()
+        {
+            if (!string.IsNullOrWhiteSpace(_searchQueryText))
+            {
+                Navigation.NavigateToViewModel<SearchPageViewModel>(_searchQueryText);
+            }
+        }
+
     }
 }

@@ -23,8 +23,8 @@
             <Grid Grid.Row="0">
                 <Grid.Background>
                     <ImageBrush x:Name="BackImageBrush"
-                            ImageSource="../Assets/header_bg.png"
-                            Stretch="UniformToFill" />
+                                ImageSource="../Assets/header_bg.png"
+                                Stretch="UniformToFill" />
                 </Grid.Background>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -33,20 +33,20 @@
                 </Grid.ColumnDefinitions>
 
                 <Image Source="{Binding Path=Branding.LogoImage}"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Left"
-                               Margin="0,0,20,0" />
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       Margin="0,0,20,0" />
 
                 <SearchBox Grid.Column="2"
-                                   Margin="0,0,30,0"
-                                   Width="350"
-                                   Height="35"
-                                   PlaceholderText="Search for apps"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Right"
-                                   FocusOnKeyboardInput="True"
-                                   QueryText="{Binding Path=SearchQueryText, Mode=TwoWay}"
-                                   cal:Message.Attach="[Event QuerySubmitted] = [RunSearch()]" />
+                           Margin="0,0,30,0"
+                           Width="350"
+                           Height="35"
+                           PlaceholderText="Search for apps"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                           FocusOnKeyboardInput="True"
+                           QueryText="{Binding Path=SearchQueryText, Mode=TwoWay}"
+                           cal:Message.Attach="[Event QuerySubmitted] = [RunSearch()]" />
             </Grid>
 
             <Grid Grid.Row="1">
@@ -56,37 +56,37 @@
                     </TransitionCollection>
                 </Grid.ChildrenTransitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="140" />
+                    <RowDefinition Height="80" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <!-- Back button and page title -->
-                <Grid>
+                <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="120" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <Button x:Name="GoBack"
-                        Margin="39,59,39,0"
-                        Style="{StaticResource NavigationBackButtonNormalStyle}"
-                        VerticalAlignment="Top"
-                        AutomationProperties.Name="Back"
-                        AutomationProperties.AutomationId="BackButton"
-                        AutomationProperties.ItemType="Navigation Button" />
+                            Margin="39,0,0,0"
+                            Style="{StaticResource NavigationBackButtonNormalStyle}"
+                            VerticalAlignment="Center"
+                            AutomationProperties.Name="Back"
+                            AutomationProperties.AutomationId="BackButton"
+                            AutomationProperties.ItemType="Navigation Button" />
                     <TextBlock x:Name="pageTitle"
-                           Text="{Binding Item.DisplayName}"
-                           Style="{StaticResource AccentHeaderTextBlockStyle}"
-                            Foreground="#666666"
-                           Grid.Column="1"
-                           IsHitTestVisible="false"
-                           TextWrapping="NoWrap"
-                           VerticalAlignment="Bottom"
-                           Margin="0,0,30,40" />
+                               Text="{Binding Item.DisplayName}"
+                               Style="{StaticResource AccentHeaderTextBlockStyle}"
+                               Foreground="#666666" LineHeight="27"
+                               Grid.Column="1"
+                               IsHitTestVisible="false"
+                               TextWrapping="NoWrap"
+                               Margin="0,-2,30,0"
+                               VerticalAlignment="Center" />
                 </Grid>
 
                 <Grid Grid.Row="1"
-                  VerticalAlignment="Stretch"
-                  Margin="120,0,0,0">
+                      VerticalAlignment="Stretch"
+                      Margin="120,0,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="350" />
                         <ColumnDefinition />
@@ -102,55 +102,55 @@
                         </Grid.RowDefinitions>
 
                         <Button x:Name="Install"
-                            Content="Install"
-                            Margin="0,0,0,40" />
+                                Content="Install"
+                                Margin="0,0,0,40" />
                         <StackPanel Orientation="Vertical"
-                                Grid.Row="1">
+                                    Grid.Row="1">
 
                             <TextBlock Text="Description"
-                                   Style="{StaticResource TitleTextBlockStyle}"
-                                   Margin="0,10,0,5" />
+                                       Style="{StaticResource TitleTextBlockStyle}"
+                                       Margin="0,10,0,5" />
                             <TextBlock Text="{Binding Item.Description}"
-                                   Margin="0,5"
-                                   TextWrapping="Wrap" />
+                                       Margin="0,5"
+                                       TextWrapping="Wrap" />
                             <TextBlock Text="Version"
-                                   Style="{StaticResource TitleTextBlockStyle}"
-                                   Margin="0,10,0,5" />
+                                       Style="{StaticResource TitleTextBlockStyle}"
+                                       Margin="0,10,0,5" />
                             <TextBlock Text="{Binding Item.Version}"
-                                   Margin="0,5" />
+                                       Margin="0,5" />
                             <TextBlock Text="Is Installed?"
-                                   Style="{StaticResource TitleTextBlockStyle}"
-                                   Margin="0,10,0,5" />
+                                       Style="{StaticResource TitleTextBlockStyle}"
+                                       Margin="0,10,0,5" />
                             <TextBlock Text="{Binding IsInstalledVersion}"
-                                   Margin="0,5" />
+                                       Margin="0,5" />
 
                             <TextBlock Text="Update Available?"
-                                   Style="{StaticResource TitleTextBlockStyle}"
-                                   Margin="0,10,0,5" />
+                                       Style="{StaticResource TitleTextBlockStyle}"
+                                       Margin="0,10,0,5" />
                             <TextBlock Text="{Binding UpdateAvailable}"
-                                   Margin="0,5" />
+                                       Margin="0,5" />
 
                             <TextBlock Text="Install Mode"
-                                   Style="{StaticResource TitleTextBlockStyle}"
-                                   Margin="0,10,0,5" />
+                                       Style="{StaticResource TitleTextBlockStyle}"
+                                       Margin="0,10,0,5" />
                             <TextBlock Text="{Binding Item.InstallMode}"
-                                   Margin="0,5" />
+                                       Margin="0,5" />
 
                             <TextBlock Text="Publisher"
-                                   Style="{StaticResource TitleTextBlockStyle}"
-                                   Margin="0,10,0,5" />
+                                       Style="{StaticResource TitleTextBlockStyle}"
+                                       Margin="0,10,0,5" />
                             <TextBlock Text="{Binding Item.PublisherDisplayName}"
-                                   Margin="0,5" />
+                                       Margin="0,5" />
                             <TextBlock Text="Category"
-                                   Style="{StaticResource TitleTextBlockStyle}"
-                                   Margin="0,10,0,5" />
+                                       Style="{StaticResource TitleTextBlockStyle}"
+                                       Margin="0,10,0,5" />
                             <TextBlock Text="{Binding Item.Category}"
-                                   Margin="0,5" />
+                                       Margin="0,5" />
                             <TextBlock Text="Date Added"
-                                   Style="{StaticResource TitleTextBlockStyle}"
-                                   Margin="0,10,0,5" />
+                                       Style="{StaticResource TitleTextBlockStyle}"
+                                       Margin="0,10,0,5" />
                             <TextBlock Text="{Binding Item.DateAdded}"
-                                   Margin="0,5" />
+                                       Margin="0,5" />
 
 
                         </StackPanel>
@@ -161,17 +161,17 @@
 
                     <!-- Second Column -->
                     <Grid Grid.Column="1"
-                      VerticalAlignment="Stretch">
+                          VerticalAlignment="Stretch">
                         <!--<Image Source="{Binding Item.ImageUrl}"
                            Stretch="Uniform"
                            HorizontalAlignment="Stretch"
                            VerticalAlignment="Top"
                            Margin="0,0,40,40" />-->
                         <FlipView HorizontalAlignment="Stretch"
-                              ItemsSource="{Binding AlbumApp}"
-                              VerticalAlignment="Top"
-                              ItemTemplate="{StaticResource FlipAppImage}"
-                              Margin="0,0,0,0">
+                                  ItemsSource="{Binding AlbumApp}"
+                                  VerticalAlignment="Top"
+                                  ItemTemplate="{StaticResource FlipAppImage}"
+                                  Margin="0,0,0,0">
                             <FlipView.Transitions>
                                 <TransitionCollection>
                                     <EdgeUIThemeTransition Edge="Right" />

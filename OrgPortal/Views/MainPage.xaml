@@ -56,8 +56,17 @@
                 </TransitionCollection>
             </Grid.ChildrenTransitions>-->
 
-            <Hub Grid.Row="1" HorizontalContentAlignment="Stretch">
-                
+            <Hub Grid.Row="1" HorizontalContentAlignment="Stretch"
+                 DefaultSectionIndex="0">
+                <!--<Hub.Resources>
+                    <DataTemplate x:Key="DataTemplate1">
+                        <Grid />
+                    </DataTemplate>
+                </Hub.Resources>
+                <Hub.HeaderTemplate>
+                    <StaticResource ResourceKey="DataTemplate1" />
+                </Hub.HeaderTemplate>-->
+
                 <!--<Hub.Header>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -83,7 +92,9 @@
                     </DataTemplate>
                 </HubSection>-->
 
-                <HubSection Header="Recently Updated">
+                <HubSection Header="Recently Updated"
+                            Visibility="{Binding InstalledList.Count, Converter={StaticResource GreaterThanZeroToVisibilityConverter}, Mode=OneWay}"
+                            Padding="40,-30,40,20">
                     <DataTemplate>
                         <ListView x:Name="InstalledList"
                                   ItemTemplate="{StaticResource AppSmallItemTemplate}"
@@ -105,7 +116,8 @@
                 </HubSection>
 
                 <HubSection IsHeaderInteractive="True"
-                            Header="All Apps">
+                            Header="All Apps"
+                            Padding="40,-30,40,20">
                     <DataTemplate>
                         <GridView ItemTemplate="{StaticResource AppLargeItemTemplate}"
                                   ItemsSource="{Binding Path=AppList}"

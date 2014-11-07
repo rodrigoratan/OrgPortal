@@ -10,13 +10,15 @@
     d:DesignHeight="300"
     d:DesignWidth="800">
 
-    <Grid Background="Transparent" DataContext="{Binding Path=NavigationBar}">
+    <Grid Background="Transparent" DataContext="{Binding Path=NavigationBar}"
+          Margin="0,-1,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="65" />
-            <RowDefinition Height="56" />
+            <RowDefinition Height="56*" />
         </Grid.RowDefinitions>
 
-        <Border Background="#101010" BorderThickness="0,0,0,0" Padding="20,10,20,10">
+        <Border Background="#101010" BorderThickness="0,0,0,0" Padding="20,10,20,10"
+                Margin="0,-2,0,0">
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="GoHome" Content="Go Home"
                         Height="45" Width="200" Background="#1d2022" Foreground="#93b5a3"
@@ -28,7 +30,9 @@
             </StackPanel>
         </Border>
 
-        <Border Grid.Row="1" Background="#262a2d" BorderThickness="0,0,0,0">
+        <Border Grid.Row="1" Background="#262a2d" BorderThickness="0,0,0,0"
+                VerticalAlignment="Top"
+                MinHeight="65">
             <ListView Margin="10,0,10,0"
                   VerticalAlignment="Stretch"
                   HorizontalAlignment="Stretch"
