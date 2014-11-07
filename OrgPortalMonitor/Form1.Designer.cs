@@ -612,6 +612,7 @@
             this.Uninstall.Name = "Uninstall";
             this.Uninstall.ReadOnly = true;
             this.Uninstall.Text = "Uninstall App";
+            this.Uninstall.UseColumnTextForButtonValue = true;
             // 
             // Form1
             // 

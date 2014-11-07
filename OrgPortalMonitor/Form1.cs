@@ -465,7 +465,11 @@ namespace OrgPortalMonitor
                 //{
                 _installer.ServerAppList = await _installer.GetRemoteAppList();
                 //}
-                var installedApps = _installer.GetInstalledApps(_installer.ServerAppList != null ? _installer.ServerAppList : new List<AppInfo>());
+                var installedApps = _installer
+                                    .GetInstalledApps(
+                                        _installer.ServerAppList != null ? 
+                                                _installer.ServerAppList : 
+                                                new List<AppInfo>());
                 foreach (var app in installedApps)
                 {
                     dgvInstalled.Rows.Add(app.DisplayName, app.Version, app.NewVersionAvailable, app.InstallMode, app.PackageFamilyName);
@@ -473,9 +477,12 @@ namespace OrgPortalMonitor
 
                 foreach (var app in _installer.ServerAppList)
                 {
-                    var _installedItem = installedApps
-                                        .FirstOrDefault(a => a.PackageFamilyName == app.PackageFamilyName &&
-                                                             a.Version == app.Version);
+                    AppInfo _installedItem = 
+                            (installedApps != null) ? 
+                                installedApps
+                                .FirstOrDefault(a => a.PackageFamilyName == app.PackageFamilyName &&
+                                                     a.Version           == app.Version) : new AppInfo();
+
                     dgvServerApps.Rows.Add(app.DisplayName, app.Version, _installedItem != null, app.InstallMode, app.PackageFamilyName);
                 }
             }
