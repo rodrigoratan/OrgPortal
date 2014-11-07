@@ -5,11 +5,11 @@
     {
         using (Html.BeginForm("Application", "Applications", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
-            <div class="formLabel">Application</div>
+            <div class="formLabel">Application<br /><small><small>(.appx)</small></small></div>
             <input type="file" name="appxFile" class="formInput">
-            <div class="formLabel">Certificate (.cer [preferred] or .pfx)</div>
+            <div class="formLabel">Certificate<br /><small><small>(.cer [preferred] or .pfx)</small></small></div>
             <input type="file" name="certificateFile" class="formInput">
-            <div class="formLabel">Publisher Id Hash (from PackageId.PublisherId)</div>
+            <div class="formLabel">Publisher Id Hash<br /><small><small>(from PackageId.PublisherId)</small></small> </div>
             <input type="text" name="publisherId" class="formInput" value="">
             <div class="formLabel">Category</div>
             <select name="categoryID">
@@ -68,8 +68,6 @@
                             }
                         )
                     </td>
-
-
                     <td>@application.Version</td>
                     <td>@application.Category.Name</td>
                     <td>@application.DateAdded.ToShortDateString()</td>

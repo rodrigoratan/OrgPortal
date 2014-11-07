@@ -1,0 +1,87 @@
+﻿@model IEnumerable<OrgPortal.Domain.Models.Application>
+<div class="jumbotron">
+    <p>
+        <a href="http://store.zollie.com.br/orgportalmonitor/OrgPortalMonitor.application?AutoStart=True&OrgPortalUrl=http://store.zollie.com.br/api/" class="btn btn-primary btn-large">Abrir @*Aplica&ccedil;&atilde;o*@ OrgPortal Sync &raquo;</a>
+    </p>
+</div>
+<div class="main">
+    <div class="heading">Application List</div>
+    <div id="noApplicationsMessage" @(Model.Count() > 0 ? "style=display:none;" : string.Empty)>
+        <div class="subHeading">You currently have no applications in your store.</div>
+        <p>Please add your first application to your store.</p>
+    </div>
+
+    <select name="categoryID" @(Model.Count() > 0 ? string.Empty : "style=display:none;")>
+        <option value="">All Categories</option>
+        @foreach (var category in OrgPortal.Domain.IoCContainerFactory.Current.GetInstance<OrgPortal.Domain.Repositories.CategoryRepository>().Categories)
+        {
+            <option value="@category.ID">@category.Name</option>
+        }
+    </select>
+    <br />
+    <br />
+<br />
+
+    <table id="applicationTable" @(Model.Count() > 0 ? "style=width:100%;" : "style=display:none;")>
+        <thead>
+            <tr>
+                <th>Logo</th>
+                <th>&nbsp;</th>
+                <th>Name</th>
+                <th>Version</th>
+                @*<th>Package Family Name</th>*@
+                <th>Category</th>
+                <th>Date Added</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var application in Model)
+            {
+                <tr>
+                    <td style="background-color:@application.BackgroundColor;width:150px" align="center">
+                        <img src="/api/logo/@application.PackageFamilyName/" />
+                    </td>
+                    <td>&nbsp;</td>
+                    <td style="width:180px;">
+                        @Html.ActionLink(
+                            application.DisplayName,
+                            "Detail",
+                            new
+                            {
+                                id = application.PackageFamilyName + "/",
+                                version = application.Version
+                            }
+                        )
+                    </td>
+                    <td>@application.Version</td>
+                    @*<td>@application.PackageFamilyName</td>*@
+                    <td>@application.Category.Name</td>
+                    <td>@application.DateAdded.ToShortDateString()</td>
+                </tr>
+                <tr>
+                    <td colspan="5">&nbsp;</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section scripts
+{
+    <script type="text/javascript">
+
+        var getCategories = function () {
+            $.get('@Url.RouteUrl("DefaultApi", new { httproute = true, controller = "categories" })', function (results) {
+                for (var i = 0; i < results.length; i++) {
+                    $('<option value="' + results[i].ID + '">' + results[i].Name + '</option>').appendTo($('select[name=categoryID]'));
+                }
+            });
+        };
+
+        $(function () {
+            //getApps();
+            //getCategories();
+
+        })
+    </script>
+}

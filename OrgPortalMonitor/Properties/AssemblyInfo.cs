@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("OrgPortalMonitor")]
+[assembly: AssemblyTitle("OrgPortal Monitor")]
 [assembly: AssemblyDescription("Improved by Zollie")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Magenic and Zollie")]
-[assembly: AssemblyProduct("OrgPortalMonitor")]
+[assembly: AssemblyProduct("OrgPortal Monitor")]
 [assembly: AssemblyCopyright("Copyright © Magenic 2013 / Zollie 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

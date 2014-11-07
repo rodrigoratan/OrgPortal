@@ -82,5 +82,29 @@ namespace OrgPortalMonitor.Properties {
                 this["WindowSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AutoInstall {
+            get {
+                return ((bool)(this["AutoInstall"]));
+            }
+            set {
+                this["AutoInstall"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int AutoInstallMinutes {
+            get {
+                return ((int)(this["AutoInstallMinutes"]));
+            }
+            set {
+                this["AutoInstallMinutes"] = value;
+            }
+        }
     }
 }

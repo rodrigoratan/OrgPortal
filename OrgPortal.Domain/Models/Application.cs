@@ -10,26 +10,51 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.ComponentModel;
 
 namespace OrgPortal.Domain.Models
 {
     public class Application
     {
         public string Name { get; set; }
+
+        [DisplayName("Package Name")]
         public string PackageName { get; set; }
         public string Description { get; set; }
         public string Version { get; set; }
+
+        [DisplayName("Processor Architecture")]
         public string ProcessorArchitecture { get; set; }
+
+        [DisplayName("Display Name")]
         public string DisplayName { get; set; }
+
+        [DisplayName("Publisher Display Name")]
         public string PublisherDisplayName { get; set; }
+
+        [DisplayName("Publisher Id")]
         public string PublisherId { get; set; }
         public string Publisher { get; set; }
+
+        [DisplayName("Install Mode")]
         public string InstallMode { get; set; }
+
+        [DisplayName("Package Family Name")]
         public string PackageFamilyName { get; set; }
+
+        [DisplayName("Package File")]
         public string PackageFile { get; set; }
+
+        [DisplayName("Certificate File")]
         public string CertificateFile { get; set; }
+
+        [DisplayName("Date Added")]
         public DateTime DateAdded { get; set; }
+
+        [DisplayName("Background Color")]
         public string BackgroundColor { get; set; }
+
+        [DisplayName("Category ID")]
         public int CategoryID { get; set; }
 
         // TODO: Make this into a proper navigation property somehow

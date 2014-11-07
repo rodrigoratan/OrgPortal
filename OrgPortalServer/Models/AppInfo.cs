@@ -65,5 +65,17 @@ namespace OrgPortalServer.Models
                 return "http://" + uri.Authority + "/api/smalllogo/" + PackageFamilyName + "/?version=" + Version;
             }
         }
+
+        public string AlbumBaseUrl
+        {
+            get
+            {
+                var uri = new Uri(ConfigurationManager.AppSettings["OrgUrl"]);
+                return "http://"        + uri.Authority + 
+                        "/api/picture/" + PackageFamilyName + 
+                        "/?version="    + Version +
+                        "&filename=";
+            }
+        }
     }
 }

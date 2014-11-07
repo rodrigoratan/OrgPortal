@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Deployment.Application;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -23,33 +24,54 @@ namespace OrgPortalMonitor
             InitializeComponent();
             try
             {
+                AppVersion = string.Empty;
                 if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
                 {
                     System.Deployment.Application.ApplicationDeployment ad =
                     System.Deployment.Application.ApplicationDeployment.CurrentDeployment;
                     var version = ad.CurrentVersion;
-                    this.Text += " - " + string.Format("V.{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision)
+                    AppVersion = " - " + string.Format("V.{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision)
                                + " - " + this.ProductVersion;
+
+                    this.Text += AppVersion;
                 }
                 else
                 {
-                    this.Text += " - " + this.ProductVersion;
+                    AppVersion = " - " + this.ProductVersion;
+                    this.Text += AppVersion;
                 }
             }
             catch (Exception)
             {
-                this.Text += " - " + this.ProductVersion;
+                AppVersion = " - " + this.ProductVersion;
+                this.Text += AppVersion;
             }
 
         }
 
         private Installer _installer;
         private bool _reallyClose;
+
+        public int CumulativeMinutesInstallTimer { get; set; }
+
         private int _autoInstallTimer = 0;
+        public int AutoInstallTimer
+        {
+            get { return _autoInstallTimer; }
+            set { _autoInstallTimer = value; }
+        }
+
+        private int _autoInstallMinutes = 0;
+        public int AutoInstallMinutes
+        {
+            get { return _autoInstallMinutes; }
+            set { _autoInstallMinutes = value; }
+        }
+
         private string btnStartStopOriginalTextBuffer;
         private string btnStripStartStopOriginalTextBuffer;
 
-        private void Form1_Load(object sender, EventArgs e)
+        private async void Form1_Load(object sender, EventArgs e)
         {
             this.ShowInTaskbar = false;
             this.Visible = false;
@@ -93,7 +115,7 @@ namespace OrgPortalMonitor
 
             aboutToolStripMenuItem.Click += (o, a) =>
             {
-                MessageBox.Show("OrgPortal by Zollie (www.zollie.com.br)");
+                MessageBox.Show("OrgPortal V" + this.AppVersion + " by Zollie (www.zollie.com.br)");
             };
 
             exitToolStripMenuItem.Click += (o, a) =>
@@ -102,21 +124,21 @@ namespace OrgPortalMonitor
                 this.Close();
             };
 
-            processExistingAppRequestsToolStripMenuItem.Click += (o, a) =>
-            {
-                if (_installer != null)
-                {
-                    _installer.ProcessExistingRequestFiles1();
-                }
-            };
+            //processExistingAppRequestsToolStripMenuItem.Click += (o, a) =>
+            //{
+            //    if (_installer != null)
+            //    {
+            //        _installer.ProcessExistingRequestFiles1();
+            //    }
+            //};
 
-            processExistingAutoInstallAndAutoUpdateToolStripMenuItem.Click += (o, a) =>
-            {
-                if (_installer != null)
-                {
-                    _installer.ProcessExistingRequestFiles2();
-                }
-            };
+            //processExistingAutoInstallAndAutoUpdateToolStripMenuItem.Click += (o, a) =>
+            //{
+            //    if (_installer != null)
+            //    {
+            //        _installer.ProcessExistingRequestFiles2();
+            //    }
+            //};
 
             BlockAllTabsExceptOneIfNotStarted("tabSettings");
 
@@ -130,6 +152,8 @@ namespace OrgPortalMonitor
             {
                 chkAutoStart.Checked = _autoStart; //bool.Parse(AutoStartParameter);
                 autoConnectToolStripMenuItem.Checked = _autoStart;
+                Settings.Default.AutoStart = _autoStart;
+                Settings.Default.Save();
             }
             else
             {
@@ -137,12 +161,54 @@ namespace OrgPortalMonitor
                 autoConnectToolStripMenuItem.Checked = (Settings.Default.AutoStart);
             }
             #endregion 
+
+            #region AutoInstall
+            var AutoInstallParameter = RequestQueryString["AutoInstall"] != null ? RequestQueryString["AutoInstall"] : "";
+            bool _autoInstall = false;
+            if (AutoInstallParameter != null &&
+                bool.TryParse(AutoInstallParameter, out _autoInstall))
+            {
+                chkAutoInstall.Checked = _autoInstall; //bool.Parse(AutoInstallParameter);
+                autoInstallToolStripMenuItem.Checked = _autoInstall;
+                btnInstallUpdates.Enabled = !_autoInstall;
+
+                Settings.Default.AutoInstall = _autoInstall;
+                Settings.Default.Save();
+            }
+            else
+            {
+                chkAutoInstall.Checked = (Settings.Default.AutoInstall);
+                autoInstallToolStripMenuItem.Checked = (Settings.Default.AutoInstall);
+                btnInstallUpdates.Enabled = !chkAutoInstall.Checked;
+            }
+            #endregion 
+
+            #region AutoInstallMinutes
+            var AutoInstallMinutesParameter = RequestQueryString["AutoInstallMinutes"] != null ? RequestQueryString["AutoInstallMinutes"] : "";
+            //int _autoInstallMinutes = 0;
+            if (AutoInstallMinutesParameter != null &&
+                Int32.TryParse(AutoInstallMinutesParameter, out _autoInstallMinutes))
+            {
+                txtAutoInstallTimer.Text = _autoInstallMinutes.ToString();
+
+                Settings.Default.AutoInstallMinutes = _autoInstallMinutes;
+                Settings.Default.Save();
+            }
+            else
+            {
+                AutoInstallMinutes = Settings.Default.AutoInstallMinutes;
+                txtAutoInstallTimer.Text = Settings.Default.AutoInstallMinutes.ToString();
+            }
+            #endregion 
+
             #region PackageFamilyName
             var PackageFamilyNameParameter = RequestQueryString["PackageFamilyName"] != null ? RequestQueryString["PackageFamilyName"] : "";
             if (PackageFamilyNameParameter != null &&
                 !string.IsNullOrEmpty(PackageFamilyNameParameter))
             {
                 txtPackageFamilyName.Text = PackageFamilyNameParameter;
+                Settings.Default.PackageFamilyName = PackageFamilyNameParameter;
+                Settings.Default.Save();
             }
             else
             {
@@ -152,12 +218,16 @@ namespace OrgPortalMonitor
                 }
             }
             #endregion
+
             #region OrgPortalUrl
             var OrgPortalUrlParameter = RequestQueryString["OrgPortalUrl"] != null ? RequestQueryString["OrgPortalUrl"] : "";
             if (OrgPortalUrlParameter != null &&
                 !string.IsNullOrEmpty(OrgPortalUrlParameter))
             {
                 txtOrgPortalUrl.Text = OrgPortalUrlParameter;
+
+                Settings.Default.OrgPortalUrl = OrgPortalUrlParameter;
+                Settings.Default.Save();
             }
             else
             {
@@ -167,6 +237,7 @@ namespace OrgPortalMonitor
                 }
             }
             #endregion 
+
             #region Window Location and Size
             // Set window location
             if (Settings.Default.WindowLocation != null)
@@ -185,18 +256,38 @@ namespace OrgPortalMonitor
             #endregion
 
             OrgPortalStatus();
+            IsLoaded = true;
 
+            await ToggleStartStop();
+
+            //GatherMachineInfo();
+        }
+
+        private void GatherMachineInfo()
+        {
+            var windowsVersion        = ""; // await WindowsStoreSystemInformation.GetWindowsVersionAsync();
+            var processor             = ""; // await WindowsStoreSystemInformation.GetProcessorArchitectureAsync();
+            var deviceCategory        = ""; // await WindowsStoreSystemInformation.GetDeviceCategoryAsync();
+            var deviceManufacturer    = ""; // await WindowsStoreSystemInformation.GetDeviceManufacturerAsync();
+            var deviceModel           = ""; // await WindowsStoreSystemInformation.GetDeviceModelAsync();
+            var osInfo                = ""; // new Windows.Security.ExchangeActiveSyncProvisioning.EasClientDeviceInformation();
+            string machineName        = ""; // osInfo.FriendlyName;
+            string operatingSystem    = ""; // osInfo.OperatingSystem;
+            string systemManufacturer = ""; // osInfo.SystemManufacturer;
+            string systemProductName  = ""; // osInfo.SystemProductName;
+            string systemSku          = ""; // osInfo.SystemSku;
+            string systemId           = ""; // osInfo.Id;
+            string deviceInfo         = ""; // string.Format(            
         }
 
         private void OrgPortalStatus()
         {
-
             string extraInfo = "";
             extraInfo += "OrgPortalUrl[" + txtOrgPortalUrl.Text + "]";
             extraInfo += "PackageFamilyName[" + txtPackageFamilyName.Text + "]";
             if (_installer != null)
             {
-                extraInfo += "serviceURI[" + _installer._serviceURI + "]";
+                extraInfo += "serviceURI[" + _installer.ServiceURI + "]";
                 extraInfo += "PackageTempPath[" + _installer.PackageTempPath + "]";
                 extraInfo += "PackageLocalPath[" + _installer.PackageLocalPath + "]";
             }
@@ -221,7 +312,6 @@ namespace OrgPortalMonitor
         {
             //_installer.GetInstalledPackages();
             await RefreshInstalledApps();
-
         }
 
         private void UnlockDevice()
@@ -269,15 +359,25 @@ namespace OrgPortalMonitor
 
         private async void timer1_Tick(object sender, EventArgs e)
         {
-            var minutes = int.Parse(ConfigurationManager.AppSettings["AutoInstallTime"]);
-            _autoInstallTimer++;
-            if (_autoInstallTimer > minutes && IsStarted)
-                _autoInstallTimer = 1;
-            if (_autoInstallTimer == 1 && _installer != null)
+            if (chkAutoInstall.Checked && IsStarted)
             {
-                await _installer.AutoInstallUpdateApps();
-                _installer.InstalledAppList = null;
-                //InstalledAppList = _installer.GetInstalledApps(_installer.GetAppList());
+                //txtAutoInstallTimer
+                //var minutes = int.Parse(ConfigurationManager.AppSettings["AutoInstallTime"]);
+
+                AtualizaAutoInstallTimerProperty();
+
+                AutoInstallTimer++;
+                //NextServerCheckInMinutes = "";
+
+                if (AutoInstallTimer > AutoInstallMinutes || AutoInstallMinutes <= 1)
+                    AutoInstallTimer = 1;
+
+                if (AutoInstallTimer == 1 && _installer != null)
+                {
+                    await _installer.AutoInstallUpdateApps();
+                    _installer.InstalledAppList = null;
+                    //InstalledAppList = _installer.GetInstalledApps(_installer.GetAppList());
+                }
             }
         }
 
@@ -286,11 +386,12 @@ namespace OrgPortalMonitor
             Settings.Default.AutoStart = chkAutoStart.Checked;
             Settings.Default.Save();
 
-            btnStartStop.Visible = !chkAutoStart.Checked;
+            //btnStartStop.Visible = !chkAutoStart.Checked;
+            btnStartStop.Enabled = !chkAutoStart.Checked;
+
             startToolStripMenuItem.Visible = !chkAutoStart.Checked;
             autoConnectToolStripMenuItem.Checked = ((CheckBox)sender).Checked;
-
-            if (chkAutoStart.Checked && !IsStarted)
+            if (chkAutoStart.Checked && !IsStarted && IsLoaded)
             {
                 IsStarted = false; //reset so ToggleStartStop can toggle it
                 await ToggleStartStop();
@@ -311,29 +412,34 @@ namespace OrgPortalMonitor
         {
             if (!IsStarted)
             {
-                IsStarted = true;
-                btnStartStopOriginalTextBuffer = btnStartStop.Text;
-                btnStripStartStopOriginalTextBuffer = startToolStripMenuItem.Text;
-                btnStartStop.Text = "Disconnect OrgPortal Store and Stop Monitoring";
-                startToolStripMenuItem.Text = "Stop and Disconnect";
-
-                this.txtLogOutput.Text += "\n\n";
-
-                _installer = new Installer(txtPackageFamilyName.Text,
-                                           this.notifyIcon1,
-                                           this.txtLogOutput,
-                                           this.fileSystemWatcher1,
-                                           this.fileSystemWatcher2
-                                          );
-
-                _installer.StartFileWatcher1(_installer.PackageTempPath);
-                //_installer.StartFileWatcher2(_installer.CachePath);
-                if (!_installer.IsAutoInstalling)
+                if (IsLoaded)
                 {
-                    _installer.ProcessExistingRequestFiles2();
-                }
+                    IsStarted = true;
+                    btnStartStopOriginalTextBuffer = btnStartStop.Text;
+                    btnStripStartStopOriginalTextBuffer = startToolStripMenuItem.Text;
+                    btnStartStop.Text = "Disconnect OrgPortal Store and Stop Monitoring";
+                    startToolStripMenuItem.Text = "Stop and Disconnect";
 
-                await RefreshInstalledApps();
+                    this.txtLogOutput.Text += "\n\n";
+
+                    _installer = new Installer(txtOrgPortalUrl.Text,
+                                               txtPackageFamilyName.Text,
+                                               this.notifyIcon1,
+                                               this.txtLogOutput,
+                                               this.fileSystemWatcher1,
+                                               this.fileSystemWatcher2
+                                              );
+
+                    _installer.StartFileWatcher1(_installer.PackageTempPath);
+                    toolStripMainStatusLabel.Text = "Connected @ " + _installer.ServiceURI;
+                    toolStripStatusAdicional.Text = " & " + _installer.PackageTempPath;
+                    //_installer.StartFileWatcher2(_installer.CachePath);
+                    if (!_installer.IsAutoInstalling)
+                    {
+                        _installer.ProcessExistingRequestFiles2();
+                    }
+                    await RefreshInstalledApps();
+                }
             }
             else
             {
@@ -362,7 +468,7 @@ namespace OrgPortalMonitor
                 var installedApps = _installer.GetInstalledApps(_installer.ServerAppList != null ? _installer.ServerAppList : new List<AppInfo>());
                 foreach (var app in installedApps)
                 {
-                    dgvInstalled.Rows.Add(app.DisplayName, app.Version, app.InstallMode, app.PackageFamilyName);
+                    dgvInstalled.Rows.Add(app.DisplayName, app.Version, app.NewVersionAvailable, app.InstallMode, app.PackageFamilyName);
                 }
 
                 foreach (var app in _installer.ServerAppList)
@@ -500,6 +606,36 @@ namespace OrgPortalMonitor
 
         }
 
+        private void dgvInstalled_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                var senderGrid = (DataGridView)sender;
+                if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
+                    e.RowIndex >= 0 && (e.ColumnIndex - 1) >= 0)
+                {
+                    MessageBox.Show("Not implemented yet. Coming soon. ");
+
+                    var packageFamilyNameColumn = senderGrid.Columns[e.ColumnIndex - 1];
+
+                    if (packageFamilyNameColumn != null &&
+                        packageFamilyNameColumn is DataGridViewTextBoxColumn &&
+                        e.RowIndex >= 0)
+                    {
+                        string package = senderGrid[e.ColumnIndex - 1, e.RowIndex].Value as string;
+                        string version = senderGrid[e.ColumnIndex - 4, e.RowIndex].Value as string;
+                        if (_installer != null)
+                        {
+                            //_installer.
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.LogException(ex);
+            }
+        }
         private async void dgvServerApps_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             try
@@ -547,5 +683,84 @@ namespace OrgPortalMonitor
 
         }
 
+        private /*async*/ void chkAutoInstall_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.AutoInstall = chkAutoInstall.Checked;
+            Settings.Default.Save();
+
+            btnInstallUpdates.Enabled = !chkAutoInstall.Checked;
+
+            autoInstallToolStripMenuItem.Checked = chkAutoInstall.Checked;
+
+            AutoInstallTimer = 0;
+
+            if (chkAutoInstall.Checked)
+            {
+                if (_installer != null && IsLoaded)
+                {
+                    //_installer.StartFileWatcher2(_installer.CachePath);
+                    //if (!_installer.IsAutoInstalling)
+                    //{
+                        _installer.ProcessExistingRequestFiles2();
+                    //}
+                }
+            }
+            //else
+            //{
+            //    if (_installer != null)
+            //    {
+            //        _installer.StopFileWatcher2();
+            //    }
+            //}
+        }
+
+        private async void btnInstallUpdates_Click(object sender, EventArgs e)
+        {
+            await _installer.AutoInstallUpdateApps();
+        }
+
+        private void autoInstallToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            chkAutoInstall.Checked = ((ToolStripMenuItem)sender).Checked;
+        }
+
+        public string AppVersion { get; set; }
+
+        public string NextServerCheckInMinutes { get; set; }
+
+        public bool IsLoaded { get; set; }
+
+        private void txtAutoInstallTimer_TextChanged(object sender, EventArgs e)
+        {
+            //int _autoInstallMinutes = 0;// ((TextBox)sender).Text;
+            AtualizaAutoInstallTimerProperty();
+        }
+
+        private void AtualizaAutoInstallTimerProperty()
+        {
+            if (Int32.TryParse(txtAutoInstallTimer.Text, out _autoInstallMinutes))
+            {
+                Settings.Default.AutoInstallMinutes = _autoInstallMinutes;
+                Settings.Default.Save();
+            }
+        }
+
+        private void OrgPortalWebToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_installer.ServiceURI.Contains("/api"))
+                {
+                    var url = _installer.ServiceURI.Substring(0, _installer.ServiceURI.IndexOf("/api"));
+                    ProcessStartInfo sInfo = new ProcessStartInfo(url);
+                    Process.Start(sInfo);
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        
     }
 }

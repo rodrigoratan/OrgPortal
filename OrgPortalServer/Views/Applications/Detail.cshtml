@@ -71,7 +71,7 @@
     <div class="left">
         @using (Html.BeginForm("ApplicationImage", "Applications", FormMethod.Post, new { enctype = "multipart/form-data" }))
         {
-            <div class="formLabel">Add a new application Image</div>
+            <div class="formLabel">Add a new application Image <br /><small><small>1366x768 preferred landscape size<br />768x1366 preferred portrait size</small></small></div>
             <input type="file" name="imageFile" class="formInput">
             @Html.Hidden("packageFamilyName", Model.PackageFamilyName)
             @Html.Hidden("version", Model.Version)

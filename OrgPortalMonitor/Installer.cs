@@ -13,7 +13,12 @@ namespace OrgPortalMonitor
 {
     public class Installer
     {
-        public /*static readonly*/ string _serviceURI = string.Empty; //"http://orgportal/api/";
+        private /*static readonly*/ string _serviceURI = string.Empty; //"http://orgportal/api/";
+        public string ServiceURI
+        {
+            get { return _serviceURI; }
+            set { _serviceURI = value; }
+        }
         public const string OrgPortalPackageFamilyName = "OrgPortal_m64ba5zfsemg0";
         private string PackageTempPathBuffer;
         public string PackageTempPath { get; set; }
@@ -25,11 +30,23 @@ namespace OrgPortalMonitor
         public FileSystemWatcher Watcher { get; set; }
         public FileSystemWatcher Watcher2 { get; set; }
 
-        public Installer(string packageFamilyName, System.Windows.Forms.NotifyIcon notifyIcon, System.Windows.Forms.TextBox output, FileSystemWatcher watcher, FileSystemWatcher watcher2)
+        public Installer(string orgPortalUrl, string packageFamilyName, System.Windows.Forms.NotifyIcon notifyIcon, System.Windows.Forms.TextBox output, FileSystemWatcher watcher, FileSystemWatcher watcher2)
         {
-            if (!string.IsNullOrEmpty(OrgPortalMonitor.Properties.Settings.Default.OrgPortalUrl))
+
+            //if (!string.IsNullOrEmpty(OrgPortalMonitor.Properties.Settings.Default.OrgPortalUrl))
+            //{
+            //    _serviceURI = OrgPortalMonitor.Properties.Settings.Default.OrgPortalUrl;
+            //}
+            if (!string.IsNullOrEmpty(orgPortalUrl))
             {
-                _serviceURI = OrgPortalMonitor.Properties.Settings.Default.OrgPortalUrl;
+                _serviceURI = orgPortalUrl;
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(OrgPortalMonitor.Properties.Settings.Default.OrgPortalUrl))
+                {
+                    _serviceURI = OrgPortalMonitor.Properties.Settings.Default.OrgPortalUrl;
+                }
             }
 
             this.NotifyIcon = notifyIcon;
@@ -93,11 +110,8 @@ namespace OrgPortalMonitor
         public void StartFileWatcher2(string path)
         {
             this.Output.AppendText(System.Environment.NewLine + "Watching Cache folder " + this.CachePath + " for Auto Install and Auto Update apps" + Environment.NewLine);
-
             this.Watcher2.Path = CachePath;
-
             Watcher2.Created += Watcher_Created;
-
             ProcessExistingRequestFiles2();
         }
 
@@ -739,60 +753,62 @@ namespace OrgPortalMonitor
         {
             var appList = new List<AppInfo>();
             var client = new System.Net.Http.HttpClient();
-
-            var response = await client.GetAsync(_serviceURI + "Apps");
-            if (response.IsSuccessStatusCode)
+            if (!string.IsNullOrEmpty(ServiceURI))
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var reader = new Newtonsoft.Json.JsonTextReader(new StringReader(data));
-                var info = new List<Dictionary<string, string>>();
-                var infoItem = new Dictionary<string, string>();
-                try
+                var response = await client.GetAsync(ServiceURI + "Apps");
+                if (response.IsSuccessStatusCode)
                 {
-                    while (reader.Read())
+                    var data = await response.Content.ReadAsStringAsync();
+                    var reader = new Newtonsoft.Json.JsonTextReader(new StringReader(data));
+                    var info = new List<Dictionary<string, string>>();
+                    var infoItem = new Dictionary<string, string>();
+                    try
                     {
-                        if (reader.TokenType == Newtonsoft.Json.JsonToken.EndObject)
+                        while (reader.Read())
                         {
-                            info.Add(infoItem);
-                            infoItem = new Dictionary<string, string>();
-                        }
-                        else if (reader.TokenType == Newtonsoft.Json.JsonToken.PropertyName && reader.Value != null)
-                        {
-                            var key = reader.Value.ToString();
-                            reader.Read();
-                            if (reader.Value != null)
-                                infoItem.Add(key, reader.Value.ToString());
-                            else
-                                infoItem.Add(key, string.Empty);
+                            if (reader.TokenType == Newtonsoft.Json.JsonToken.EndObject)
+                            {
+                                info.Add(infoItem);
+                                infoItem = new Dictionary<string, string>();
+                            }
+                            else if (reader.TokenType == Newtonsoft.Json.JsonToken.PropertyName && reader.Value != null)
+                            {
+                                var key = reader.Value.ToString();
+                                reader.Read();
+                                if (reader.Value != null)
+                                    infoItem.Add(key, reader.Value.ToString());
+                                else
+                                    infoItem.Add(key, string.Empty);
+                            }
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    this.Output.AppendText(ex.ToString());
-                    ExceptionLogger.LogException(ex, PackageTempPath);
-                }
-                foreach (var obj in info)
-                {
-                    var app = new AppInfo();
-                    app.Name = obj["Name"] != null ? obj["Name"] : "";
-                    app.DisplayName = obj["DisplayName"] != null ? obj["DisplayName"] : "";
-                    app.PackageFamilyName = obj["PackageFamilyName"] != null ? obj["PackageFamilyName"] : "";
-                    app.PackageFile = obj["PackageFile"] != null ? obj["PackageFile"] : "";
-                    app.PackageName = obj["PackageName"] != null ? obj["PackageName"] : "";
-                    app.AppxUrl = obj["AppxUrl"] != null ? obj["AppxUrl"] : "";
-                    app.CertificateUrl = obj["CertificateUrl"] != null ? obj["CertificateUrl"] : "";
-                    app.CertificateFile = obj["CertificateFile"] != null ? obj["CertificateFile"] : "";
-                    app.Version = obj["Version"] != null ? obj["Version"] : "";
-                    app.Description = obj["Description"] != null ? obj["Description"] : "";
-                    app.ImageUrl = obj.ContainsKey("LogoUrl") && obj["LogoUrl"] != null ? obj["LogoUrl"] : "Assets/DarkGray.png";
-                    app.SmallImageUrl = obj.ContainsKey("LogoUrl") && obj["LogoUrl"] != null ? obj["LogoUrl"] : "Assets/DarkGray.png";
-                    app.InstallMode = obj["InstallMode"] != null ? obj["InstallMode"] : "AutoUpdate";
-                    app.BackgroundColor = obj["BackgroundColor"] != null ? obj["BackgroundColor"] : "";
-                    app.DateAdded = obj["DateAdded"] != null ? Convert.ToDateTime(obj["DateAdded"].ToString()) : DateTime.Now;
-                    app.Category = obj["Category"] != null ? obj["Category"] : "";
+                    catch (Exception ex)
+                    {
+                        this.Output.AppendText(ex.ToString());
+                        ExceptionLogger.LogException(ex, PackageTempPath);
+                    }
+                    foreach (var obj in info)
+                    {
+                        var app = new AppInfo();
+                        app.Name = obj["Name"] != null ? obj["Name"] : "";
+                        app.DisplayName = obj["DisplayName"] != null ? obj["DisplayName"] : "";
+                        app.PackageFamilyName = obj["PackageFamilyName"] != null ? obj["PackageFamilyName"] : "";
+                        app.PackageFile = obj["PackageFile"] != null ? obj["PackageFile"] : "";
+                        app.PackageName = obj["PackageName"] != null ? obj["PackageName"] : "";
+                        app.AppxUrl = obj["AppxUrl"] != null ? obj["AppxUrl"] : "";
+                        app.CertificateUrl = obj["CertificateUrl"] != null ? obj["CertificateUrl"] : "";
+                        app.CertificateFile = obj["CertificateFile"] != null ? obj["CertificateFile"] : "";
+                        app.Version = obj["Version"] != null ? obj["Version"] : "";
+                        app.Description = obj["Description"] != null ? obj["Description"] : "";
+                        app.ImageUrl = obj.ContainsKey("LogoUrl") && obj["LogoUrl"] != null ? obj["LogoUrl"] : "Assets/DarkGray.png";
+                        app.SmallImageUrl = obj.ContainsKey("LogoUrl") && obj["LogoUrl"] != null ? obj["LogoUrl"] : "Assets/DarkGray.png";
+                        app.InstallMode = obj["InstallMode"] != null ? obj["InstallMode"] : "AutoUpdate";
+                        app.BackgroundColor = obj["BackgroundColor"] != null ? obj["BackgroundColor"] : "";
+                        app.DateAdded = obj["DateAdded"] != null ? Convert.ToDateTime(obj["DateAdded"].ToString()) : DateTime.Now;
+                        app.Category = obj["Category"] != null ? obj["Category"] : "";
 
-                    appList.Add(app);
+                        appList.Add(app);
+                    }
                 }
             }
             return appList;
