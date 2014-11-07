@@ -13,7 +13,7 @@ namespace OrgPortal.Infrastructure.DAL.Mappings
     {
         public ApplicationMap()
         {
-            ToTable("Application").HasKey(a => a.PackageFamilyName).HasKey(a => a.Version).Ignore(a => a.Package).Ignore(a => a.Certificate).Ignore(a => a.Logo).Ignore(a => a.SmallLogo);
+            ToTable("Application").HasKey(a => new { a.PackageFamilyName, a.Version } ).Ignore(a => a.Package).Ignore(a => a.Certificate).Ignore(a => a.Logo).Ignore(a => a.SmallLogo);
             Property(a => a.PackageFamilyName).IsUnicode().IsRequired().HasColumnName("PackageFamilyName");
             Property(a => a.PackageFile).IsUnicode().IsRequired().HasColumnName("PackageFile");
             Property(a => a.PackageName).IsUnicode().IsRequired().HasColumnName("PackageName");
