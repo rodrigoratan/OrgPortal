@@ -76,7 +76,8 @@
                     <TextBlock x:Name="pageTitle"
                                Text="{Binding Item.DisplayName}"
                                Style="{StaticResource AccentHeaderTextBlockStyle}"
-                               Foreground="#666666" LineHeight="27"
+                               Foreground="#666666"
+                               LineHeight="27"
                                Grid.Column="1"
                                IsHitTestVisible="false"
                                TextWrapping="NoWrap"
@@ -182,6 +183,13 @@
                 </Grid>
 
             </Grid>
+            <TextBlock HorizontalAlignment="Center"
+                       Margin="0"
+                       FontSize="12"
+                       FontWeight="Normal"
+                       Foreground="Gray"
+                       Text="{Binding AppVersion, Mode=OneTime}"
+                       VerticalAlignment="Center" />
         </Grid>
     </Grid>
 

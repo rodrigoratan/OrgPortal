@@ -27,6 +27,10 @@ namespace OrgPortal.ViewModels
             this._messageBox = messageBox;
             this._dataSource = dataSource;
             this._fileManager = fileManager;
+
+            var version = Windows.ApplicationModel.Package.Current.Id.Version;
+            AppVersion = string.Format("V.{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision);
+
         }
 
         private string _featureUrl;
@@ -131,5 +135,7 @@ namespace OrgPortal.ViewModels
                 Navigation.NavigateToViewModel<SearchPageViewModel>(_searchQueryText);
             }
         }
+
+        public string AppVersion { get; set; }
     }
 }

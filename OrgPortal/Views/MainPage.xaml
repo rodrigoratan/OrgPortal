@@ -20,12 +20,12 @@
                 <RowDefinition Height="65" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            
+
             <Grid Grid.Row="0">
                 <Grid.Background>
                     <ImageBrush x:Name="BackImageBrush"
-                            ImageSource="../Assets/header_bg.png"
-                            Stretch="UniformToFill" />
+                                ImageSource="../Assets/header_bg.png"
+                                Stretch="UniformToFill" />
                 </Grid.Background>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -34,29 +34,30 @@
                 </Grid.ColumnDefinitions>
 
                 <Image Source="{Binding Path=Branding.LogoImage}"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Left"
-                               Margin="0,0,20,0" />
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Left"
+                       Margin="0,0,20,0" />
 
                 <SearchBox Grid.Column="2"
-                                   Margin="0,0,30,0"
-                                   Width="350"
-                                   Height="35"
-                                   PlaceholderText="Search for apps"
-                                   VerticalAlignment="Center"
-                                   HorizontalAlignment="Right"
-                                   FocusOnKeyboardInput="True"
-                                   QueryText="{Binding Path=SearchQueryText, Mode=TwoWay}"
-                                   cal:Message.Attach="[Event QuerySubmitted] = [RunSearch()]" />
+                           Margin="0,0,30,0"
+                           Width="350"
+                           Height="35"
+                           PlaceholderText="Search for apps"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"
+                           FocusOnKeyboardInput="True"
+                           QueryText="{Binding Path=SearchQueryText, Mode=TwoWay}"
+                           cal:Message.Attach="[Event QuerySubmitted] = [RunSearch()]" />
             </Grid>
-            
+
             <!--<Grid.ChildrenTransitions>
                 <TransitionCollection>
                     <EntranceThemeTransition/>
                 </TransitionCollection>
             </Grid.ChildrenTransitions>-->
 
-            <Hub Grid.Row="1" HorizontalContentAlignment="Stretch"
+            <Hub Grid.Row="1"
+                 HorizontalContentAlignment="Stretch"
                  DefaultSectionIndex="0">
                 <!--<Hub.Resources>
                     <DataTemplate x:Key="DataTemplate1">
@@ -131,6 +132,14 @@
                 </HubSection>
 
             </Hub>
+
+            <TextBlock HorizontalAlignment="Center"
+                       Margin="0"
+                       FontSize="12"
+                       FontWeight="Normal"
+                       Foreground="Gray"
+                       Text="{Binding AppVersion, Mode=OneTime}"
+                       VerticalAlignment="Center" />
         </Grid>
     </Grid>
 

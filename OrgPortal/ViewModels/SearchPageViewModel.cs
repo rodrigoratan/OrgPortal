@@ -22,6 +22,9 @@ namespace OrgPortal.ViewModels
             : base(navigation, navBar, branding)
         {
             this._dataSource = dataSource;
+            var version = Windows.ApplicationModel.Package.Current.Id.Version;
+            AppVersion = string.Format("V.{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision);
+
         }
 
 
@@ -124,5 +127,7 @@ namespace OrgPortal.ViewModels
                 Navigation.NavigateToViewModel<AppDetailsPageViewModel>(param.ClickedItem);
             }
         }
+
+        public string AppVersion { get; set; }
     }
 }

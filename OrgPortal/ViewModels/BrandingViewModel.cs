@@ -125,7 +125,6 @@ namespace OrgPortal.ViewModels
                 var image = await SaveFileAsync(logoImageName, branding.LogoImage);
                 //LogoImage = GetImage(image);
                 LogoImage = await GetImageAsync(image.Name);
-
             }
             else
             {
