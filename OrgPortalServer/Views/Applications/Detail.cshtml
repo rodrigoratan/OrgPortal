@@ -10,42 +10,66 @@
     <h4>Application</h4>
     <hr />
     <p>
+        <p>@Html.ActionLink("Back to Application List", "Index")</p></dt>
         <dl class="dl-horizontal">
-            <dt><p>@Html.ActionLink("Back to Application List", "Index")</p></dt>
-            <dd>&nbsp;</dd>
+            <dt style="vertical-align:middle;">Logo</dt>
+            <dd style="background-color:@Model.BackgroundColor;width:150px">
+                <img src="/api/logo/@Html.DisplayFor(model => model.PackageFamilyName)/?version=@Model.Version" />
+            </dd>
+            <dt></dt>
+            <dd></dd>
             <dt>@Html.DisplayNameFor(model => model.Name)</dt>
             <dd>@Html.DisplayFor(model => model.Name)</dd>
+
             <dt>@Html.DisplayNameFor(model => model.PackageName)</dt>
             <dd>@Html.DisplayFor(model => model.PackageName)</dd>
+
             <dt>@Html.DisplayNameFor(model => model.Description)</dt>
             <dd>@Html.DisplayFor(model => model.Description)</dd>
+
             <dt>@Html.DisplayNameFor(model => model.Version)</dt>
             <dd>@Html.DisplayFor(model => model.Version)</dd>
+
             <dt>@Html.DisplayNameFor(model => model.ProcessorArchitecture)</dt>
             <dd>@Html.DisplayFor(model => model.ProcessorArchitecture)</dd>
+
             <dt>@Html.DisplayNameFor(model => model.DisplayName)</dt>
             <dd>@Html.DisplayFor(model => model.DisplayName)</dd>
+
             <dt>@Html.DisplayNameFor(model => model.PublisherDisplayName)</dt>
             <dd>@Html.DisplayFor(model => model.PublisherDisplayName)</dd>
+
             <dt>@Html.DisplayNameFor(model => model.PublisherId)</dt>
             <dd>@Html.DisplayFor(model => model.PublisherId)</dd>
+
             <dt>@Html.DisplayNameFor(model => model.Publisher)</dt>
             <dd>@Html.DisplayFor(model => model.Publisher)</dd>
+
             <dt>@Html.DisplayNameFor(model => model.InstallMode)</dt>
             <dd>@Html.DisplayFor(model => model.InstallMode)</dd>
+
             <dt>@Html.DisplayNameFor(model => model.PackageFamilyName)</dt>
             <dd>@Html.DisplayFor(model => model.PackageFamilyName)</dd>
-            <dt>@Html.DisplayNameFor(model => model.PackageFile)</dt>
-            <dd>@Html.DisplayFor(model => model.PackageFile)</dd>
-            <dt>@Html.DisplayNameFor(model => model.CertificateFile)</dt>
-            <dd>@Html.DisplayFor(model => model.CertificateFile)</dd>
+
             <dt>@Html.DisplayNameFor(model => model.DateAdded)</dt>
             <dd>@Html.DisplayFor(model => model.DateAdded)</dd>
+
             <dt>@Html.DisplayNameFor(model => model.BackgroundColor)</dt>
-            <dd>@Html.DisplayFor(model => model.BackgroundColor)</dd>
-            <dt>@Html.DisplayNameFor(model => model.CategoryID)</dt>
-            <dd>@Html.DisplayFor(model => model.CategoryID)</dd>
+            <dd>@Html.DisplayFor(model => model.BackgroundColor) <span style="color:white;background-color:@Model.BackgroundColor;">[<small>&nbsp;&nbsp;&nbsp;@Model.BackgroundColor &nbsp;&nbsp;</small>]</span></dd>
+
+            <dt>@Html.DisplayNameFor(model => model.Category)</dt>
+            <dd>@Html.DisplayFor(model => model.Category.Name) ( @Html.DisplayFor(model => model.CategoryID) )</dd>
+
+            <dt>@Html.DisplayNameFor(model => model.PackageFile)</dt>
+            <dd>@Html.DisplayFor(model => model.PackageFile) <i>(<a href="/api/appx/@Model.PackageFamilyName/?version=@Model.Version" />Download Appx</a>)</i></dd>
+
+            <dt>@Html.DisplayNameFor(model => model.CertificateFile)</dt>
+            <dd>@Html.DisplayFor(model => model.CertificateFile) <i>(<a href="/api/certificate/@Model.PackageFamilyName/?version=@Model.Version" />Download Certificate</a>)</i></dd>
+
+            <dd></dd>
+            <dd></dd>
         </dl>
+
     </p>
     @*<button tag="model.PackageFamilyName" class="delete" onclick="if (!confirm('Delete?')) return; else alert('Deleting (not yet)');">Delete</button>*@
     @Html.ActionLink("Delete"

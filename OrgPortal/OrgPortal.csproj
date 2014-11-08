@@ -179,7 +179,6 @@
     </AppxManifest>
     <None Include="OrgPortal_StoreKey.pfx" />
     <None Include="Package.StoreAssociation.xml" />
-    <None Include="OrgPortal_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <PRIResource Include="Strings\en-US\Resources.resw">
       <SubType>Designer</SubType>
