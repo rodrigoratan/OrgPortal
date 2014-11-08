@@ -10,14 +10,17 @@
     <h4>Application</h4>
     <hr />
     <p>
-        <p>@Html.ActionLink("Back to Application List", "Index")</p></dt>
+        <p>@Html.ActionLink("Back to Application List", "Index")</p>
+
         <dl class="dl-horizontal">
             <dt style="vertical-align:middle;">Logo</dt>
             <dd style="background-color:@Model.BackgroundColor;width:150px">
                 <img src="/api/logo/@Html.DisplayFor(model => model.PackageFamilyName)/?version=@Model.Version" />
             </dd>
-            <dt></dt>
-            <dd></dd>
+
+            <dt>&nbsp;<br /></dt>
+            <dd>&nbsp;<br /></dd>
+
             <dt>@Html.DisplayNameFor(model => model.Name)</dt>
             <dd>@Html.DisplayFor(model => model.Name)</dd>
 
@@ -73,7 +76,7 @@
     </p>
     @*<button tag="model.PackageFamilyName" class="delete" onclick="if (!confirm('Delete?')) return; else alert('Deleting (not yet)');">Delete</button>*@
     @Html.ActionLink("Delete"
-                    ,"DeleteWithRedirect"
+                    , "DeleteWithRedirect"
                     , new { id = Model.PackageFamilyName + "/", version = Model.Version }
                     , new { onclick = "return confirm('Are you sure you wish to delete this package version?');", @class = "delete", style = "border:1px dashed black;margin-left:100px;padding:5px;" }
                     )
@@ -83,9 +86,9 @@
     <div style="clear:both;margin-left:50px;">
         <div class="heading">Images</div>
         @*@foreach (var image in OrgPortal.Domain.IoCContainerFactory.Current.GetInstance<OrgPortal.Domain.Repositories.PictureRepository>().GetImages(Model.PackageFamilyName, Model.Version))
-        {
-            <img src="/api/Picture/@Model.PackageFamilyName/?version=@Model.Version&filename=@image" /> <br /><br />
-        }*@
+            {
+                <img src="/api/Picture/@Model.PackageFamilyName/?version=@Model.Version&filename=@image" /> <br /><br />
+            }*@
 
         @foreach (var image in OrgPortal.Domain.IoCContainerFactory.Current.GetInstance<OrgPortal.Domain.Repositories.PictureRepository>().GetImagesApi(Model.PackageFamilyName, Model.Version))
         {
