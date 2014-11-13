@@ -289,12 +289,63 @@ namespace OrgPortal.Domain.Models
 
         private static string ExtractValueFromVisualElementsNode(XDocument manifest, string attributeName)
         {
-            var logoFileName = manifest.Descendants().Single(d => d.Name.LocalName == "Applications")
-                                       .Descendants().First(d => d.Name.LocalName == "Application") // TODO: What if there is more than one application?
-                                       .Descendants().Single(d => d.Name.ToString().EndsWith("VisualElements", StringComparison.InvariantCultureIgnoreCase))
-                                       .Attributes().Single(a => a.Name.LocalName == attributeName)
-                                       .Value;
-            return logoFileName;
+
+            try
+            {
+                var obj1 = manifest.Descendants().Single(d => d.Name.LocalName == "Applications");
+                var obj2 = obj1.Descendants().First(d => d.Name.LocalName == "Application"); // TODO: What if there is more than one application?
+                var obj3 = obj2.Descendants().Single(d => d.Name.ToString().EndsWith("VisualElements", StringComparison.InvariantCultureIgnoreCase));
+                var obj4 = obj3.Attributes().SingleOrDefault(a => a.Name.LocalName == attributeName);
+                if (obj4 == null && attributeName.EndsWith("Logo"))
+                {
+                    var _attributeName = string.Empty;
+                    if (attributeName == "Square30x30Logo")
+                    {
+                        _attributeName = "SmallLogo";
+                    }
+                    else if (attributeName == "Square150x150Logo")
+                    {
+                        _attributeName = "Logo";
+                    }
+                    else if (attributeName == "SmallLogo")
+                    {
+                        _attributeName = "Square30x30Logo";
+                    }
+                    else if (attributeName == "Logo")
+                    {
+                        _attributeName = "Square150x150Logo";
+                    }
+                    obj4 = obj3.Attributes().SingleOrDefault(a => a.Name.LocalName == _attributeName);
+                }
+
+                var final = obj4 != null ? obj4.Value : string.Empty;
+
+                return final;
+                //Square30x30Logo="Assets\small_logo.png" Square150x150Logo="Assets\square_logo.png"
+                //SmallLogo="Assets\Logo30x30.png" Logo="Assets\Logo150x150.png" 
+            }
+            catch 
+            {
+                return string.Empty;
+            }
+/*
+            try
+            {
+
+
+                var logoFileName = manifest.Descendants().Single(d => d.Name.LocalName == "Applications")
+                                           .Descendants().First(d => d.Name.LocalName == "Application") // TODO: What if there is more than one application?
+                                           .Descendants().Single(d => d.Name.ToString().EndsWith("VisualElements", StringComparison.InvariantCultureIgnoreCase))
+                                           .Attributes().Single(a => a.Name.LocalName == attributeName)
+                                           .Value;
+                return logoFileName;
+
+            }
+            catch //(Exception)
+            {
+                return string.Empty;
+            }
+*/
         }
     }
 }
