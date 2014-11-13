@@ -28,5 +28,19 @@
     </ResourceDictionary.ThemeDictionaries>
 
     <common:ThemeManager x:Key="ThemeManager" />
-    
+
+    <Style x:Key="BasicTextStyle"
+           TargetType="TextBlock" />
+
+    <Style x:Key="AccentHeaderTextBlockStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource HeaderTextBlockStyle}">
+        <Setter Property="FontSize"
+                Value="36" />
+        <Setter Property="LineHeight"
+                Value="27" />
+        <Setter Property="Foreground"
+                Value="{StaticResource AccentColorBrush}" />
+    </Style>
+
 </ResourceDictionary>

@@ -123,6 +123,7 @@
     <Compile Include="Common\Navigation.cs" />
     <Compile Include="Common\Serializer.cs" />
     <Compile Include="Common\ThemeManager.cs" />
+    <Compile Include="Common\TileNotifications.cs" />
     <Compile Include="Common\WindowsStoreSystemInformation.cs" />
     <Compile Include="Converters\GreaterThanIntToVisibilityConverter.cs" />
     <Compile Include="Converters\InverseBoolToVisibilityConverter.cs" />
@@ -328,6 +329,12 @@
     <SDKReference Include="Callisto, Version=1.4.0">
       <Name>Callisto</Name>
     </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NotificationsExtensions\NotificationsExtensions.csproj">
+      <Project>{6e87464b-b064-40ca-8161-7c18c337adff}</Project>
+      <Name>NotificationsExtensions</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="OrgPortal.App">
-      <m2:VisualElements DisplayName="Zollie OrgPortal" Square150x150Logo="Assets\square_logo.png" Square30x30Logo="Assets\small_logo.png" Description="Powered by OrgPortal" ForegroundText="light" BackgroundColor="#101010">
+      <m2:VisualElements DisplayName="Zollie OrgPortal" Square150x150Logo="Assets\square_logo.png" Square30x30Logo="Assets\small_logo.png" Description="Open Source App Store for Organizations powered by Zollie R2 division." ForegroundText="light" BackgroundColor="#101010" ToastCapable="true">
         <m2:DefaultTile Wide310x150Logo="Assets\wide_logo.png" Square310x310Logo="Assets\Square310x310Logo.png" ShortName="Zollie OrgPortal" Square70x70Logo="Assets\Square70x70Logo.png">
           <m2:ShowNameOnTiles>
             <m2:ShowOn Tile="square150x150Logo" />
@@ -23,6 +23,7 @@
           </m2:ShowNameOnTiles>
         </m2:DefaultTile>
         <m2:SplashScreen Image="Assets\splash_page.png" BackgroundColor="#101010" />
+        <m2:ApplicationView MinWidth="width500" />
       </m2:VisualElements>
     </Application>
   </Applications>
