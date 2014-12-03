@@ -61,6 +61,12 @@
             this.Install = new System.Windows.Forms.DataGridViewButtonColumn();
             this.tabInstalled = new System.Windows.Forms.TabPage();
             this.dgvInstalled = new System.Windows.Forms.DataGridView();
+            this.DisplayName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.InstalledVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UpdateAvailable = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.InstallMode = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PackageFamilyName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Uninstall = new System.Windows.Forms.DataGridViewButtonColumn();
             this.tabMultiple = new System.Windows.Forms.TabPage();
             this.dgvPackages = new System.Windows.Forms.DataGridView();
             this.dataGridViewCheckBoxColumn1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
@@ -80,12 +86,6 @@
             this.OrgPortalWebToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.fileSystemWatcher2 = new System.IO.FileSystemWatcher();
-            this.DisplayName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.InstalledVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.UpdateAvailable = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.InstallMode = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PackageFamilyName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Uninstall = new System.Windows.Forms.DataGridViewButtonColumn();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -425,6 +425,51 @@
             this.dgvInstalled.TabIndex = 0;
             this.dgvInstalled.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvInstalled_CellContentClick);
             // 
+            // DisplayName
+            // 
+            this.DisplayName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.DisplayName.FillWeight = 60F;
+            this.DisplayName.HeaderText = "App Name";
+            this.DisplayName.Name = "DisplayName";
+            this.DisplayName.ReadOnly = true;
+            // 
+            // InstalledVersion
+            // 
+            this.InstalledVersion.FillWeight = 50F;
+            this.InstalledVersion.HeaderText = "Version";
+            this.InstalledVersion.Name = "InstalledVersion";
+            this.InstalledVersion.ReadOnly = true;
+            this.InstalledVersion.Width = 70;
+            // 
+            // UpdateAvailable
+            // 
+            this.UpdateAvailable.HeaderText = "Update Available";
+            this.UpdateAvailable.Name = "UpdateAvailable";
+            this.UpdateAvailable.ReadOnly = true;
+            this.UpdateAvailable.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            // 
+            // InstallMode
+            // 
+            this.InstallMode.HeaderText = "Install Mode";
+            this.InstallMode.Name = "InstallMode";
+            this.InstallMode.ReadOnly = true;
+            // 
+            // PackageFamilyName
+            // 
+            this.PackageFamilyName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PackageFamilyName.FillWeight = 70F;
+            this.PackageFamilyName.HeaderText = "Package Family Name";
+            this.PackageFamilyName.Name = "PackageFamilyName";
+            this.PackageFamilyName.ReadOnly = true;
+            // 
+            // Uninstall
+            // 
+            this.Uninstall.HeaderText = "Uninstall";
+            this.Uninstall.Name = "Uninstall";
+            this.Uninstall.ReadOnly = true;
+            this.Uninstall.Text = "Uninstall App";
+            this.Uninstall.UseColumnTextForButtonValue = true;
+            // 
             // tabMultiple
             // 
             this.tabMultiple.Controls.Add(this.dgvPackages);
@@ -569,51 +614,6 @@
             this.fileSystemWatcher2.Filter = "*.rt2win";
             this.fileSystemWatcher2.SynchronizingObject = this;
             // 
-            // DisplayName
-            // 
-            this.DisplayName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.DisplayName.FillWeight = 60F;
-            this.DisplayName.HeaderText = "App Name";
-            this.DisplayName.Name = "DisplayName";
-            this.DisplayName.ReadOnly = true;
-            // 
-            // InstalledVersion
-            // 
-            this.InstalledVersion.FillWeight = 50F;
-            this.InstalledVersion.HeaderText = "Version";
-            this.InstalledVersion.Name = "InstalledVersion";
-            this.InstalledVersion.ReadOnly = true;
-            this.InstalledVersion.Width = 70;
-            // 
-            // UpdateAvailable
-            // 
-            this.UpdateAvailable.HeaderText = "Update Available";
-            this.UpdateAvailable.Name = "UpdateAvailable";
-            this.UpdateAvailable.ReadOnly = true;
-            this.UpdateAvailable.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            // 
-            // InstallMode
-            // 
-            this.InstallMode.HeaderText = "Install Mode";
-            this.InstallMode.Name = "InstallMode";
-            this.InstallMode.ReadOnly = true;
-            // 
-            // PackageFamilyName
-            // 
-            this.PackageFamilyName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.PackageFamilyName.FillWeight = 70F;
-            this.PackageFamilyName.HeaderText = "Package Family Name";
-            this.PackageFamilyName.Name = "PackageFamilyName";
-            this.PackageFamilyName.ReadOnly = true;
-            // 
-            // Uninstall
-            // 
-            this.Uninstall.HeaderText = "Uninstall";
-            this.Uninstall.Name = "Uninstall";
-            this.Uninstall.ReadOnly = true;
-            this.Uninstall.Text = "Uninstall App";
-            this.Uninstall.UseColumnTextForButtonValue = true;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -628,7 +628,7 @@
             this.Name = "Form1";
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
-            this.Text = "OrgPortal Sync";
+            this.Text = "OrgPortal Sync Monitor";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResizeEnd += new System.EventHandler(this.Form1_ResizeEnd);

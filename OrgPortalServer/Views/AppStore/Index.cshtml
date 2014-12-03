@@ -45,7 +45,7 @@
                     <td>&nbsp;</td>
                     <td style="width:180px;">
                         @Html.ActionLink(
-                            application.DisplayName,
+                            !string.IsNullOrEmpty(application.DisplayName) ? application.DisplayName : !string.IsNullOrEmpty(application.Name) ? application.Name : "App",
                             "Detail",
                             new
                             {

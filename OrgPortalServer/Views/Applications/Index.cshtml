@@ -59,7 +59,7 @@
                     @*<td style="width:180px;">@Html.ActionLink(application.DisplayName, "Detail/" + application.PackageFamilyName + "/?version=" + application.Version)</td>*@
                     <td style="width:180px;">
                         @Html.ActionLink(
-                            application.DisplayName,
+                            !string.IsNullOrEmpty(application.DisplayName) ? application.DisplayName : !string.IsNullOrEmpty(application.Name) ? application.Name : "App",
                             "Detail",
                             new
                             {

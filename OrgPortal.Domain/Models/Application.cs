@@ -135,13 +135,21 @@ namespace OrgPortal.Domain.Models
             InstallMode = installMode;
             DateAdded = DateTime.UtcNow;
 
+            DisplayName = "App";
             PublisherId = publisherId;
             ExtractValuesFromPackage(dataAppx);
             dataAppx.Seek(0, SeekOrigin.Begin);
             Package = dataAppx.ReadFully();
+            if (certificateData != null)
+            {
+                certificateData.Seek(0, SeekOrigin.Begin);
+                Certificate = certificateData.ReadFully();
+            }
 
-            certificateData.Seek(0, SeekOrigin.Begin);
-            Certificate = certificateData.ReadFully();
+            //CertificateFile
+            //BackgroundColor
+            //DisplayName
+            //Description
 
             //TODO: This is not correct.  Publisher needs to be the Publisher ID, which is a hash of something. Need to figure out how to calculate/fetch the Publisher ID.
             //RESOLVED: For now this Hash (Publisher ID) is a required entry field to allow upload the app to the store so we can match the PackageFamilyName
@@ -326,7 +334,7 @@ namespace OrgPortal.Domain.Models
                 }
                 else
                 {
-                    return obj4;
+                    return obj4.Value; //ToString();
                 }
             }
             catch 

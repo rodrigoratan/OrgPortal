@@ -137,6 +137,7 @@
     <Compile Include="Controllers\ApplicationsController.cs" />
     <Compile Include="Controllers\AppStoreController.cs" />
     <Compile Include="Controllers\AppsController.cs" />
+    <Compile Include="Controllers\RequestUpdateController.cs" />
     <Compile Include="Controllers\CertificateController.cs" />
     <Compile Include="Controllers\BrandingController.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />

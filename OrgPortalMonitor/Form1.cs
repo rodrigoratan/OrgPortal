@@ -436,14 +436,14 @@ namespace OrgPortalMonitor
                     //_installer.StartFileWatcher2(_installer.CachePath);
                     if (!_installer.IsAutoInstalling)
                     {
-                        _installer.ProcessExistingRequestFiles2();
+                        _installer.ProcessExistingCacheRequestFiles();
                     }
                     await RefreshInstalledApps();
                 }
             }
             else
             {
-                _installer.StopFileWatcher1();
+                _installer.StopPackageTempFileWatcher();
                 _installer = null;
                 IsStarted = false;
                 btnStartStop.Text = btnStartStopOriginalTextBuffer;
@@ -708,7 +708,7 @@ namespace OrgPortalMonitor
                     //_installer.StartFileWatcher2(_installer.CachePath);
                     //if (!_installer.IsAutoInstalling)
                     //{
-                        _installer.ProcessExistingRequestFiles2();
+                        _installer.ProcessExistingCacheRequestFiles();
                     //}
                 }
             }

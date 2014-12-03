@@ -113,7 +113,7 @@ namespace OrgPortal.DataModel
         }
 
         //TODO: code is duplicated from Installer.cs , plan to add a Shared Project for shared code
-        private bool UpdateAvailable(AppInfo serverApp, AppInfo installedApp)
+        public static bool UpdateAvailable(AppInfo serverApp, AppInfo installedApp)
         {
             var result = false;
             var serverVersion = serverApp.Version.Split('.');

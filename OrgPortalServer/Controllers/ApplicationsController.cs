@@ -51,9 +51,9 @@ namespace OrgPortalServer.Controllers
         {
             if (!string.IsNullOrEmpty(publisherId))
             {
-                if (appxFile == null || certificateFile == null)
+                if (appxFile == null)
                 {
-                    TempData["WarningMessage"] = "Application (.appx) and Certificate (.cer or .pfx) files are required.";
+                    TempData["WarningMessage"] = "Application file (.appx) is required. Certificate (.cer or .pfx) is optional. ";
                 }
                 else
                 {
@@ -62,12 +62,20 @@ namespace OrgPortalServer.Controllers
                         uow.ApplicationRepository.Add(
                             new Application(
                                 appxFile.InputStream,
-                               (appxFile.FileName.Contains("\\") ? appxFile.FileName.Substring(appxFile.FileName.LastIndexOf("\\") + 1) : appxFile.FileName)
-                               , certificateFile.InputStream,
-                               (certificateFile.FileName.Contains("\\") ? certificateFile.FileName.Substring(certificateFile.FileName.LastIndexOf("\\") + 1) : certificateFile.FileName)
-                               , publisherId
-                               , categoryID
-                               , installMode));
+                               (appxFile.FileName.Contains("\\") ? 
+                                appxFile.FileName.Substring(appxFile.FileName.LastIndexOf("\\") + 1) : 
+                                appxFile.FileName),
+                               (certificateFile != null ? certificateFile.InputStream : null),
+                               (certificateFile != null ? 
+                                   (certificateFile.FileName.Contains("\\") ? 
+                                    certificateFile.FileName.Substring(certificateFile.FileName.LastIndexOf("\\") + 1) : 
+                                    certificateFile.FileName) : 
+                                   string.Empty),
+                               publisherId,
+                               categoryID,
+                               installMode
+                            )
+                        );
 
                         uow.Commit();
                     }
@@ -76,7 +84,7 @@ namespace OrgPortalServer.Controllers
             }
             else
             {
-                TempData["WarningMessage"] = "PublisherId is required to save.";
+                TempData["WarningMessage"] = "PublisherId is required to save. Enter 'None' if unknown at this point (may require editing later). ";
             }
             return RedirectToAction("Index");
         }

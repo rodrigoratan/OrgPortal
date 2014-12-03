@@ -24,12 +24,7 @@ namespace OrgPortal.DataModel
                                             string certificateUrl, 
                                             string certificateFile)
         {
-            var app = new string[] { "install",         appxUrl, 
-                                     "appxFile",        appxFile, 
-                                     "certificateUrl",  certificateUrl, 
-                                     "certificateFile", certificateFile,
-                                     "saveAt",          "INetCache" /*string.Empty*/
-                                   };
+            var app = InstallAppRequestArray(appxUrl, appxFile, certificateUrl, certificateFile);
 
 
             //var machineInfo = await MachineInfo.GatherMachineInfoArray();
@@ -43,6 +38,17 @@ namespace OrgPortal.DataModel
             await WriteTempFile(app);
 
 
+        }
+
+        public static string[] InstallAppRequestArray(string appxUrl, string appxFile, string certificateUrl, string certificateFile)
+        {
+            var app = new string[] { "install",         appxUrl, 
+                                     "appxFile",        appxFile, 
+                                     "certificateUrl",  certificateUrl, 
+                                     "certificateFile", certificateFile,
+                                     "saveAt",          "INetCache" /*string.Empty*/
+                                   };
+            return app;
         }
 
         public async Task<List<AppInfo>> GetInstalledApps(List<AppInfo> apps)
@@ -96,11 +102,16 @@ namespace OrgPortal.DataModel
         }
 
         //TODO: code is duplicated from Installer.cs , plan to add a Shared Project for shared code
-        private bool UpdateAvailable(AppInfo serverApp, AppInfo installedApp)
+        public static bool UpdateAvailable(AppInfo serverApp, AppInfo installedApp)
+        {
+            return UpdateAvailable(serverApp.Version, installedApp.Version);
+        }
+
+        private static bool UpdateAvailable(string serverAppVersion, string installedAppVersion)
         {
             var result = false;
-            var serverVersion = serverApp.Version.Split('.');
-            var installedVersion = installedApp.Version.Split('.');
+            var serverVersion = serverAppVersion.Split('.');
+            var installedVersion = installedAppVersion.Split('.');
             if (int.Parse(serverVersion[0]) > int.Parse(installedVersion[0]))
                 result = true;
             else if (int.Parse(serverVersion[1]) > int.Parse(installedVersion[1]))

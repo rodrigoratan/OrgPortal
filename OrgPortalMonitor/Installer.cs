@@ -104,7 +104,7 @@ namespace OrgPortalMonitor
             this.Output.AppendText(System.Environment.NewLine + "Watching OrgPortal app TempState folder " + path + " for App Install Requests " + Environment.NewLine);
             this.Watcher.Path = path;
             Watcher.Created += Watcher_Created;
-            ProcessExistingRequestFiles1();
+            ProcessExistingPackageTempRequestFiles();
         }
 
         public void StartFileWatcher2(string path)
@@ -112,10 +112,10 @@ namespace OrgPortalMonitor
             this.Output.AppendText(System.Environment.NewLine + "Watching Cache folder " + this.CachePath + " for Auto Install and Auto Update apps" + Environment.NewLine);
             this.Watcher2.Path = CachePath;
             Watcher2.Created += Watcher_Created;
-            ProcessExistingRequestFiles2();
+            ProcessExistingCacheRequestFiles();
         }
 
-        public void ProcessExistingRequestFiles1()
+        public void ProcessExistingPackageTempRequestFiles()
         {
             if (!IsInstalling)
             {
@@ -131,7 +131,7 @@ namespace OrgPortalMonitor
             }
         }
 
-        public void ProcessExistingRequestFiles2()
+        public void ProcessExistingCacheRequestFiles()
         {
             if (!IsAutoInstalling)
             {
@@ -154,7 +154,7 @@ namespace OrgPortalMonitor
             ProcessRequest(e.FullPath);
         }
 
-        public void StopFileWatcher1()
+        public void StopPackageTempFileWatcher()
         {
             Watcher.Created -= Watcher_Created;
             this.Output.AppendText(System.Environment.NewLine + "\n\nStop Watching OrgPortal Temp folder " + this.PackageTempPath + Environment.NewLine);
@@ -162,7 +162,7 @@ namespace OrgPortalMonitor
             //Watcher.Dispose();
         }
 
-        public void StopFileWatcher2()
+        public void StopCacheFileWatcher()
         {
             Watcher2.Created -= Watcher_Created;
             this.Output.AppendText(System.Environment.NewLine + "\n\nStop Watching INet Cache folder " + this.CachePath + Environment.NewLine);
