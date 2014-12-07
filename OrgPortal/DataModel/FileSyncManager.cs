@@ -21,10 +21,15 @@ namespace OrgPortal.DataModel
 
         public async Task RequestAppInstall(string appxUrl, 
                                             string appxFile, 
-                                            string certificateUrl, 
-                                            string certificateFile)
+                                            string certificateUrl,
+                                            string certificateFile,
+                                            string version,
+                                            string name,
+                                            string description,
+                                            string backgroundColor, 
+                                            string imageUrl)
         {
-            var app = InstallAppRequestArray(appxUrl, appxFile, certificateUrl, certificateFile);
+            var app = InstallAppRequestArray(appxUrl, appxFile, certificateUrl, certificateFile, version, name, description, backgroundColor, imageUrl);
 
 
             //var machineInfo = await MachineInfo.GatherMachineInfoArray();
@@ -40,13 +45,26 @@ namespace OrgPortal.DataModel
 
         }
 
-        public static string[] InstallAppRequestArray(string appxUrl, string appxFile, string certificateUrl, string certificateFile)
+        public static string[] InstallAppRequestArray(string appxUrl, 
+                                                      string appxFile, 
+                                                      string certificateUrl, 
+                                                      string certificateFile,
+                                                      string version,
+                                                      string name,
+                                                      string description,
+                                                      string backgroundColor, 
+                                                      string imageUrl)
         {
             var app = new string[] { "install",         appxUrl, 
                                      "appxFile",        appxFile, 
                                      "certificateUrl",  certificateUrl, 
                                      "certificateFile", certificateFile,
-                                     "saveAt",          "INetCache" /*string.Empty*/
+                                     "saveAt",          "INetCache", /*string.Empty*/
+                                     "version",         version,
+                                     "name",            name,
+                                     "description",     description,
+                                     "backgroundColor", backgroundColor,
+                                     "imageUrl",        imageUrl
                                    };
             return app;
         }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OrgPortalMonitor
+namespace OrgPortalMonitor.Common
 {
     public static class ExceptionLogger
     {
@@ -108,7 +108,7 @@ namespace OrgPortalMonitor
         /// </summary>
         /// <param name="currentException"></param>
         /// <returns></returns>
-        private static String CreateErrorMessage(Exception currentException)
+        public static String CreateErrorMessage(Exception currentException)
         {
             StringBuilder messageBuilder = new StringBuilder();
             try
@@ -132,6 +132,36 @@ namespace OrgPortalMonitor
                     messageBuilder.AppendLine("More details: " + currentException.InnerException.ToString());
                 }
                 messageBuilder.AppendLine("");
+                return messageBuilder.ToString();
+            }
+            catch
+            {
+                messageBuilder.AppendLine("Unknown error.");
+                return messageBuilder.ToString();
+            }
+        }
+
+        public static String CreateMiniErrorMessage(Exception currentException)
+        {
+            StringBuilder messageBuilder = new StringBuilder();
+            try
+            {
+                messageBuilder.Append("-- Thread: " + Environment.CurrentManagedThreadId + " ");
+
+                if (currentException.Source != null)
+                {
+                    messageBuilder.Append(" @ " + currentException.Source.ToString().Trim());
+                }
+                messageBuilder.Append(" @ " + DateTime.Now);
+                if (!string.IsNullOrEmpty(currentException.Message))
+                {
+                    messageBuilder.Append("Method: " + currentException.Message.ToString().Trim());
+                }
+                messageBuilder.Append("Error: " + currentException.ToString());
+                if (currentException.InnerException != null)
+                {
+                    messageBuilder.Append("More: " + currentException.InnerException.ToString());
+                }
                 return messageBuilder.ToString();
             }
             catch

@@ -36,6 +36,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabSettings = new System.Windows.Forms.TabPage();
+            this.monitorInstalledApps = new System.Windows.Forms.CheckBox();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripMainStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusAdicional = new System.Windows.Forms.ToolStripStatusLabel();
@@ -67,10 +68,6 @@
             this.InstallMode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.PackageFamilyName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Uninstall = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.tabMultiple = new System.Windows.Forms.TabPage();
-            this.dgvPackages = new System.Windows.Forms.DataGridView();
-            this.dataGridViewCheckBoxColumn1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.clPackageFamilyName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.monitorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoConnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -96,8 +93,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvServerApps)).BeginInit();
             this.tabInstalled.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvInstalled)).BeginInit();
-            this.tabMultiple.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPackages)).BeginInit();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher2)).BeginInit();
             this.SuspendLayout();
@@ -138,7 +133,6 @@
             this.tabControl1.Controls.Add(this.tabLog);
             this.tabControl1.Controls.Add(this.tabServerApps);
             this.tabControl1.Controls.Add(this.tabInstalled);
-            this.tabControl1.Controls.Add(this.tabMultiple);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 24);
             this.tabControl1.Name = "tabControl1";
@@ -150,6 +144,7 @@
             // 
             // tabSettings
             // 
+            this.tabSettings.Controls.Add(this.monitorInstalledApps);
             this.tabSettings.Controls.Add(this.statusStrip1);
             this.tabSettings.Controls.Add(this.txtAutoInstallTimer);
             this.tabSettings.Controls.Add(this.btnInstallUpdates);
@@ -168,6 +163,17 @@
             this.tabSettings.TabIndex = 0;
             this.tabSettings.Text = "Settings";
             this.tabSettings.UseVisualStyleBackColor = true;
+            // 
+            // monitorInstalledApps
+            // 
+            this.monitorInstalledApps.AutoSize = true;
+            this.monitorInstalledApps.Location = new System.Drawing.Point(19, 164);
+            this.monitorInstalledApps.Name = "monitorInstalledApps";
+            this.monitorInstalledApps.Size = new System.Drawing.Size(315, 17);
+            this.monitorInstalledApps.TabIndex = 12;
+            this.monitorInstalledApps.Text = "Monitor Installed Apps for Updates Requests from themselves";
+            this.monitorInstalledApps.UseVisualStyleBackColor = true;
+            this.monitorInstalledApps.CheckedChanged += new System.EventHandler(this.monitorInstalledApps_CheckedChanged);
             // 
             // statusStrip1
             // 
@@ -470,42 +476,6 @@
             this.Uninstall.Text = "Uninstall App";
             this.Uninstall.UseColumnTextForButtonValue = true;
             // 
-            // tabMultiple
-            // 
-            this.tabMultiple.Controls.Add(this.dgvPackages);
-            this.tabMultiple.Location = new System.Drawing.Point(4, 22);
-            this.tabMultiple.Name = "tabMultiple";
-            this.tabMultiple.Size = new System.Drawing.Size(736, 311);
-            this.tabMultiple.TabIndex = 3;
-            this.tabMultiple.Text = "Multiple Packages (Beta)";
-            this.tabMultiple.UseVisualStyleBackColor = true;
-            // 
-            // dgvPackages
-            // 
-            this.dgvPackages.AllowUserToOrderColumns = true;
-            this.dgvPackages.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvPackages.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.dataGridViewCheckBoxColumn1,
-            this.clPackageFamilyName});
-            this.dgvPackages.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvPackages.Location = new System.Drawing.Point(0, 0);
-            this.dgvPackages.Name = "dgvPackages";
-            this.dgvPackages.Size = new System.Drawing.Size(736, 311);
-            this.dgvPackages.TabIndex = 1;
-            // 
-            // dataGridViewCheckBoxColumn1
-            // 
-            this.dataGridViewCheckBoxColumn1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.dataGridViewCheckBoxColumn1.HeaderText = "Auto Update";
-            this.dataGridViewCheckBoxColumn1.Name = "dataGridViewCheckBoxColumn1";
-            this.dataGridViewCheckBoxColumn1.Width = 80;
-            // 
-            // clPackageFamilyName
-            // 
-            this.clPackageFamilyName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.clPackageFamilyName.HeaderText = "Package Family Name";
-            this.clPackageFamilyName.Name = "clPackageFamilyName";
-            // 
             // menuStrip1
             // 
             this.menuStrip1.BackColor = System.Drawing.SystemColors.ButtonFace;
@@ -624,7 +594,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(640, 300);
+            this.MinimumSize = new System.Drawing.Size(640, 340);
             this.Name = "Form1";
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
@@ -646,8 +616,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvServerApps)).EndInit();
             this.tabInstalled.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvInstalled)).EndInit();
-            this.tabMultiple.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvPackages)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher2)).EndInit();
@@ -675,10 +643,6 @@
     private System.Windows.Forms.DataGridView dgvServerApps;
     private System.Windows.Forms.TabPage tabInstalled;
     private System.Windows.Forms.DataGridView dgvInstalled;
-    private System.Windows.Forms.TabPage tabMultiple;
-    private System.Windows.Forms.DataGridView dgvPackages;
-    private System.Windows.Forms.DataGridViewCheckBoxColumn dataGridViewCheckBoxColumn1;
-    private System.Windows.Forms.DataGridViewTextBoxColumn clPackageFamilyName;
     private System.Windows.Forms.MenuStrip menuStrip1;
     private System.Windows.Forms.ToolStripMenuItem monitorToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem startToolStripMenuItem;
@@ -713,6 +677,7 @@
     private System.Windows.Forms.DataGridViewTextBoxColumn InstallMode;
     private System.Windows.Forms.DataGridViewTextBoxColumn PackageFamilyName;
     private System.Windows.Forms.DataGridViewButtonColumn Uninstall;
+    private System.Windows.Forms.CheckBox monitorInstalledApps;
   }
 }
 

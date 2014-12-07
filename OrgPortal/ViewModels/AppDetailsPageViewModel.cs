@@ -100,7 +100,13 @@ namespace OrgPortal.ViewModels
                                 Item.AppxUrl,
                                 Item.PackageFile, 
                                 Item.CertificateUrl, 
-                                Item.CertificateFile);
+                                Item.CertificateFile, 
+                                Item.Version,
+                                Item.Name, 
+                                Item.Description, 
+                                Item.BackgroundColor, 
+                                Item.ImageUrl
+                            );
 
             await _messageBox.ShowAsync("Install request sent", "Install App " + Item.Name);
         }

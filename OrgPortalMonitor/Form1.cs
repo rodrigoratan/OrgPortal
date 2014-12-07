@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Windows.Forms;
+using OrgPortalMonitor.Common;
 using OrgPortalMonitor.DataModel;
 using OrgPortalMonitor.Properties;
 
@@ -19,13 +20,25 @@ namespace OrgPortalMonitor
 {
     public partial class Form1 : Form
     {
-        public Form1()
+        public  Form1()
         {
             InitializeComponent();
+
+            string[] args = Environment.GetCommandLineArgs();
+            //•args[0] is the application path.
+            //•args[1] will be the file path.
+            //•args[n] will be any other arguments passed in.
+
+            SetAppVersion();
+
+        }
+
+        private void SetAppVersion()
+        {
             try
             {
                 AppVersion = string.Empty;
-                if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
+                if (false/* || System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed*/)
                 {
                     System.Deployment.Application.ApplicationDeployment ad =
                     System.Deployment.Application.ApplicationDeployment.CurrentDeployment;
@@ -46,13 +59,12 @@ namespace OrgPortalMonitor
                 AppVersion = " - " + this.ProductVersion;
                 this.Text += AppVersion;
             }
-
         }
 
-        private Installer _installer;
+        private Installer _monitor;
         private bool _reallyClose;
 
-        public int CumulativeMinutesInstallTimer { get; set; }
+        //public int CumulativeMinutesInstallTimer { get; set; }
 
         private int _autoInstallTimer = 0;
         public int AutoInstallTimer
@@ -70,11 +82,12 @@ namespace OrgPortalMonitor
 
         private string btnStartStopOriginalTextBuffer;
         private string btnStripStartStopOriginalTextBuffer;
+        private AppRequest appRequest;
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-            this.ShowInTaskbar = false;
-            this.Visible = false;
+            //this.ShowInTaskbar = false;
+            //this.Visible = false;
 
             this.notifyIcon1.Visible = true;
             var menu = this.notifyIcon1.ContextMenu = new ContextMenu();
@@ -126,23 +139,23 @@ namespace OrgPortalMonitor
 
             //processExistingAppRequestsToolStripMenuItem.Click += (o, a) =>
             //{
-            //    if (_installer != null)
+            //    if (_monitor != null)
             //    {
-            //        _installer.ProcessExistingRequestFiles1();
+            //        _monitor.ProcessExistingRequestFiles1();
             //    }
             //};
 
             //processExistingAutoInstallAndAutoUpdateToolStripMenuItem.Click += (o, a) =>
             //{
-            //    if (_installer != null)
+            //    if (_monitor != null)
             //    {
-            //        _installer.ProcessExistingRequestFiles2();
+            //        _monitor.ProcessExistingRequestFiles2();
             //    }
             //};
 
             BlockAllTabsExceptOneIfNotStarted("tabSettings");
 
-            var RequestQueryString = GetQueryStringParameters();
+            var RequestQueryString = Utils.GetQueryStringParameters();
             
             #region AutoStart
             var AutoStartParameter = RequestQueryString["AutoStart"] != null ? RequestQueryString["AutoStart"] : "";
@@ -285,11 +298,11 @@ namespace OrgPortalMonitor
             string extraInfo = "";
             extraInfo += "OrgPortalUrl[" + txtOrgPortalUrl.Text + "]";
             extraInfo += "PackageFamilyName[" + txtPackageFamilyName.Text + "]";
-            if (_installer != null)
+            if (_monitor != null)
             {
-                extraInfo += "serviceURI[" + _installer.ServiceURI + "]";
-                extraInfo += "PackageTempPath[" + _installer.PackageTempPath + "]";
-                extraInfo += "PackageLocalPath[" + _installer.PackageLocalPath + "]";
+                extraInfo += "serviceURI[" + _monitor.ServiceURI + "]";
+                extraInfo += "PackageTempPath[" + _monitor.OrgPortalPackageTempPath + "]";
+                extraInfo += "PackageLocalPath[" + _monitor.OrgPortalPackageLocalPath + "]";
             }
             extraInfo += Environment.NewLine;
 
@@ -310,7 +323,7 @@ namespace OrgPortalMonitor
 
         private async Task RefreshAppList()
         {
-            //_installer.GetInstalledPackages();
+            //_monitor.GetInstalledPackages();
             await RefreshInstalledApps();
         }
 
@@ -320,22 +333,32 @@ namespace OrgPortalMonitor
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 var key = dialog.KeyValue;
-                _installer.UnlockDevice(key);
+                _monitor.UnlockDevice(key);
             }
         }
 
         private void GetDevLicense()
         {
-            _installer.GetDevLicense();
+            _monitor.ShowDevLicense();
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        private async void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!_reallyClose)
             {
                 this.ShowInTaskbar = false;
                 this.Visible = false;
                 e.Cancel = true;
+            }
+            else
+            {
+                if (_monitor != null)
+                {
+                    await _monitor.StopCacheFileWatcher();
+                    await _monitor.StopPackageTempFileWatcher();
+                    await _monitor.StopExistingAppsFileWatcher();
+                    _monitor = null;
+                }
             }
         }
 
@@ -351,7 +374,7 @@ namespace OrgPortalMonitor
 
         private void DisplayForm()
         {
-            //this.ShowInTaskbar = true;
+            this.ShowInTaskbar = true;
             this.WindowState = FormWindowState.Normal;
             this.Visible = true;
             this.BringToFront();
@@ -372,11 +395,11 @@ namespace OrgPortalMonitor
                 if (AutoInstallTimer > AutoInstallMinutes || AutoInstallMinutes <= 1)
                     AutoInstallTimer = 1;
 
-                if (AutoInstallTimer == 1 && _installer != null)
+                if (AutoInstallTimer == 1 && _monitor != null)
                 {
-                    await _installer.AutoInstallUpdateApps();
-                    _installer.InstalledAppList = null;
-                    //InstalledAppList = _installer.GetInstalledApps(_installer.GetAppList());
+                    await _monitor.AutoInstallUpdateApps();
+                    _monitor.InstalledAppList = null;
+                    //InstalledAppList = _monitor.GetInstalledApps(_monitor.GetAppList());
                 }
             }
         }
@@ -422,7 +445,7 @@ namespace OrgPortalMonitor
 
                     this.txtLogOutput.Text += "\n\n";
 
-                    _installer = new Installer(txtOrgPortalUrl.Text,
+                    _monitor = new Installer(txtOrgPortalUrl.Text,
                                                txtPackageFamilyName.Text,
                                                this.notifyIcon1,
                                                this.txtLogOutput,
@@ -430,24 +453,28 @@ namespace OrgPortalMonitor
                                                this.fileSystemWatcher2
                                               );
 
-                    _installer.StartFileWatcher1(_installer.PackageTempPath);
-                    toolStripMainStatusLabel.Text = "Connected @ " + _installer.ServiceURI;
-                    toolStripStatusAdicional.Text = " & " + _installer.PackageTempPath;
-                    //_installer.StartFileWatcher2(_installer.CachePath);
-                    if (!_installer.IsAutoInstalling)
-                    {
-                        _installer.ProcessExistingCacheRequestFiles();
-                    }
+                    await _monitor.StartOrgPortalFileWatcher(_monitor.OrgPortalPackageTempPath);
+                    toolStripMainStatusLabel.Text = "Connected @ " + _monitor.ServiceURI;
+                    toolStripStatusAdicional.Text = " & " + _monitor.OrgPortalPackageTempPath;
+
+                    //_monitor.StartFileWatcher2(_monitor.CachePath);
+                    //TODO: Uncomment to ProcessExistingCacheRequestFiles on ToggleStartStop
+                    //if (!_monitor.IsAutoInstalling)
+                    //{
+                    //    _monitor.ProcessExistingCacheRequestFiles();
+                    //}
                     await RefreshInstalledApps();
                 }
             }
             else
             {
-                _installer.StopPackageTempFileWatcher();
-                _installer = null;
+                await _monitor.StopPackageTempFileWatcher();
+                _monitor = null;
                 IsStarted = false;
                 btnStartStop.Text = btnStartStopOriginalTextBuffer;
                 startToolStripMenuItem.Text = btnStripStartStopOriginalTextBuffer;
+                toolStripMainStatusLabel.Text = "Disconnected ";// + _monitor.ServiceURI;
+                toolStripStatusAdicional.Text = ""; // & " + _monitor.OrgPortalPackageTempPath;
             }
 
             txtOrgPortalUrl.Enabled = !IsStarted;
@@ -459,23 +486,23 @@ namespace OrgPortalMonitor
             dgvInstalled.Rows.Clear();
             dgvServerApps.Rows.Clear();
 
-            if (_installer != null)
+            if (_monitor != null)
             {
-                //if (_installer.ServerAppList == null || _installer.ServerAppList.Count == 0)
+                //if (_monitor.ServerAppList == null || _monitor.ServerAppList.Count == 0)
                 //{
-                _installer.ServerAppList = await _installer.GetRemoteAppList();
+                _monitor.ServerAppList = await _monitor.GetRemoteAppList();
                 //}
-                var installedApps = _installer
+                var installedApps = _monitor
                                     .GetInstalledApps(
-                                        _installer.ServerAppList != null ? 
-                                                _installer.ServerAppList : 
+                                        _monitor.ServerAppList != null ?
+                                                _monitor.ServerAppList : 
                                                 new List<AppInfo>());
                 foreach (var app in installedApps)
                 {
                     dgvInstalled.Rows.Add(app.DisplayName, app.Version, app.NewVersionAvailable, app.InstallMode, app.PackageFamilyName);
                 }
 
-                foreach (var app in _installer.ServerAppList)
+                foreach (var app in _monitor.ServerAppList)
                 {
                     AppInfo _installedItem = 
                             (installedApps != null) ? 
@@ -530,90 +557,8 @@ namespace OrgPortalMonitor
 
         }
 
-        private NameValueCollection GetQueryStringParameters()
-        {
-            NameValueCollection nameValueTable = new NameValueCollection();
-            try
-            {
-                if (ApplicationDeployment.IsNetworkDeployed &&
-                    ApplicationDeployment.CurrentDeployment.ActivationUri != null)
-                {
-                    string queryString = ApplicationDeployment.CurrentDeployment.ActivationUri.Query;
-                    nameValueTable = HttpUtility.ParseQueryString(queryString);
-                }
-                return (nameValueTable);
-            }
-            catch (Exception ex)
-            {
-                OutputException(ex);
-                return (nameValueTable);
-            }
-        }
 
-        private void OutputException(Exception ex)
-        {
-            try 
-	        {
-                if (_installer != null)
-                {
-                    ExceptionLogger.LogException(ex, _installer.PackageTempPath);
-                }
-                else
-                {
-                    ExceptionLogger.LogException(ex);
-                }
-   
-                txtLogOutput.Text += "---------------------------"
-                                  + "Erro: " 
-                                  + System.Environment.NewLine
-                                  + ex.Message 
-                                  + System.Environment.NewLine
-                                  + (ex.InnerException != null ?
-                                        "[ Erro interno: " 
-                                        + ex.InnerException.Message 
-                                        + System.Environment.NewLine 
-                                        + "Em: " 
-                                        + System.Environment.NewLine 
-                                        + ex.InnerException.StackTrace 
-                                        + System.Environment.NewLine 
-                                        + "Origem: " 
-                                        + System.Environment.NewLine 
-                                        + ex.InnerException.Source 
-                                        + System.Environment.NewLine 
-                                        + "]"
-                                        + System.Environment.NewLine 
-                                        : "") 
-                                   + "Em: "
-                                   + System.Environment.NewLine
-                                   + ex.StackTrace
-                                   + System.Environment.NewLine
-                                   + "Origem: "
-                                   + System.Environment.NewLine
-                                   + ex.Source
-                                   + System.Environment.NewLine
-                                   + "---------------------------"
-                                   ;
-	        }
-	        catch (Exception exc)
-	        {
-		        txtLogOutput.Text += "Erro: " 
-                                      + System.Environment.NewLine
-                                      + exc.Message;
-
-                if (_installer != null)
-                {
-                    ExceptionLogger.LogException(exc, _installer.PackageTempPath);
-                }
-                else
-                {
-                    ExceptionLogger.LogException(exc);
-                }
-
-	        }
-
-        }
-
-        private void dgvInstalled_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private async void dgvInstalled_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             try
             {
@@ -621,7 +566,7 @@ namespace OrgPortalMonitor
                 if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn &&
                     e.RowIndex >= 0 && (e.ColumnIndex - 1) >= 0)
                 {
-                    MessageBox.Show("Not implemented yet. Coming soon. ");
+                    //MessageBox.Show("Not implemented yet. Coming soon. ");
 
                     var packageFamilyNameColumn = senderGrid.Columns[e.ColumnIndex - 1];
 
@@ -631,9 +576,25 @@ namespace OrgPortalMonitor
                     {
                         string package = senderGrid[e.ColumnIndex - 1, e.RowIndex].Value as string;
                         string version = senderGrid[e.ColumnIndex - 4, e.RowIndex].Value as string;
-                        if (_installer != null)
+
+                        if (_monitor != null)
                         {
-                            //_installer.
+                            var result = new InstallResult();
+                            result = await _monitor.UninstallApp(package);
+                            if (result != null)
+                            {
+                                if (string.IsNullOrWhiteSpace(result.Error))
+                                {
+                                    this.notifyIcon1.ShowBalloonTip(500, "OrgPortal ", package + " uninstalled with sucess", System.Windows.Forms.ToolTipIcon.Info);
+                                    this.txtLogOutput.AppendText("** SUCCESS " + Environment.NewLine);
+                                }
+                                else
+                                {
+                                    this.notifyIcon1.ShowBalloonTip(500, "OrgPortal", package + " could not be uninstalled ", System.Windows.Forms.ToolTipIcon.Warning);
+                                    this.txtLogOutput.AppendText("** FAILED " + Environment.NewLine);
+                                    this.txtLogOutput.AppendText(result.ToString() + Environment.NewLine);
+                                }
+                            }
                         }
                     }
                 }
@@ -662,22 +623,24 @@ namespace OrgPortalMonitor
                     {
                         string package = senderGrid[e.ColumnIndex - 1, e.RowIndex].Value as string;
                         string version = senderGrid[e.ColumnIndex - 4, e.RowIndex].Value as string;
-                        if (_installer != null)
+                        if (_monitor != null)
                         {
-                            var serverApps = _installer.ServerAppList;
+                            var serverApps = _monitor.ServerAppList;
                             var requestApp = serverApps
                                             .Where(a => a.Version == version &&
                                                         a.PackageFamilyName == package).FirstOrDefault();
 
-                            var fileNamePath = _installer.CachePath +
+                            var fileNamePath = _monitor.CachePath +
                                                System.Guid.NewGuid().ToString() +
                                                ".rt2win";
                             await Installer.RequestApp(
                                 requestApp,
-                                _installer.CachePath,
+                                _monitor.CachePath,
                                 fileNamePath);
-                            
-                            _installer.ProcessRequest(fileNamePath); 
+
+                            appRequest = new AppRequest(fileNamePath);
+                            appRequest.Show();
+                            //_monitor.ProcessRequest(fileNamePath); 
                         }
                     }
 
@@ -690,7 +653,7 @@ namespace OrgPortalMonitor
 
         }
 
-        private /*async*/ void chkAutoInstall_CheckedChanged(object sender, EventArgs e)
+        private async void chkAutoInstall_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.AutoInstall = chkAutoInstall.Checked;
             Settings.Default.Save();
@@ -703,27 +666,27 @@ namespace OrgPortalMonitor
 
             if (chkAutoInstall.Checked)
             {
-                if (_installer != null && IsLoaded)
+                if (_monitor != null && IsLoaded)
                 {
-                    //_installer.StartFileWatcher2(_installer.CachePath);
-                    //if (!_installer.IsAutoInstalling)
+                    //_monitor.StartFileWatcher2(_monitor.CachePath);
+                    //if (!_monitor.IsAutoInstalling)
                     //{
-                        _installer.ProcessExistingCacheRequestFiles();
+                    await _monitor.ProcessExistingCacheRequestFiles();
                     //}
                 }
             }
             //else
             //{
-            //    if (_installer != null)
+            //    if (_monitor != null)
             //    {
-            //        _installer.StopFileWatcher2();
+            //        _monitor.StopFileWatcher2();
             //    }
             //}
         }
 
         private async void btnInstallUpdates_Click(object sender, EventArgs e)
         {
-            await _installer.AutoInstallUpdateApps();
+            await _monitor.AutoInstallUpdateApps();
         }
 
         private void autoInstallToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
@@ -756,9 +719,9 @@ namespace OrgPortalMonitor
         {
             try
             {
-                if (_installer.ServiceURI.Contains("/api"))
+                if (_monitor.ServiceURI.Contains("/api"))
                 {
-                    var url = _installer.ServiceURI.Substring(0, _installer.ServiceURI.IndexOf("/api"));
+                    var url = _monitor.ServiceURI.Substring(0, _monitor.ServiceURI.IndexOf("/api"));
                     ProcessStartInfo sInfo = new ProcessStartInfo(url);
                     Process.Start(sInfo);
                 }
@@ -766,6 +729,93 @@ namespace OrgPortalMonitor
             catch
             {
             }
+        }
+
+        private async void monitorInstalledApps_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.MonitorInstalledApps = monitorInstalledApps.Checked;
+            Settings.Default.Save();
+           
+            //TODO: create toolstrip
+            //monitorInstalledAppsToolStripMenuItem.Checked = monitorInstalledApps.Checked;
+
+            if (monitorInstalledApps.Checked)
+            {
+                if (_monitor != null && IsLoaded)
+                {
+                    //_monitor.StartFileWatcher2(_monitor.CachePath);
+                    //if (!_monitor.IsAutoInstalling)
+                    //{
+                    if (_monitor.InstalledAppList != null && _monitor.InstalledAppList.Count > 0)
+                    {
+                        await _monitor.ProcessExistingAppsTempRequestFiles();
+                    }
+                    //}
+                }
+            }
+        }
+
+        public void OutputException(Exception ex)
+        {
+            try
+            {
+                if (_monitor != null)
+                {
+                    ExceptionLogger.LogException(ex, _monitor.OrgPortalPackageTempPath);
+                }
+                else
+                {
+                    ExceptionLogger.LogException(ex);
+                }
+
+                txtLogOutput.Text += "---------------------------"
+                                  + "Erro: "
+                                  + System.Environment.NewLine
+                                  + ex.Message
+                                  + System.Environment.NewLine
+                                  + (ex.InnerException != null ?
+                                        "[ Erro interno: "
+                                        + ex.InnerException.Message
+                                        + System.Environment.NewLine
+                                        + "Em: "
+                                        + System.Environment.NewLine
+                                        + ex.InnerException.StackTrace
+                                        + System.Environment.NewLine
+                                        + "Origem: "
+                                        + System.Environment.NewLine
+                                        + ex.InnerException.Source
+                                        + System.Environment.NewLine
+                                        + "]"
+                                        + System.Environment.NewLine
+                                        : "")
+                                   + "Em: "
+                                   + System.Environment.NewLine
+                                   + ex.StackTrace
+                                   + System.Environment.NewLine
+                                   + "Origem: "
+                                   + System.Environment.NewLine
+                                   + ex.Source
+                                   + System.Environment.NewLine
+                                   + "---------------------------"
+                                   ;
+            }
+            catch (Exception exc)
+            {
+                txtLogOutput.Text += "Erro: "
+                                      + System.Environment.NewLine
+                                      + exc.Message;
+
+                if (_monitor != null)
+                {
+                    ExceptionLogger.LogException(exc, _monitor.OrgPortalPackageTempPath);
+                }
+                else
+                {
+                    ExceptionLogger.LogException(exc);
+                }
+
+            }
+
         }
 
         

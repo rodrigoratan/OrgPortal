@@ -18,7 +18,7 @@ namespace OrgPortalServer.Controllers
 {
     public class RequestUpdateController : ApiController
     {
-        const string InstallRequestFileName = "InstallRequest.txt";
+        const string InstallRequestFileName = "UpdateRequest.rt2win";
         // GET api/<controller>/packagefamilyname
         // http://orgportal/api/Appx/Agile for Windows_CN=C42B4C41-BEC2-494C-AFE8-5E95519F8A0C
         public HttpResponseMessage Get(string id)
@@ -37,7 +37,16 @@ namespace OrgPortalServer.Controllers
 
                 AppInfo appInfo = ApplicationToAppInfo(applicationLastVersion);
                 var response = new HttpResponseMessage(HttpStatusCode.OK);
-                string appRequest = string.Join(Environment.NewLine, InstallAppRequestArray(appInfo.AppxUrl, appInfo.PackageFile, appInfo.CertificateUrl, appInfo.CertificateFile));
+                string appRequest = string.Join(Environment.NewLine, 
+                                                InstallAppRequestArray(appInfo.AppxUrl, 
+                                                                       appInfo.PackageFile, 
+                                                                       appInfo.CertificateUrl, 
+                                                                       appInfo.CertificateFile, 
+                                                                       appInfo.Version, 
+                                                                       appInfo.Name, 
+                                                                       appInfo.Description,
+                                                                       appInfo.BackgroundColor,
+                                                                       appInfo.ImageUrl));
                 response.Content = new StringContent(appRequest);
                 response.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                 response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
@@ -75,13 +84,27 @@ namespace OrgPortalServer.Controllers
             return appInfo;
         }
 
-        public static string[] InstallAppRequestArray(string appxUrl, string appxFile, string certificateUrl, string certificateFile)
+        public static string[] InstallAppRequestArray(string appxUrl, 
+                                                      string appxFile, 
+                                                      string certificateUrl, 
+                                                      string certificateFile,
+                                                      string version,
+                                                      string name, 
+                                                      string description,
+                                                      string backgroundColor,
+                                                      string imageUrl)
         {
             var app = new string[] { "install",         appxUrl, 
                                      "appxFile",        appxFile, 
                                      "certificateUrl",  certificateUrl, 
                                      "certificateFile", certificateFile,
-                                     "saveAt",          "INetCache" /*string.Empty*/
+                                     "saveAt",          "INetCache", /*string.Empty*/
+                                     "version",         version,
+                                     "name",            name,
+                                     "description",     description,
+                                     "backgroundColor", backgroundColor,
+                                     "imageUrl",        imageUrl
+
                                    };
             return app;
         }
@@ -130,7 +153,17 @@ namespace OrgPortalServer.Controllers
                 string appRequest = string.Empty;
                 if (UpdateAvailable(appInfo.Version, version))
                 {
-                    appRequest = string.Join(Environment.NewLine, InstallAppRequestArray(appInfo.AppxUrl, appInfo.PackageFile, appInfo.CertificateUrl, appInfo.CertificateFile));
+                    appRequest = string.Join(Environment.NewLine, 
+                                             InstallAppRequestArray(appInfo.AppxUrl, 
+                                                                    appInfo.PackageFile, 
+                                                                    appInfo.CertificateUrl,
+                                                                    appInfo.CertificateFile,
+                                                                    appInfo.Version,
+                                                                    appInfo.Name,
+                                                                    appInfo.Description,
+                                                                    appInfo.BackgroundColor,
+                                                                    appInfo.ImageUrl
+                                                                    ));
                 }
 
                 var response = new HttpResponseMessage(HttpStatusCode.OK);

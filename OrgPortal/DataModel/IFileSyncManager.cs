@@ -9,8 +9,13 @@ namespace OrgPortal.DataModel
     {
         Task RequestAppInstall(string appxUrl, 
                                string appxFile, 
-                               string certificateUrl, 
-                               string certificateFile);
+                               string certificateUrl,
+                               string certificateFile,
+                               string version,
+                               string name,
+                               string description,
+                               string backgroundColor, 
+                               string imageUrl);
         Task<List<AppInfo>> GetInstalledApps(List<AppInfo> apps);
         Task UpdateDevLicense();
         Task<IReadOnlyList<StorageFile>> ReadFiles();
