@@ -30,6 +30,12 @@
     {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.fileSystemWatcher1 = new System.IO.FileSystemWatcher();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
@@ -62,12 +68,6 @@
             this.Install = new System.Windows.Forms.DataGridViewButtonColumn();
             this.tabInstalled = new System.Windows.Forms.TabPage();
             this.dgvInstalled = new System.Windows.Forms.DataGridView();
-            this.DisplayName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.InstalledVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.UpdateAvailable = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.InstallMode = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PackageFamilyName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Uninstall = new System.Windows.Forms.DataGridViewButtonColumn();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.monitorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.autoConnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,12 +77,21 @@
             this.appsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refreshInstalledListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unlockDeviceForSideloadingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.getDeveloperLicenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.registerDeveloperLicenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OrgPortalWebToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.fileSystemWatcher2 = new System.IO.FileSystemWatcher();
+            this.DisplayName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.InstalledVersion = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UpdateAvailable = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.InstallMode = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PackageName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Uninstall = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.monitorInstalledAppsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unregisterDeveloperLicenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.verifyDeveloperLicenseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             this.panel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -124,7 +133,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(744, 361);
+            this.panel1.Size = new System.Drawing.Size(744, 311);
             this.panel1.TabIndex = 0;
             // 
             // tabControl1
@@ -137,7 +146,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 24);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(744, 337);
+            this.tabControl1.Size = new System.Drawing.Size(744, 287);
             this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabControl1.TabIndex = 2;
             this.tabControl1.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl1_Selecting);
@@ -159,7 +168,7 @@
             this.tabSettings.Location = new System.Drawing.Point(4, 22);
             this.tabSettings.Name = "tabSettings";
             this.tabSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSettings.Size = new System.Drawing.Size(736, 311);
+            this.tabSettings.Size = new System.Drawing.Size(736, 261);
             this.tabSettings.TabIndex = 0;
             this.tabSettings.Text = "Settings";
             this.tabSettings.UseVisualStyleBackColor = true;
@@ -167,20 +176,21 @@
             // monitorInstalledApps
             // 
             this.monitorInstalledApps.AutoSize = true;
+            this.monitorInstalledApps.Checked = true;
+            this.monitorInstalledApps.CheckState = System.Windows.Forms.CheckState.Checked;
             this.monitorInstalledApps.Location = new System.Drawing.Point(19, 164);
             this.monitorInstalledApps.Name = "monitorInstalledApps";
             this.monitorInstalledApps.Size = new System.Drawing.Size(315, 17);
             this.monitorInstalledApps.TabIndex = 12;
             this.monitorInstalledApps.Text = "Monitor Installed Apps for Updates Requests from themselves";
             this.monitorInstalledApps.UseVisualStyleBackColor = true;
-            this.monitorInstalledApps.CheckedChanged += new System.EventHandler(this.monitorInstalledApps_CheckedChanged);
             // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMainStatusLabel,
             this.toolStripStatusAdicional});
-            this.statusStrip1.Location = new System.Drawing.Point(3, 286);
+            this.statusStrip1.Location = new System.Drawing.Point(3, 236);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
             this.statusStrip1.Size = new System.Drawing.Size(730, 22);
@@ -231,7 +241,6 @@
             this.chkAutoInstall.TabIndex = 8;
             this.chkAutoInstall.Text = "Auto Install Updates and Required Apps  * (Run every";
             this.chkAutoInstall.UseVisualStyleBackColor = true;
-            this.chkAutoInstall.CheckedChanged += new System.EventHandler(this.chkAutoInstall_CheckedChanged);
             // 
             // btnStartStop
             // 
@@ -279,7 +288,6 @@
             this.chkAutoStart.TabIndex = 2;
             this.chkAutoStart.Text = "Auto Connect and Start Monitor";
             this.chkAutoStart.UseVisualStyleBackColor = true;
-            this.chkAutoStart.CheckedChanged += new System.EventHandler(this.chkAutoStart_CheckedChanged);
             // 
             // txtPackageFamilyName
             // 
@@ -306,7 +314,7 @@
             this.tabLog.Location = new System.Drawing.Point(4, 22);
             this.tabLog.Name = "tabLog";
             this.tabLog.Padding = new System.Windows.Forms.Padding(3);
-            this.tabLog.Size = new System.Drawing.Size(736, 311);
+            this.tabLog.Size = new System.Drawing.Size(736, 261);
             this.tabLog.TabIndex = 1;
             this.tabLog.Text = "Log";
             this.tabLog.UseVisualStyleBackColor = true;
@@ -319,7 +327,7 @@
             this.txtLogOutput.Name = "txtLogOutput";
             this.txtLogOutput.ReadOnly = true;
             this.txtLogOutput.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLogOutput.Size = new System.Drawing.Size(730, 305);
+            this.txtLogOutput.Size = new System.Drawing.Size(730, 255);
             this.txtLogOutput.TabIndex = 2;
             // 
             // tabServerApps
@@ -328,7 +336,7 @@
             this.tabServerApps.Location = new System.Drawing.Point(4, 22);
             this.tabServerApps.Name = "tabServerApps";
             this.tabServerApps.Padding = new System.Windows.Forms.Padding(3);
-            this.tabServerApps.Size = new System.Drawing.Size(736, 311);
+            this.tabServerApps.Size = new System.Drawing.Size(736, 261);
             this.tabServerApps.TabIndex = 4;
             this.tabServerApps.Text = "Server Apps";
             this.tabServerApps.UseVisualStyleBackColor = true;
@@ -338,6 +346,14 @@
             this.dgvServerApps.AllowUserToAddRows = false;
             this.dgvServerApps.AllowUserToDeleteRows = false;
             this.dgvServerApps.AllowUserToOrderColumns = true;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvServerApps.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvServerApps.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvServerApps.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn2,
@@ -346,11 +362,27 @@
             this.dataGridViewTextBoxColumn3,
             this.dataGridViewTextBoxColumn4,
             this.Install});
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvServerApps.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgvServerApps.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvServerApps.Location = new System.Drawing.Point(3, 3);
             this.dgvServerApps.Name = "dgvServerApps";
             this.dgvServerApps.ReadOnly = true;
-            this.dgvServerApps.Size = new System.Drawing.Size(730, 305);
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvServerApps.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            this.dgvServerApps.Size = new System.Drawing.Size(730, 255);
             this.dgvServerApps.TabIndex = 1;
             this.dgvServerApps.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvServerApps_CellContentClick);
             // 
@@ -406,7 +438,7 @@
             this.tabInstalled.Location = new System.Drawing.Point(4, 22);
             this.tabInstalled.Name = "tabInstalled";
             this.tabInstalled.Padding = new System.Windows.Forms.Padding(3);
-            this.tabInstalled.Size = new System.Drawing.Size(736, 311);
+            this.tabInstalled.Size = new System.Drawing.Size(736, 261);
             this.tabInstalled.TabIndex = 2;
             this.tabInstalled.Text = "Installed Apps";
             this.tabInstalled.UseVisualStyleBackColor = true;
@@ -415,21 +447,156 @@
             // 
             this.dgvInstalled.AllowUserToAddRows = false;
             this.dgvInstalled.AllowUserToDeleteRows = false;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvInstalled.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.dgvInstalled.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvInstalled.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.DisplayName,
             this.InstalledVersion,
             this.UpdateAvailable,
             this.InstallMode,
-            this.PackageFamilyName,
+            this.PackageName,
             this.Uninstall});
+            dataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle5.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle5.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dgvInstalled.DefaultCellStyle = dataGridViewCellStyle5;
             this.dgvInstalled.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvInstalled.Location = new System.Drawing.Point(3, 3);
             this.dgvInstalled.Name = "dgvInstalled";
             this.dgvInstalled.ReadOnly = true;
-            this.dgvInstalled.Size = new System.Drawing.Size(730, 305);
+            dataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dgvInstalled.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
+            this.dgvInstalled.Size = new System.Drawing.Size(730, 255);
             this.dgvInstalled.TabIndex = 0;
             this.dgvInstalled.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvInstalled_CellContentClick);
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.monitorToolStripMenuItem,
+            this.appsToolStripMenuItem,
+            this.helpToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(744, 24);
+            this.menuStrip1.TabIndex = 3;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // monitorToolStripMenuItem
+            // 
+            this.monitorToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.autoConnectToolStripMenuItem,
+            this.autoInstallToolStripMenuItem,
+            this.monitorInstalledAppsToolStripMenuItem,
+            this.startToolStripMenuItem,
+            this.exitToolStripMenuItem});
+            this.monitorToolStripMenuItem.Name = "monitorToolStripMenuItem";
+            this.monitorToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
+            this.monitorToolStripMenuItem.Text = "Monitor";
+            // 
+            // autoConnectToolStripMenuItem
+            // 
+            this.autoConnectToolStripMenuItem.CheckOnClick = true;
+            this.autoConnectToolStripMenuItem.Name = "autoConnectToolStripMenuItem";
+            this.autoConnectToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.autoConnectToolStripMenuItem.Text = "Auto Connect";
+            this.autoConnectToolStripMenuItem.CheckedChanged += new System.EventHandler(this.autoConnectToolStripMenuItem_CheckedChanged);
+            // 
+            // autoInstallToolStripMenuItem
+            // 
+            this.autoInstallToolStripMenuItem.CheckOnClick = true;
+            this.autoInstallToolStripMenuItem.Name = "autoInstallToolStripMenuItem";
+            this.autoInstallToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.autoInstallToolStripMenuItem.Text = "Auto Install";
+            this.autoInstallToolStripMenuItem.CheckedChanged += new System.EventHandler(this.autoInstallToolStripMenuItem_CheckedChanged);
+            // 
+            // startToolStripMenuItem
+            // 
+            this.startToolStripMenuItem.Name = "startToolStripMenuItem";
+            this.startToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.startToolStripMenuItem.Text = "Connect and Start";
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            // 
+            // appsToolStripMenuItem
+            // 
+            this.appsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.refreshInstalledListToolStripMenuItem,
+            this.unlockDeviceForSideloadingToolStripMenuItem,
+            this.verifyDeveloperLicenseToolStripMenuItem,
+            this.registerDeveloperLicenseToolStripMenuItem,
+            this.unregisterDeveloperLicenseToolStripMenuItem});
+            this.appsToolStripMenuItem.Name = "appsToolStripMenuItem";
+            this.appsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
+            this.appsToolStripMenuItem.Text = "Apps";
+            // 
+            // refreshInstalledListToolStripMenuItem
+            // 
+            this.refreshInstalledListToolStripMenuItem.Name = "refreshInstalledListToolStripMenuItem";
+            this.refreshInstalledListToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.refreshInstalledListToolStripMenuItem.Text = "Refresh Installed List";
+            // 
+            // unlockDeviceForSideloadingToolStripMenuItem
+            // 
+            this.unlockDeviceForSideloadingToolStripMenuItem.Name = "unlockDeviceForSideloadingToolStripMenuItem";
+            this.unlockDeviceForSideloadingToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.unlockDeviceForSideloadingToolStripMenuItem.Text = "Unlock device for side-loading";
+            // 
+            // registerDeveloperLicenseToolStripMenuItem
+            // 
+            this.registerDeveloperLicenseToolStripMenuItem.Name = "registerDeveloperLicenseToolStripMenuItem";
+            this.registerDeveloperLicenseToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.registerDeveloperLicenseToolStripMenuItem.Text = "Register developer license";
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem,
+            this.OrgPortalWebToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Text = "About";
+            // 
+            // OrgPortalWebToolStripMenuItem
+            // 
+            this.OrgPortalWebToolStripMenuItem.Name = "OrgPortalWebToolStripMenuItem";
+            this.OrgPortalWebToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.OrgPortalWebToolStripMenuItem.Text = "OrgPortal Site";
+            this.OrgPortalWebToolStripMenuItem.Click += new System.EventHandler(this.OrgPortalWebToolStripMenuItem_Click);
+            // 
+            // fileSystemWatcher2
+            // 
+            this.fileSystemWatcher2.EnableRaisingEvents = true;
+            this.fileSystemWatcher2.Filter = "*.rt2win";
+            this.fileSystemWatcher2.SynchronizingObject = this;
             // 
             // DisplayName
             // 
@@ -460,13 +627,13 @@
             this.InstallMode.Name = "InstallMode";
             this.InstallMode.ReadOnly = true;
             // 
-            // PackageFamilyName
+            // PackageName
             // 
-            this.PackageFamilyName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.PackageFamilyName.FillWeight = 70F;
-            this.PackageFamilyName.HeaderText = "Package Family Name";
-            this.PackageFamilyName.Name = "PackageFamilyName";
-            this.PackageFamilyName.ReadOnly = true;
+            this.PackageName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.PackageName.FillWeight = 70F;
+            this.PackageName.HeaderText = "Package Name";
+            this.PackageName.Name = "PackageName";
+            this.PackageName.ReadOnly = true;
             // 
             // Uninstall
             // 
@@ -476,119 +643,30 @@
             this.Uninstall.Text = "Uninstall App";
             this.Uninstall.UseColumnTextForButtonValue = true;
             // 
-            // menuStrip1
+            // monitorInstalledAppsToolStripMenuItem
             // 
-            this.menuStrip1.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.monitorToolStripMenuItem,
-            this.appsToolStripMenuItem,
-            this.helpToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(744, 24);
-            this.menuStrip1.TabIndex = 3;
-            this.menuStrip1.Text = "menuStrip1";
+            this.monitorInstalledAppsToolStripMenuItem.Name = "monitorInstalledAppsToolStripMenuItem";
+            this.monitorInstalledAppsToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.monitorInstalledAppsToolStripMenuItem.Text = "Monitor Installed Apps";
             // 
-            // monitorToolStripMenuItem
+            // unregisterDeveloperLicenseToolStripMenuItem
             // 
-            this.monitorToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.autoConnectToolStripMenuItem,
-            this.autoInstallToolStripMenuItem,
-            this.startToolStripMenuItem,
-            this.exitToolStripMenuItem});
-            this.monitorToolStripMenuItem.Name = "monitorToolStripMenuItem";
-            this.monitorToolStripMenuItem.Size = new System.Drawing.Size(62, 20);
-            this.monitorToolStripMenuItem.Text = "Monitor";
+            this.unregisterDeveloperLicenseToolStripMenuItem.Enabled = false;
+            this.unregisterDeveloperLicenseToolStripMenuItem.Name = "unregisterDeveloperLicenseToolStripMenuItem";
+            this.unregisterDeveloperLicenseToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.unregisterDeveloperLicenseToolStripMenuItem.Text = "Unregister developer license";
             // 
-            // autoConnectToolStripMenuItem
+            // verifyDeveloperLicenseToolStripMenuItem
             // 
-            this.autoConnectToolStripMenuItem.CheckOnClick = true;
-            this.autoConnectToolStripMenuItem.Name = "autoConnectToolStripMenuItem";
-            this.autoConnectToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
-            this.autoConnectToolStripMenuItem.Text = "Auto Connect";
-            this.autoConnectToolStripMenuItem.CheckedChanged += new System.EventHandler(this.autoConnectToolStripMenuItem_CheckedChanged);
-            // 
-            // autoInstallToolStripMenuItem
-            // 
-            this.autoInstallToolStripMenuItem.CheckOnClick = true;
-            this.autoInstallToolStripMenuItem.Name = "autoInstallToolStripMenuItem";
-            this.autoInstallToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
-            this.autoInstallToolStripMenuItem.Text = "Auto Install";
-            this.autoInstallToolStripMenuItem.CheckedChanged += new System.EventHandler(this.autoInstallToolStripMenuItem_CheckedChanged);
-            // 
-            // startToolStripMenuItem
-            // 
-            this.startToolStripMenuItem.Name = "startToolStripMenuItem";
-            this.startToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
-            this.startToolStripMenuItem.Text = "Connect and Start";
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            // 
-            // appsToolStripMenuItem
-            // 
-            this.appsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.refreshInstalledListToolStripMenuItem,
-            this.unlockDeviceForSideloadingToolStripMenuItem,
-            this.getDeveloperLicenseToolStripMenuItem});
-            this.appsToolStripMenuItem.Name = "appsToolStripMenuItem";
-            this.appsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
-            this.appsToolStripMenuItem.Text = "Apps";
-            // 
-            // refreshInstalledListToolStripMenuItem
-            // 
-            this.refreshInstalledListToolStripMenuItem.Name = "refreshInstalledListToolStripMenuItem";
-            this.refreshInstalledListToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.refreshInstalledListToolStripMenuItem.Text = "Refresh Installed List";
-            // 
-            // unlockDeviceForSideloadingToolStripMenuItem
-            // 
-            this.unlockDeviceForSideloadingToolStripMenuItem.Name = "unlockDeviceForSideloadingToolStripMenuItem";
-            this.unlockDeviceForSideloadingToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.unlockDeviceForSideloadingToolStripMenuItem.Text = "Unlock device for side-loading";
-            // 
-            // getDeveloperLicenseToolStripMenuItem
-            // 
-            this.getDeveloperLicenseToolStripMenuItem.Name = "getDeveloperLicenseToolStripMenuItem";
-            this.getDeveloperLicenseToolStripMenuItem.Size = new System.Drawing.Size(235, 22);
-            this.getDeveloperLicenseToolStripMenuItem.Text = "Get developer license";
-            // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutToolStripMenuItem,
-            this.OrgPortalWebToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // aboutToolStripMenuItem
-            // 
-            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
-            this.aboutToolStripMenuItem.Text = "About";
-            // 
-            // OrgPortalWebToolStripMenuItem
-            // 
-            this.OrgPortalWebToolStripMenuItem.Name = "OrgPortalWebToolStripMenuItem";
-            this.OrgPortalWebToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
-            this.OrgPortalWebToolStripMenuItem.Text = "OrgPortal Site";
-            this.OrgPortalWebToolStripMenuItem.Click += new System.EventHandler(this.OrgPortalWebToolStripMenuItem_Click);
-            // 
-            // fileSystemWatcher2
-            // 
-            this.fileSystemWatcher2.EnableRaisingEvents = true;
-            this.fileSystemWatcher2.Filter = "*.rt2win";
-            this.fileSystemWatcher2.SynchronizingObject = this;
+            this.verifyDeveloperLicenseToolStripMenuItem.Name = "verifyDeveloperLicenseToolStripMenuItem";
+            this.verifyDeveloperLicenseToolStripMenuItem.Size = new System.Drawing.Size(253, 22);
+            this.verifyDeveloperLicenseToolStripMenuItem.Text = "Verify developer license expiration";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(744, 361);
+            this.ClientSize = new System.Drawing.Size(744, 311);
             this.Controls.Add(this.panel1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
@@ -652,7 +730,7 @@
     private System.Windows.Forms.ToolStripMenuItem appsToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem refreshInstalledListToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem unlockDeviceForSideloadingToolStripMenuItem;
-    private System.Windows.Forms.ToolStripMenuItem getDeveloperLicenseToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem registerDeveloperLicenseToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem autoConnectToolStripMenuItem;
     private System.ComponentModel.BackgroundWorker backgroundWorker1;
     private System.Windows.Forms.ToolStripMenuItem OrgPortalWebToolStripMenuItem;
@@ -671,13 +749,16 @@
     private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
     private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
     private System.Windows.Forms.DataGridViewButtonColumn Install;
+    private System.Windows.Forms.CheckBox monitorInstalledApps;
     private System.Windows.Forms.DataGridViewTextBoxColumn DisplayName;
     private System.Windows.Forms.DataGridViewTextBoxColumn InstalledVersion;
     private System.Windows.Forms.DataGridViewCheckBoxColumn UpdateAvailable;
     private System.Windows.Forms.DataGridViewTextBoxColumn InstallMode;
-    private System.Windows.Forms.DataGridViewTextBoxColumn PackageFamilyName;
+    private System.Windows.Forms.DataGridViewTextBoxColumn PackageName;
     private System.Windows.Forms.DataGridViewButtonColumn Uninstall;
-    private System.Windows.Forms.CheckBox monitorInstalledApps;
+    private System.Windows.Forms.ToolStripMenuItem monitorInstalledAppsToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem unregisterDeveloperLicenseToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem verifyDeveloperLicenseToolStripMenuItem;
   }
 }
 

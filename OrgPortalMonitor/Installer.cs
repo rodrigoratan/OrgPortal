@@ -10,6 +10,7 @@ using System.Xml.Linq;
 using System.Threading;
 using OrgPortalMonitor.Common;
 using RunProcessAsTask;
+using System.Windows.Forms;
 
 namespace OrgPortalMonitor
 {
@@ -181,6 +182,7 @@ namespace OrgPortalMonitor
         {
             if (OrgPortalWatcher != null)
             {
+                IsWatchingOrgPortal = true;
                 this.Output.AppendText("Monitor started at " + DateTime.Now + Environment.NewLine);
                 this.Output.AppendText(System.Environment.NewLine + "Watching OrgPortal app TempState folder " + path + " for App Install Requests " + Environment.NewLine);
 
@@ -195,6 +197,7 @@ namespace OrgPortalMonitor
         {
             if (CacheWatcher != null)
             {
+                IsWatchingCache = true;
                 this.Output.AppendText(System.Environment.NewLine + "Watching Cache folder " + this.CachePath + " for Auto Install and Auto Update apps" + Environment.NewLine);
 
                 this.CacheWatcher.Path = CachePath;
@@ -209,6 +212,7 @@ namespace OrgPortalMonitor
             this.Output.AppendText(System.Environment.NewLine + "Watching Apps TempState folder for App Update Requests " + Environment.NewLine);
             //this.Watcher.Path = path;
             //FileSystemWatcher appWatcher
+            IsWatchingInstalledApps = true;
             WatcherList = new List<FileSystemWatcher>();
             if (InstalledAppList != null)
             {
@@ -304,6 +308,7 @@ namespace OrgPortalMonitor
 
         public async Task StopPackageTempFileWatcher()
         {
+            IsWatchingOrgPortal = false;
             if (OrgPortalWatcher != null)
             {
                 OrgPortalWatcher.Created -= Watcher_Created;
@@ -315,6 +320,7 @@ namespace OrgPortalMonitor
 
         public async Task StopCacheFileWatcher()
         {
+            IsWatchingCache = false;
             if (CacheWatcher != null)
             {
                 CacheWatcher.Created -= Watcher_Created;
@@ -326,6 +332,7 @@ namespace OrgPortalMonitor
 
         public async Task StopExistingAppsFileWatcher()
         {
+            IsWatchingInstalledApps = false;
             if (WatcherList != null)
             {
                 foreach (var appWatcher in WatcherList)
@@ -440,7 +447,9 @@ namespace OrgPortalMonitor
                 if (string.IsNullOrWhiteSpace(result.Error))
                 {
                     this.Output.AppendText("Installing " + certificateFilePath + " ... " + Environment.NewLine);
-                    result = await InstallCertificate(certificateFilePath);
+                    //result = await InstallCertificateAsync(certificateFilePath);
+                    //TODO:await Task.Run(.... result = InstallCertificate(certificateFilePath) ....)
+                    result = InstallCertificate(certificateFilePath);
                 }
                 else
                 {
@@ -450,17 +459,40 @@ namespace OrgPortalMonitor
 
             if (string.IsNullOrWhiteSpace(result.Error))
             {
+                if (!string.IsNullOrEmpty(result.Output))
+                {
+                    this.Output.Text += Environment.NewLine + result.Output;
+                }
+
                 //result.Error = DownloadFile(appxUrl, appFilePath);
                 result.Error = await DownloadFileTaskAsync(appxUrl, appFilePath);
 
                 if (string.IsNullOrWhiteSpace(result.Error))
                 {
                     this.Output.AppendText("Installing " + appFilePath + " ... " + Environment.NewLine);
+
                     result = await InstallAppx(appFilePath);
+
+                    if (!string.IsNullOrWhiteSpace(result.Error))
+                    {
+                        this.Output.Text += "** Error installing appx: " + Environment.NewLine + result.Error;
+                    }
+
+                    if (!string.IsNullOrEmpty(result.Output))
+                    {
+                        this.Output.Text += Environment.NewLine + result.Output;
+                    }
                 }
                 else
                 {
-                    this.Output.AppendText("Error downloading certificate at " + certificateUrl + " : " + Environment.NewLine + result.Error + Environment.NewLine);
+                    this.Output.AppendText("Error downloading appx at " + appxUrl + " : " + Environment.NewLine + result.Error + Environment.NewLine);
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(result.Error))
+                {
+                    this.Output.Text += "** Error installing certificate: " + Environment.NewLine + result.Error;
                 }
             }
 
@@ -470,6 +502,8 @@ namespace OrgPortalMonitor
                 outputDoc.Add(new XElement("filePath", appFilePath));
                 NotifyIcon.ShowBalloonTip(500, "OrgPortal ", appxUrl + " installed with sucess", System.Windows.Forms.ToolTipIcon.Info);
                 this.Output.AppendText("** SUCCESS " + Environment.NewLine);
+
+                //await RefreshInstalledAppList();
             }
             else
             {
@@ -493,7 +527,7 @@ namespace OrgPortalMonitor
             try
             {
                 var sb = new StringBuilder();
-                sb.Append(@"get-appxpackage -Name:""*" + packageFamilyName + @"* "" | Remove-appxpackage ");
+                sb.Append(@"get-appxpackage -Name *" + packageFamilyName + @"* | Remove-appxpackage ");
 
                 var process = new System.Diagnostics.Process();
                 process.StartInfo.UseShellExecute = false;
@@ -504,14 +538,26 @@ namespace OrgPortalMonitor
                 process.StartInfo.Arguments = sb.ToString();
 
                 process.StartInfo.CreateNoWindow = false;
-                process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                //process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Minimized;
+
 
                 //process.Start();
                 var pr = await ProcessEx.RunAsync(process.StartInfo);
 
                 //pr.Process.Exited += (sender, args) =>
                 //{
+
+                var stdout = pr.StandardOutput;
+                var stderr = pr.StandardError;
+
+                result.Output = stdout.Join(Environment.NewLine);
+                result.Error = stderr.Join(Environment.NewLine);
+
                 tcs.SetResult(result);
+
+                await Task.Delay(2000);
+
                 //    process.Dispose();
                 //};
 
@@ -542,10 +588,7 @@ namespace OrgPortalMonitor
                 ExceptionLogger.LogException(ex, CachePath);
 
             }
-            finally
-            {
-                GetInstalledPackages();
-            }
+            //await GetInstalledPackages();
 
             //return result;
             return await tcs.Task;
@@ -554,100 +597,116 @@ namespace OrgPortalMonitor
 
         public async Task<InstallResult> InstallAppx(string appxFilePath)
         {
+            await RefreshDevLicenseOutput();
+
+            //TODO: Check if AllowAllTrustedApps == 1, if not, set it.
+            //HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Appx\AllowAllTrustedApps = 1
+
+            if (!DevLicenseEnabled)
+            {
+                ShowDevLicense();
+                await RefreshDevLicenseOutput();
+            }
 
             var tcs = new TaskCompletionSource<InstallResult>();
+            result = new InstallResult();
 
-            var process = new System.Diagnostics.Process
+            if (DevLicenseEnabled)
             {
-                EnableRaisingEvents = true,
-                StartInfo = { FileName = "powershell.exe" }
-            };
+                var process = new System.Diagnostics.Process
+                {
+                    EnableRaisingEvents = true,
+                    StartInfo = { FileName = "powershell.exe" }
+                };
 
-            var result = new InstallResult();
+                /*var*/
+                try
+                {
+                    var sb = new StringBuilder();
+                    sb.Append(@"add-appxpackage ");
+                    sb.Append(appxFilePath);
+                    sb.Append(" -ForceApplicationShutdown");
 
-            try
-            {
-                var sb = new StringBuilder();
-                sb.Append(@"add-appxpackage ");
-                sb.Append(appxFilePath);
-                sb.Append(" -ForceApplicationShutdown"); 
+                    //TODO: Implement dependencies:
+                    // –DependencyPath .\Dependencies\Microsoft.WinJS.1.0.RC.appx
 
-                //TODO: Implement dependencies:
-                // –DependencyPath .\Dependencies\Microsoft.WinJS.1.0.RC.appx
+                    // var process = new System.Diagnostics.Process();
 
-                // var process = new System.Diagnostics.Process();
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.RedirectStandardError = true;
+                    process.StartInfo.RedirectStandardOutput = true;
 
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.RedirectStandardError = true;
-                process.StartInfo.RedirectStandardOutput = true;
+                    process.StartInfo.FileName = "powershell.exe";
+                    process.StartInfo.Arguments = sb.ToString();
 
-                process.StartInfo.FileName = "powershell.exe";
-                process.StartInfo.Arguments = sb.ToString();
+                    process.StartInfo.CreateNoWindow = false;
+                    //process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Minimized;
 
-                process.StartInfo.CreateNoWindow = false;
-                process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    //process.Start();
+                    var pr = await ProcessEx.RunAsync(process.StartInfo);
 
-                //process.Start();
-                var pr = await ProcessEx.RunAsync(process.StartInfo);
+                    //var stdout = process.StandardOutput;
+                    //var stderr = process.StandardError;
 
-                //var stdout = process.StandardOutput;
-                //var stderr = process.StandardError;
+                    var stdout = pr.StandardOutput;
+                    var stderr = pr.StandardError;
 
-                var stdout = pr.StandardOutput;
-                var stderr = pr.StandardError;
+                    result.Output = stdout.Join(Environment.NewLine);
+                    result.Error = stderr.Join(Environment.NewLine);
 
-                result.Output = stdout.Join(Environment.NewLine);
-                result.Error = stderr.Join(Environment.NewLine);
-
-                //pr.Process.Exited += (sender, args) =>
-                //{
+                    //pr.Process.Exited += (sender, args) =>
+                    //{
                     tcs.SetResult(result);
-                //    process.Dispose();
-                //};
+                    //    process.Dispose();
+                    //};
 
-                //if (!process.HasExited)
-                //{
-                //    process.Kill();
-                //}
+                    //if (!process.HasExited)
+                    //{
+                    //    process.Kill();
+                    //}
 
-                //stdout.Close();
-                //stderr.Close();
+                    //stdout.Close();
+                    //stderr.Close();
+                }
+                catch (Exception ex)
+                {
+                    if (string.IsNullOrWhiteSpace(result.Error))
+                    {
+                        result.Error = ex.Message;
+                    }
+                    else
+                    {
+                        result.Error += Environment.NewLine + ex.Message;
+                    }
 
+                    tcs.SetResult(result);
+                    //process.Dispose();
 
+                    ExceptionLogger.LogException(ex, CachePath);
+                }
+                finally
+                {
+                    File.Delete(appxFilePath);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                if (string.IsNullOrWhiteSpace(result.Error))
-                {
-                    result.Error = ex.Message;
-                }
-                else
-                {
-                    result.Error += Environment.NewLine + ex.Message;
-                }
-
+                result.Error = "** ERROR ** Unable to install appx - Verify if your Developer license is enabled or you have sideloading key installed.";
                 tcs.SetResult(result);
-                //process.Dispose();
-
-                ExceptionLogger.LogException(ex, CachePath);
-
             }
-            finally
-            {
-                File.Delete(appxFilePath);
-                GetInstalledPackages();
-            }
-
+            //await GetInstalledPackages();
             //return result;
             return await tcs.Task;
-
         }
 
         /*
          * importpfx.exe -f "somePfx.pfx" -p "somePassword" -t MACHINE -s "TRUSTEDPEOPLE"
          */
-        public async Task<InstallResult> InstallCertificate(string certificateFilePath)
+        public async Task<InstallResult> InstallCertificateAsync(string certificateFilePath)
         {
+            var tcs = new TaskCompletionSource<InstallResult>();
+
             /*var*/
             result = new InstallResult();
 
@@ -693,21 +752,34 @@ namespace OrgPortalMonitor
 
                 process.StartInfo.CreateNoWindow = false;
                 //process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+                process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Minimized;
 
                 process.ErrorDataReceived += process_ErrorDataReceived;
                 process.OutputDataReceived += process_OutputDataReceived;
                 //process.EnableRaisingEvents = true;
-                process.Start();
-                process.WaitForExit();
+                //process.Start();
+                //process.WaitForExit();
+
+                var pr = await ProcessEx.RunAsync(process.StartInfo);
+
                 //process.BeginOutputReadLine();
                 //process.BeginErrorReadLine();
-
                 //var stdout = process.StandardOutput;
                 //var stderr = process.StandardError;
-
                 //result.Output = stdout.ReadToEnd();
                 //result.Error = stderr.ReadToEnd();
+
+                var stdout = pr.StandardOutput;
+                var stderr = pr.StandardError;
+
+                result.Output = stdout.Join(Environment.NewLine);
+                result.Error = stderr.Join(Environment.NewLine);
+
+                //pr.Process.Exited += (sender, args) =>
+                //{
+                tcs.SetResult(result);
+                //    process.Dispose();
+                //};
 
                 //if (!process.HasExited)
                 //    process.Kill();
@@ -732,8 +804,117 @@ namespace OrgPortalMonitor
                 File.Delete(certificateFilePath);
             }
 
+            //return result;
+            return await tcs.Task;
+
+        }
+
+        public InstallResult InstallCertificate(string certificateFilePath)
+        {
+            /*var*/
+            result = new InstallResult();
+
+            try
+            {
+                var sb = new StringBuilder();
+
+                if (certificateFilePath.Contains(".pfx"))
+                {
+                    sb.Append(@"importpfx.exe -f ");
+                    sb.Append(@"""");
+                    sb.Append(certificateFilePath);
+                    sb.Append(@"""");
+                    sb.Append(@" -p """" -t MACHINE -s ""TRUSTEDPEOPLE"" ");
+                }
+                else if (certificateFilePath.Contains(".cer"))
+                {
+                    //Certutil -addstore -f "TRUSTEDPEOPLE" "someCertificate.cer"
+                    //C:\Temp>certutil -addstore -f "TRUSTEDPEOPLE" .\Agile.WindowsApp_StoreKey.cer TRUSTEDPEOPLE
+                    //sb.Append(@"Certutil -addstore -f ");
+                    sb.Append(@"Certutil ");
+                    sb.Append(@" -addstore -f ");
+                    sb.Append(@"""");
+                    sb.Append("TRUSTEDPEOPLE");
+                    sb.Append(@""" """);
+                    sb.Append(certificateFilePath);
+                    sb.Append(@"""");
+                }
+
+                string tempFile = Path.GetTempFileName();
+
+                var process = new System.Diagnostics.Process();
+                process.EnableRaisingEvents = true;
+
+                process.StartInfo.UseShellExecute = true;
+                //process.StartInfo.RedirectStandardError = true;
+                //process.StartInfo.RedirectStandardOutput = true;
+
+                //process.StartInfo.FileName = "certutil";
+                process.StartInfo.FileName = "cmd.exe";
+                //process.StartInfo.Arguments = "dir /w"; //sb.ToString()/* + " | more"*/;
+                //process.StartInfo.Arguments = " /c " + sb.ToString()/* + " | more"*/;
+                //process.StartInfo.Arguments = " /c " + sb.ToString() + "\" > \"" + tempFile + "\"\"";
+                //process.StartInfo.Arguments = sb.ToString() + " > \"" + tempFile + "\"";
+                process.StartInfo.Arguments = " /c " + sb.ToString() + " > \"" + tempFile + "\"";
+
+                process.StartInfo.Verb = "runas";
+
+                process.StartInfo.CreateNoWindow = false;
+                //process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Minimized;
+
+                process.ErrorDataReceived += process_ErrorDataReceived;
+                process.OutputDataReceived += process_OutputDataReceived;
+
+                process.Start();
+                process.WaitForExit();
+
+                string output = File.ReadAllText(tempFile);
+                File.Delete(tempFile);
+
+                result.Output = output;
+                //process.BeginOutputReadLine();
+                //process.BeginErrorReadLine();
+                //var stdout = process.StandardOutput;
+                //var stderr = process.StandardError;
+                //result.Output = stdout.ReadToEnd();
+                //result.Error = stderr.ReadToEnd();
+
+                ////var stdout = pr.StandardOutput;
+                ////var stderr = pr.StandardError;
+                ////result.Output = stdout.Join(Environment.NewLine);
+                ////result.Error = stderr.Join(Environment.NewLine);
+                ////pr.Process.Exited += (sender, args) =>
+                ////{
+                ////    process.Dispose();
+                ////};
+
+                //if (!process.HasExited)
+                //     process.Kill();
+
+                //stdout.Close();
+                //stderr.Close();
+            }
+            catch (Exception ex)
+            {
+                if (string.IsNullOrWhiteSpace(result.Error))
+                {
+                    result.Error = ex.Message;
+                }
+                else
+                {
+                    result.Error += Environment.NewLine + ex.Message;
+                }
+                ExceptionLogger.LogException(ex, CachePath);
+            }
+            finally
+            {
+                File.Delete(certificateFilePath);
+            }
+
             return result;
         }
+
 
         void process_OutputDataReceived(object sender, System.Diagnostics.DataReceivedEventArgs e)
         {
@@ -747,6 +928,8 @@ namespace OrgPortalMonitor
 
         public async Task<InstallResult> GetInstalledPackages()
         {
+            await Task.Delay(4000);
+
             var tcs = new TaskCompletionSource<InstallResult>();
             var result = new InstallResult();
 
@@ -765,10 +948,18 @@ namespace OrgPortalMonitor
                 process.StartInfo.Arguments = sb.ToString();
 
                 process.StartInfo.CreateNoWindow = false;
-                process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                //process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Minimized;
 
                 //process.Start();
                 var pr = await ProcessEx.RunAsync(process.StartInfo);
+
+                var stdout = pr.StandardOutput;
+                var stderr = pr.StandardError;
+
+                result.Output = stdout.Join(Environment.NewLine);
+                result.Error = stderr.Join(Environment.NewLine);
+
                 //pr.Process.Exited += (sender, args) =>
                 //{
                 tcs.SetResult(result);
@@ -869,26 +1060,83 @@ namespace OrgPortalMonitor
             outputDoc.Add(new XElement("success", "true"));
         }
 
-        public void UnregisterDevLicense()
+        public async Task UnregisterDevLicense()
         {
-            UnregisterDevLicense(new XElement("request"));
+           await UnregisterDevLicense(new XElement("request"));
         }
 
-        public void UnregisterDevLicense(XElement outputDoc)
+        public async Task UnregisterDevLicense(XElement outputDoc)
         {
-            RunAsAdmin("powershell.exe", @"Unregister-WindowsDeveloperLicense -Force");
+            var result = await RunAsAdminWithResult("powershell.exe", @"Unregister-WindowsDeveloperLicense -Force");
+
+            if (string.IsNullOrEmpty(result.Error))
+            {
+                if (!string.IsNullOrEmpty(result.Output))
+                {
+                    MessageBox.Show("" + result.Output);
+
+                    this.Output.Text += System.Environment.NewLine +
+                                        "UnregisterDevLicense: " + result.Output + System.Environment.NewLine;
+                }
+            }
+            else
+            {
+                //if (string.IsNullOrEmpty(result.Output))
+                //{
+                //    MessageBox.Show("No developer license installed");
+                //}
+                this.Output.Text += System.Environment.NewLine +
+                                    "UnregisterDevLicense Error:  " + result.Error +
+                                    System.Environment.NewLine +
+                                    (!string.IsNullOrEmpty(result.Output) ?
+                                     "UnregisterDevLicense Output: " + result.Output +
+                                     System.Environment.NewLine : "");
+            }
             outputDoc.Add(new XElement("success", "true"));
         }
 
-        public void GetDevLicense()
+        private async Task RefreshDevLicenseOutput()
         {
-            GetDevLicense(new XElement("request"));
+            DevLicenseOutput = await GetDevLicense();
+            DevLicenseEnabled = !string.IsNullOrEmpty(DevLicenseOutput);
         }
 
-        public void GetDevLicense(XElement outputDoc)
+        public async Task<string> GetDevLicense()
         {
-            RunAsAdmin("powershell.exe", @"Get-WindowsDeveloperLicense");
+            return await GetDevLicense(new XElement("request"));
+        }
+
+        public async Task<string> GetDevLicense(XElement outputDoc)
+        {
+            //bool returnVal = false;
+            string returnVal = string.Empty;
+            var result = await RunAsAdminWithResult("powershell.exe", @"Get-WindowsDeveloperLicense");
+            if (string.IsNullOrEmpty(result.Error))
+            {
+                //result.Output = result.Output.Split(' ').Join(Environment.NewLine);
+                //MessageBox.Show("" + result.Output);
+                this.Output.Text += System.Environment.NewLine + 
+                                    result.Output + System.Environment.NewLine;
+                //returnVal = true;
+                returnVal = result.Output;
+            }
+            else
+            {
+                //if (string.IsNullOrEmpty(result.Output))
+                //{
+                //    MessageBox.Show("No developer license installed");
+                //}
+                this.Output.Text += System.Environment.NewLine + 
+                                    "GetDevLicense Error:  " + result.Error + 
+                                    System.Environment.NewLine +
+                                    (!string.IsNullOrEmpty(result.Output) ?
+                                     "GetDevLicense Output: " + result.Output + 
+                                     System.Environment.NewLine : "");
+                //returnVal = false;
+                returnVal = string.Empty;
+            }
             outputDoc.Add(new XElement("success", "true"));
+            return returnVal;
         }
         
         public async Task AutoInstallUpdateApps()
@@ -901,7 +1149,7 @@ namespace OrgPortalMonitor
                 ServerAppList = await GetRemoteAppList();
                 DistinctServerAppList = await GetRemoteDistinctAppList(ServerAppList);
 
-                InstalledAppList = GetInstalledApps(ServerAppList);
+                await RefreshInstalledAppList();
 
                 this.Output.AppendText(DistinctServerAppList.Count + " distinct apps available on server... " + System.Environment.NewLine);
 
@@ -942,11 +1190,19 @@ namespace OrgPortalMonitor
                 //Ideally here we would restore PackageTempPath and GetInstalledPackages but we are no sure that it finished
                 //RestorePackageTempPathIfChanged();
 
+                //await RefreshInstalledAppList();
+
                 IsAutoInstalling = false;
 
             }
             //GetInstalledPackages();
 
+        }
+
+        public async Task RefreshInstalledAppList()
+        {
+            InstalledAppList = new List<AppInfo>();
+            InstalledAppList = await GetInstalledApps(ServerAppList);
         }
 
         public static async Task RequestApp(AppInfo serverApp, string SavePath, string requestFileName)
@@ -1102,11 +1358,11 @@ namespace OrgPortalMonitor
             return appList;
         }
 
-        public List<AppInfo> GetInstalledApps(List<AppInfo> apps)
+        public async Task<List<AppInfo>> GetInstalledApps(List<AppInfo> apps)
         {
             if (InstalledAppList == null || InstalledAppList.Count == 0)  // avoid call powershell again if we already have installedAppList
             {
-                GetInstalledPackages();
+                await GetInstalledPackages();
             } // InstalledAppList will be cleared after AutoInstallUpdateApps call made by Tick timer and this method will be allowed to refresh the InstalledAppList again
 
             var appList = new List<AppInfo>();
@@ -1178,7 +1434,67 @@ namespace OrgPortalMonitor
             while (!process.HasExited)
                 System.Threading.Thread.Sleep(5);
         }
+        private async Task<InstallResult> RunAsAdminWithResult(string fileName, string parameter)
+        {
+            var tcs = new TaskCompletionSource<InstallResult>();
 
+            //var 
+            result = new InstallResult();
+
+            try
+            {
+                var process = new System.Diagnostics.Process();
+                process.EnableRaisingEvents = true;
+
+                process.StartInfo.UseShellExecute = true;
+                process.StartInfo.FileName = fileName;
+                process.StartInfo.Arguments = parameter;
+
+                process.StartInfo.Verb = "runas";
+                process.StartInfo.CreateNoWindow = false;
+                //process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                process.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Minimized;
+
+                process.ErrorDataReceived += process_ErrorDataReceived;
+                process.OutputDataReceived += process_OutputDataReceived;
+                //process.EnableRaisingEvents = true;
+                //process.Start();
+                //process.WaitForExit();
+
+                var pr = await ProcessEx.RunAsync(process.StartInfo);
+
+                //var stdout = process.StandardOutput;
+                //var stderr = process.StandardError;
+                var stdout = pr.StandardOutput;
+                var stderr = pr.StandardError;
+                result.Output = stdout.Join(Environment.NewLine);
+                result.Error = stderr.Join(Environment.NewLine);
+
+                //pr.Process.Exited += (sender, args) =>
+                //{
+                tcs.SetResult(result);
+                //    process.Dispose();
+                //};
+                //
+
+                //while (!process.HasExited)
+                //    System.Threading.Thread.Sleep(5);
+            }
+            catch (Exception ex)
+            {
+                if (string.IsNullOrWhiteSpace(result.Error))
+                {
+                    result.Error = ex.Message;
+                }
+                else
+                {
+                    result.Error += Environment.NewLine + ex.Message;
+                }
+                ExceptionLogger.LogException(ex, CachePath);
+            }
+            return await tcs.Task;
+
+        }
         public InstallResult result { get; set; }
 
         public List<AppInfo> InstalledAppList { get; set; }
@@ -1200,6 +1516,16 @@ namespace OrgPortalMonitor
 
         public bool CancelExecution { get; set; }
 
-        
+
+
+        public bool IsWatchingOrgPortal { get; set; }
+
+        public bool IsWatchingCache { get; set; }
+
+        public bool IsWatchingInstalledApps { get; set; }
+
+        public string DevLicenseOutput { get; set; }
+
+        public bool DevLicenseEnabled { get; set; }
     }
 }
