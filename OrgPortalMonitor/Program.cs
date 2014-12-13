@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Win32;
 using OrgPortalMonitor.Common;
+using OrgPortalMonitor.Properties;
 
 //using Microsoft.VisualBasic; //import Microsoft.VisualBasic dll into the C# project to use Interaction.AppActivate
 
@@ -39,6 +42,8 @@ namespace OrgPortalMonitor
             //*/
             #endregion
 
+            ImportRegistrySettings();
+
             var RequestQueryString = Utils.GetQueryStringParameters();
 
             #region debugdelay
@@ -52,12 +57,15 @@ namespace OrgPortalMonitor
                 }
                 else
                 {
-                    MessageBox.Show("You will have " + RequestQueryString["debugDelay"] + "s after you click OK to attach the debugger (or you can attach before clicking OK)");
+                    MessageBox.Show("You will have " + (debugDelay / 1000) + "s after you click OK to attach the debugger (or you can attach before clicking OK)");
                 }
 
-                Thread.Sleep(debugDelay);
+                //Thread.Sleep(debugDelay);
             }
             #endregion
+
+            //Thread.Sleep(20000);
+            //MessageBox.Show("OrgPortal is Loading...");
 
             var currentProcess = Process.GetCurrentProcess();
             //var foundProcess = Process.GetProcesses().FirstOrDefault(p => p.ProcessName.Equals(currentProcess.ProcessName));
@@ -91,38 +99,80 @@ namespace OrgPortalMonitor
                Plus a tutorial on adding file associations to "Published" projects:
                http://blogs.msdn.com/b/mwade/archive/2008/01/30/how-to-add-file-associations-to-a-clickonce-application.aspx */
             #endregion
-            if (
-                 (args != null && args.Length > 1) || 
-                 (RequestQueryString["mode"] != null && RequestQueryString["mode"] == "install") || 
-                 (AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData != null &&
-                  AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData.Count() > 0)
+            if ((args != null && args.Length > 1)                                               || 
+                (RequestQueryString["mode"] != null && RequestQueryString["mode"].ToLower() == "install") ||
+                (AppDomain.CurrentDomain.SetupInformation.ActivationArguments                    != null && 
+                 AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData     != null &&
+                 AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData.Count() > 0 &&
+                 (
+                   !AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData[0].Contains("http://") ||
+                   (RequestQueryString["mode"] != null && RequestQueryString["mode"].ToLower() == "install")
+                 )
+
+                )
                )
             {
                 #region AppRequest
-                string fileName = AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData != null ?
-                                       AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData[0] :
-                                                                                                                   "" ; 
-                if (!System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
-
+                string fileName = AppDomain.CurrentDomain.SetupInformation.ActivationArguments                              != null && 
+                                  AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData               != null &&
+                                  AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData.Count()        >    0 &&
+                                 !AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData[0].Contains("http://") ?
+                                                      AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData[0] :
+                                                                                                                                  "" ;
+                //if (!System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
+                //{
                 if (args != null && args.Length > 1)
                 {
                     //string executable = args[0];
                     fileName = args[1];
                 }
+                //}
+
+                fileName = System.Web.HttpUtility.UrlDecode(fileName);
+
+                #region handle protocol and file activation
                 if (fileName.Contains("file:///"))
                 {
                     fileName = fileName.Replace("file:///", "");
+                } 
+                else if (fileName.Contains(@"orgportal:///"))
+                {
+                    fileName = fileName.Replace(@"orgportal:///", "");
+                } 
+                else if (fileName.Contains(@"orgportal://install/file/"))
+                {
+                    fileName = fileName.Replace(@"orgportal://install/file/", "");
                 }
-                
-                if (RequestQueryString["mode"] != null && RequestQueryString["mode"] == "install") //TODO: ...
+                else if (fileName.Contains(@"orgportal://install/"))
+                {
+                    fileName = fileName.Replace(@"orgportal://install/", "");
+                }
+                else if (fileName.Contains(@"orgportal://"))
+                {
+                    fileName = fileName.Replace(@"orgportal://", "");
+                }
+                if (fileName.Contains(@".rt2win/"))
+                {
+                    fileName = fileName.Replace(@".rt2win/", ".rt2win");
+                }
+
+                #endregion
+
+                if (RequestQueryString["mode"] != null && RequestQueryString["mode"].ToLower() == "install") //TODO: ...
                 {
                     Application.Run(new AppRequest());
                 }
-                
-                //Check file exists
-                if (!string.IsNullOrEmpty(fileName) && File.Exists(fileName))
+                else
                 {
-                    Application.Run(new AppRequest(fileName));
+                    //Check file exists
+                    if (!string.IsNullOrEmpty(fileName) && File.Exists(fileName))
+                    {
+                        Application.Run(new AppRequest(fileName));
+                    }
+                    else
+                    {
+                        MessageBox.Show("Unable to open file " + fileName);
+                    }
                 }
                 #endregion
             }
@@ -139,8 +189,13 @@ namespace OrgPortalMonitor
                     }
                     else if (foundProcesses.Count() > 1)
                     {
-
-                        MessageBox.Show("There's already another instance of OrgPortal monitor running...[" + foundProcesses.Join(Environment.NewLine) + "]");
+                        string titulos=string.Empty;
+                        foreach (var process in foundProcesses)
+                        {
+                            titulos+=process.MainWindowTitle+Environment.NewLine;
+                            //process.Kill();
+                        }
+                        MessageBox.Show("There's already another instance of OrgPortal monitor running...[" + titulos + "]");
                     }
                 }
                 else
@@ -149,7 +204,141 @@ namespace OrgPortalMonitor
                 }
                 #endregion
             }
+
         }
+
+        // Requires "using System.Security.Principal;"
+
+        public static bool IsElevated
+        {
+            get
+            {
+                return new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
+            }
+        }
+
+        private static void ImportRegistrySettings()
+        {
+            try
+            {
+                if (IsElevated)
+                {
+                    //TODO: comment before production
+                    //MessageBox.Show("You are running as administrador. We won't ask for permissions unless strictly necessary");
+
+                    RegistryKey orgPortal = Registry.ClassesRoot.CreateSubKey("OrgPortal");
+                    Utils.CreateOrgPortalUrlProtocolSubKeys(orgPortal);
+                    //commenting because it was unable to write @ [HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Appx] due to permission errors even whem isElevated==true
+                    //CreateDontRequireDevLicenseRegistry();
+                    if (!OrgPortalMonitor.Properties.Settings.Default.RequireDevLicense)
+                    {
+                        if (!File.Exists(Path.Combine(Utils.CurrentPath, Utils.DontRequiredDevLicenseRegistryFileName)))
+                        {
+                            MessageBox.Show("Running OrgPortal for the first time or you have changed the Require Developer License settings.\n\nPlease say YES to all security prompts you see, we will try to ask it only when strictly necessary.", "Welcome to OrgPortal");
+
+                            string requiredRegistryTemplate = "REGEDIT4" + Environment.NewLine + Environment.NewLine;
+                            requiredRegistryTemplate += Utils.ReturnRegistryDontRequireDevLicense();
+                            if (Utils.WriteRequiredRegistry(requiredRegistryTemplate, Utils.DontRequiredDevLicenseRegistryFileName))
+                            {
+                                if (Utils.ImportRequiredRegistry(Utils.DontRequiredDevLicenseRegistryFileName))
+                                {
+                                    Utils.SaveDontRequireDevLicenseInstalledIfFileExists();
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    //MessageBox.Show("Not elevated. Using alternate method to register OrgPortal:// protocol.", "OrgPortal");
+
+                    //Make sure next time it runs under admin privileges
+                    //SetAlwaysRunAsAdmin();
+
+                    var RequestQueryString = Utils.GetQueryStringParameters();
+
+                    RegistryKey orgPortal = Registry.CurrentUser.CreateSubKey("OrgPortal");
+                    Utils.CreateOrgPortalUrlProtocolSubKeys(orgPortal);
+
+                    bool alwaysDontRequireDevLicense = false;
+
+                    var RequireDeveloperLicenseParameter = 
+                        RequestQueryString["RequireDeveloperLicense"] != null ? 
+                            RequestQueryString["RequireDeveloperLicense"] : 
+                            "";
+                    
+                    bool _requireDeveloperLicense = true;
+                    if (!string.IsNullOrEmpty(RequireDeveloperLicenseParameter) &&
+                        bool.TryParse(RequireDeveloperLicenseParameter, out _requireDeveloperLicense))
+                    {
+                        Settings.Default.RequireDevLicense = _requireDeveloperLicense;
+                        Settings.Default.Save();
+                    }
+
+                    //"open" /*change to "runas" to run as admin - test using clickonce*/
+                    string shellParameter =
+                           RequestQueryString["shellParameter"] != null ?
+                               RequestQueryString["shellParameter"] :
+                               "open";
+
+                    string requiredRegistryTemplate = "REGEDIT4" + Environment.NewLine + Environment.NewLine;
+
+                    if (!File.Exists(Path.Combine(Utils.CurrentPath, Utils.RegisterProtocolRegistryFileName)))
+                    {
+                        MessageBox.Show("Running OrgPortal for the first time.\n\nPlease say YES to all security prompts you see, we will try to ask it only when strictly necessary.", "Welcome to OrgPortal");
+
+                        requiredRegistryTemplate += Utils.ReturnRegistryRegisterProtocol(shellParameter);
+
+                        if (!OrgPortalMonitor.Properties.Settings.Default.RequireDevLicense ||
+                            alwaysDontRequireDevLicense)
+                        {
+                            requiredRegistryTemplate += Utils.ReturnRegistryDontRequireDevLicense();
+                            Settings.Default.DontRequireDevLicenseInstalled = true;
+                        }
+
+                        if (Utils.WriteRequiredRegistry(requiredRegistryTemplate, Utils.RegisterProtocolRegistryFileName))
+                        {
+                            if (Utils.ImportRequiredRegistry(Utils.RegisterProtocolRegistryFileName))
+                            {
+                                if (File.Exists(Path.Combine(Utils.CurrentPath, Utils.RegisterProtocolRegistryFileName)))
+                                {
+                                    //TODO: save DontRequireDevLicenseInstalled 
+                                    Settings.Default.Save();
+                                }
+                            }
+                        }
+                    }
+                    else // already have imported RegisterProtocolRegistry
+                    {
+                        if (
+                              !alwaysDontRequireDevLicense && // if alwaysDontRequireDevLicense is true, then if already happened
+                              !OrgPortalMonitor.Properties.Settings.Default.RequireDevLicense && // if RequireDevLicense is true, dont import
+                              !Settings.Default.DontRequireDevLicenseInstalled
+                           ) 
+                        {
+                            if (!File.Exists(Path.Combine(Utils.CurrentPath, Utils.DontRequiredDevLicenseRegistryFileName)))
+                            {
+                                MessageBox.Show("We must import some settings to the registry because you changed the Require Developer License setting.\n\nPlease say YES to all security prompts you see, we will try to ask it only when strictly necessary.", "Welcome to OrgPortal");
+                                requiredRegistryTemplate += Utils.ReturnRegistryDontRequireDevLicense();
+                                if (Utils.WriteRequiredRegistry(requiredRegistryTemplate, Utils.DontRequiredDevLicenseRegistryFileName))
+                                {
+                                    if (Utils.ImportRequiredRegistry(Utils.DontRequiredDevLicenseRegistryFileName))
+                                    {
+                                        Utils.SaveDontRequireDevLicenseInstalledIfFileExists();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.LogException(ex);
+            }
+        }
+
+
     }
 }
 

@@ -11,6 +11,7 @@ using System.Threading;
 using OrgPortalMonitor.Common;
 using RunProcessAsTask;
 using System.Windows.Forms;
+using OrgPortalMonitor.Properties;
 
 namespace OrgPortalMonitor
 {
@@ -22,7 +23,7 @@ namespace OrgPortalMonitor
             get { return _serviceURI; }
             set { _serviceURI = value; }
         }
-        public string OrgPortalPackageFamilyName = "OrgPortal_m64ba5zfsemg0";
+        public string OrgPortalPackageFamilyName = "34993Zollie.ZollieOrgPortal_mcdpzngym7t32";
         //private string OrgPortalUrlParameter;
         //private string PackageFamilyNameParameter;
         //private System.Windows.Forms.TextBox txtLogOutput;
@@ -50,30 +51,120 @@ namespace OrgPortalMonitor
             var orgPortalTempPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
             if (!orgPortalTempPath.EndsWith(@"\")) orgPortalTempPath += @"\";
             orgPortalTempPath += @"Packages\" + OrgPortalPackageFamilyName + @"\TempState\";
-            if (!System.IO.Directory.Exists(orgPortalTempPath))
-            {
-                System.IO.Directory.CreateDirectory(orgPortalTempPath);
-            }
             this.OrgPortalPackageTempPath = orgPortalTempPath;
         }
 
         private void SetOrgPortalPackageLocalPath()
         {
-            // LocalPath will be used for InstalledPackages.txt saving
+            // LocalPath will be used for InstalledPackages.txt saving (copy)
             var orgPortalLocalPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
             if (!orgPortalLocalPath.EndsWith(@"\")) orgPortalLocalPath += @"\";
             orgPortalLocalPath += @"Packages\" + OrgPortalPackageFamilyName + @"\LocalState\";
-            if (!System.IO.Directory.Exists(orgPortalLocalPath))
-            {
-                System.IO.Directory.CreateDirectory(orgPortalLocalPath);
-            }
             this.OrgPortalPackageLocalPath = orgPortalLocalPath;
         }
+
+        private bool DeleteOrgPortalPath()
+        {
+            bool retValue1 = false;
+            bool retValue2 = false;
+            bool retValue3 = true;
+            #region Delete OrgPortalPackageTempPath
+            try
+            {
+                if (System.IO.Directory.Exists(OrgPortalPackageTempPath))
+                {
+                    System.IO.Directory.Delete(OrgPortalPackageTempPath, true);
+                    retValue1 = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.LogException(ex);
+            }
+            #endregion
+            #region Delete OrgPortalPackageLocalPath
+            try
+            {
+                if (System.IO.Directory.Exists(OrgPortalPackageLocalPath))
+                {
+                    System.IO.Directory.Delete(OrgPortalPackageLocalPath, true);
+                    retValue2 = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.LogException(ex);
+            }
+            #endregion
+            #region Delete orgPortalPath
+            try
+            {
+                var orgPortalPath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData);
+                if (!orgPortalPath.EndsWith(@"\")) orgPortalPath += @"\";
+                orgPortalPath += @"Packages\" + OrgPortalPackageFamilyName;
+
+                if (System.IO.Directory.Exists(orgPortalPath))
+                {
+                    System.IO.Directory.Delete(orgPortalPath, true);
+                    retValue3 = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.LogException(ex);
+                retValue3 = false;
+            }
+            #endregion
+            return (retValue1 || retValue2 || retValue3); // ideally only with &&, but lets try relaxed now
+
+        }
+
+        private void ResetOrgPortalPackagePaths(bool createIfNotExists, bool deleteIfAlreadyExists)
+        {
+            if (deleteIfAlreadyExists) DeleteOrgPortalPath();
+
+            #region OrgPortalPackageTempPath
+            SetOrgPortalPackageTempPath();
+            if (createIfNotExists) CreateIfNotExists(OrgPortalPackageTempPath);
+            #endregion
+
+            #region PackageLocalPath
+            SetOrgPortalPackageLocalPath();
+            if (createIfNotExists) CreateIfNotExists(OrgPortalPackageLocalPath);
+            #endregion
+        }
+
+        private static bool CreateIfNotExists(string folderPath)
+        {
+            try
+            {
+                if (!System.IO.Directory.Exists(folderPath))
+                {
+                    var folder = System.IO.Directory.CreateDirectory(folderPath);
+                    return folder != null;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.LogException(ex);
+                return false;
+            }
+
+        }
+
 
         #region Specific app install
         public Installer(string orgPortalUrl, AppInfo appInfo, System.Windows.Forms.NotifyIcon notifyIcon, System.Windows.Forms.TextBox txtLogOutput)
         {
             InstallerAppConstruct(orgPortalUrl, appInfo.Version, appInfo.Name, appInfo.Description, appInfo.PackageFamilyName, notifyIcon, txtLogOutput);
+        }
+        public Installer(string orgPortalUrl, System.Windows.Forms.NotifyIcon notifyIcon, System.Windows.Forms.TextBox txtLogOutput)
+        {
+            InstallerAppConstruct(orgPortalUrl, notifyIcon, txtLogOutput);
         }
 
         public Installer(string orgPortalUrl,
@@ -108,19 +199,14 @@ namespace OrgPortalMonitor
             //    PackageFamilyName = OrgPortalPackageFamilyName;
             //}
 
-            #region OrgPortalPackageTempPath
-            SetOrgPortalPackageTempPath();
-            #endregion
-
-            #region PackageLocalPath
-            SetOrgPortalPackageLocalPath();
-            #endregion
+            ResetOrgPortalPackagePaths(false, false);
 
             #region CachePath
             SetCachePath();
             #endregion
 
         }
+
 
 
         public Installer(string orgPortalUrl, string version, string name, string description, string packageFamilyName, System.Windows.Forms.NotifyIcon notifyIcon, System.Windows.Forms.TextBox txtLogOutput)
@@ -163,37 +249,82 @@ namespace OrgPortalMonitor
             }
             #endregion
 
-            #region OrgPortalPackageTempPath
-            SetOrgPortalPackageTempPath();
-            #endregion
+            ResetOrgPortalPackagePaths(false, false);
+            //#region OrgPortalPackageTempPath
+            //SetOrgPortalPackageTempPath();
+            //#endregion
 
-            #region PackageLocalPath
-            SetOrgPortalPackageLocalPath();
-            #endregion
+            //#region PackageLocalPath
+            //SetOrgPortalPackageLocalPath();
+            //#endregion
 
             #region CachePath
             SetCachePath();
             #endregion
+        }
 
+        private void InstallerAppConstruct(string orgPortalUrl, System.Windows.Forms.NotifyIcon notifyIcon, System.Windows.Forms.TextBox txtLogOutput)
+        {
+            this.NotifyIcon = notifyIcon;
+            this.Output = txtLogOutput;
+
+            #region _serviceURI
+            if (!string.IsNullOrEmpty(orgPortalUrl))
+            {
+                _serviceURI = orgPortalUrl;
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(OrgPortalMonitor.Properties.Settings.Default.OrgPortalUrl))
+                {
+                    _serviceURI = OrgPortalMonitor.Properties.Settings.Default.OrgPortalUrl;
+                }
+            }
+            #endregion
+
+            ResetOrgPortalPackagePaths(false, false);
+            //#region OrgPortalPackageTempPath
+            //SetOrgPortalPackageTempPath();
+            //#endregion
+
+            //#region PackageLocalPath
+            //SetOrgPortalPackageLocalPath();
+            //#endregion
+
+            #region CachePath
+            SetCachePath();
+            #endregion
         }
         #endregion
 
-        public async Task StartOrgPortalFileWatcher(string path)
+        public async Task<bool> StartOrgPortalFileWatcher(string path)
         {
             if (OrgPortalWatcher != null)
             {
-                IsWatchingOrgPortal = true;
-                this.Output.AppendText("Monitor started at " + DateTime.Now + Environment.NewLine);
-                this.Output.AppendText(System.Environment.NewLine + "Watching OrgPortal app TempState folder " + path + " for App Install Requests " + Environment.NewLine);
-
-                this.OrgPortalWatcher.Path = path;
-                OrgPortalWatcher.Created += Watcher_Created;
-
-                await ProcessExistingOrgPortalRequestFiles();
+                if (Directory.Exists(path))
+                {
+                    IsWatchingOrgPortal = true;
+                    this.Output.AppendText("Monitor started at " + DateTime.Now + Environment.NewLine);
+                    this.Output.AppendText(System.Environment.NewLine + "Watching OrgPortal app TempState folder " + path + " for App Install Requests " + Environment.NewLine);
+                    this.OrgPortalWatcher.Path = path;
+                    OrgPortalWatcher.Created += Watcher_Created;
+                    await ProcessExistingOrgPortalRequestFiles();
+                    return true;
+                }
+                else
+                {
+                    this.Output.AppendText("Tried to start monitor at " + DateTime.Now + Environment.NewLine);
+                    this.Output.AppendText(System.Environment.NewLine + "Unable to find OrgPortal app TempState folder " + path + " for App Install Requests " + Environment.NewLine);
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
             }
         }
 
-        public async Task StartFileWatcher2(string path)
+        public async Task StartCacheWatcher(string path)
         {
             if (CacheWatcher != null)
             {
@@ -221,14 +352,18 @@ namespace OrgPortalMonitor
                     if (app.PackageFamilyName != OrgPortalPackageFamilyName)
                     { //OrgPortal_m64ba5zfsemg0
                         FileSystemWatcher appWatcher = new FileSystemWatcher();
-                        appWatcher.EnableRaisingEvents = true;
                         appWatcher.Path = appTempPath(app);
                         appWatcher.Filter = "*.rt2win";
+                        appWatcher.EnableRaisingEvents = true;
                         appWatcher.Created += Watcher_Created;
                         WatcherList.Add(appWatcher);
                     }
                 }
-                await ProcessExistingAppsTempRequestFiles();
+
+                if (Settings.Default.ProcessExistingAppRequests)
+                {
+                    await ProcessExistingAppsTempRequestFiles();
+                }
             }
         }
 
@@ -250,7 +385,11 @@ namespace OrgPortalMonitor
 
         public async Task ProcessExistingAppsTempRequestFiles()
         {
-            if (!IsInstalling)
+            if (InstalledAppList == null)
+            {
+                await RefreshInstalledAppList();
+            }
+            if (!IsInstalling && InstalledAppList != null)
             {
                 foreach (var app in InstalledAppList)
                 {
@@ -306,7 +445,7 @@ namespace OrgPortalMonitor
             await ProcessRequest(e.FullPath);
         }
 
-        public async Task StopPackageTempFileWatcher()
+        public void StopPackageTempFileWatcher()
         {
             IsWatchingOrgPortal = false;
             if (OrgPortalWatcher != null)
@@ -318,7 +457,7 @@ namespace OrgPortalMonitor
             }
         }
 
-        public async Task StopCacheFileWatcher()
+        public void StopCacheFileWatcher()
         {
             IsWatchingCache = false;
             if (CacheWatcher != null)
@@ -330,7 +469,7 @@ namespace OrgPortalMonitor
             }
         }
 
-        public async Task StopExistingAppsFileWatcher()
+        public void StopExistingAppsFileWatcher()
         {
             IsWatchingInstalledApps = false;
             if (WatcherList != null)
@@ -602,7 +741,8 @@ namespace OrgPortalMonitor
             //TODO: Check if AllowAllTrustedApps == 1, if not, set it.
             //HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\Appx\AllowAllTrustedApps = 1
 
-            if (!DevLicenseEnabled)
+            if (!CurrentDevLicense.IsValid && 
+                 OrgPortalMonitor.Properties.Settings.Default.RequireDevLicense)
             {
                 ShowDevLicense();
                 await RefreshDevLicenseOutput();
@@ -611,7 +751,8 @@ namespace OrgPortalMonitor
             var tcs = new TaskCompletionSource<InstallResult>();
             result = new InstallResult();
 
-            if (DevLicenseEnabled)
+            if (CurrentDevLicense.IsValid || 
+               !OrgPortalMonitor.Properties.Settings.Default.RequireDevLicense)
             {
                 var process = new System.Diagnostics.Process
                 {
@@ -928,7 +1069,7 @@ namespace OrgPortalMonitor
 
         public async Task<InstallResult> GetInstalledPackages()
         {
-            await Task.Delay(4000);
+            //await Task.Delay(4000);
 
             var tcs = new TaskCompletionSource<InstallResult>();
             var result = new InstallResult();
@@ -938,7 +1079,7 @@ namespace OrgPortalMonitor
             var sb = new StringBuilder();
             try
             {
-                sb.Append(@"get-appxpackage > " + this.OrgPortalPackageLocalPath + fileName);
+                sb.Append(@"get-appxpackage > " + this.CachePath + fileName);
 
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.RedirectStandardError = true;
@@ -984,25 +1125,27 @@ namespace OrgPortalMonitor
 
             try
             {
-                if (process != null)
+                //if (process != null)
+                //{
+                //    //while (!process.HasExited)
+                //    //{
+                //    //    System.Threading.Thread.Sleep(15);
+                //    //}
+                //}
+                if (InstalledAppList   != null && 
+                    InstalledAppList.Count > 0 && 
+                    InstalledAppList.Any(a => a.PackageFamilyName == OrgPortalPackageFamilyName)) //Is OrgPortalPackageFamilyName installed? 
                 {
-                    //while (!process.HasExited)
-                    //{
-                    //    System.Threading.Thread.Sleep(15);
-                    //}
-
-                    System.IO.File.Copy(Path.Combine(this.OrgPortalPackageLocalPath, fileName),
-                                        Path.Combine(this.CachePath, fileName), true);
+                    System.IO.File.Copy(Path.Combine(this.CachePath, fileName),
+                                        Path.Combine(this.OrgPortalPackageLocalPath, fileName),
+                                        true); // Copy a list of Installed Packages to it (overwrite if already exists)
                 }
-
             }
             catch (Exception ex)
             {
                 ExceptionLogger.LogException(ex);
             }
-
             return await tcs.Task;
-
         }
 
         public string DownloadFile(string fileUrl, string localFilePath)
@@ -1093,23 +1236,41 @@ namespace OrgPortalMonitor
                                      System.Environment.NewLine : "");
             }
             outputDoc.Add(new XElement("success", "true"));
+
+            CurrentDevLicense = new DevLicense() { IsValid = false, DevLicenseOutput = "Developer license was unregistered." };
         }
 
-        private async Task RefreshDevLicenseOutput()
+        private /*async Task*/void IgnoreDevLicense()
         {
-            DevLicenseOutput = await GetDevLicense();
-            DevLicenseEnabled = !string.IsNullOrEmpty(DevLicenseOutput);
+            CurrentDevLicense = new DevLicense();
+            CurrentDevLicense.DevLicenseOutput = "No developer license is required.";
+            CurrentDevLicense.IsValid = true;
         }
 
-        public async Task<string> GetDevLicense()
+        public async Task<DevLicense> RefreshDevLicenseOutput()
+        {
+            if (OrgPortalMonitor.Properties.Settings.Default.RequireDevLicense)
+            {
+                //DevLicenseOutput = await GetDevLicense();
+                CurrentDevLicense = await GetDevLicense();
+            }
+            else
+            {
+                IgnoreDevLicense();
+            }
+            return CurrentDevLicense;
+
+        }
+
+        public async Task<DevLicense> GetDevLicense()
         {
             return await GetDevLicense(new XElement("request"));
         }
 
-        public async Task<string> GetDevLicense(XElement outputDoc)
+        public async Task<DevLicense> GetDevLicense(XElement outputDoc)
         {
             //bool returnVal = false;
-            string returnVal = string.Empty;
+            DevLicense returnVal = new DevLicense();// string.Empty;
             var result = await RunAsAdminWithResult("powershell.exe", @"Get-WindowsDeveloperLicense");
             if (string.IsNullOrEmpty(result.Error))
             {
@@ -1118,7 +1279,45 @@ namespace OrgPortalMonitor
                 this.Output.Text += System.Environment.NewLine + 
                                     result.Output + System.Environment.NewLine;
                 //returnVal = true;
-                returnVal = result.Output;
+                //returnVal = result.Output;
+                returnVal.DevLicenseOutput = result.Output;
+                returnVal.IsValid = result.Output.Contains("IsValid") && 
+                                    result.Output.Contains("True");
+
+                try
+                {
+                    if (result.Output.Contains("ExpirationTime") &&
+                        result.Output.Contains("IsValid"))
+                    {
+                        var cleanChars = result.Output.Replace("--", "-").Replace("  ", " ");
+                        while (cleanChars.Contains("--") || cleanChars.Contains("  "))
+                        {
+                            cleanChars = cleanChars.Replace("--", "-").Replace("  ", " ");
+                        }
+
+                        returnVal.DevLicenseOutput = cleanChars;
+
+                        //ExpirationTime IsValid
+                        //- -
+                        //07/03/2015 22:45:38 True
+
+                        var dataLine = cleanChars.Split('-')[2].Trim();
+                        //var date = dataLine.Split(' ')[0].Trim();
+                        //var time = dataLine.Split(' ')[1].Trim();
+                        var dateTime = dataLine.Split(' ')[0].Trim() + " " +
+                                       dataLine.Split(' ')[1].Trim();
+                        var isValid = dataLine.Split(' ')[2].Trim();
+
+                        returnVal.DateLicense = dateTime;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ExceptionLogger.LogException(ex);
+                }
+
+                outputDoc.Add(new XElement("success", "true"));
+
             }
             else
             {
@@ -1133,9 +1332,10 @@ namespace OrgPortalMonitor
                                      "GetDevLicense Output: " + result.Output + 
                                      System.Environment.NewLine : "");
                 //returnVal = false;
-                returnVal = string.Empty;
+                returnVal = new DevLicense() { IsValid = false, DevLicenseOutput = result.Error };
+                outputDoc.Add(new XElement("success", "false"));
             }
-            outputDoc.Add(new XElement("success", "true"));
+
             return returnVal;
         }
         
@@ -1145,9 +1345,6 @@ namespace OrgPortalMonitor
             {
                 IsAutoInstalling = true;
                 this.Output.AppendText(System.Environment.NewLine + "Auto-install and auto-update apps... " + System.Environment.NewLine);
-
-                ServerAppList = await GetRemoteAppList();
-                DistinctServerAppList = await GetRemoteDistinctAppList(ServerAppList);
 
                 await RefreshInstalledAppList();
 
@@ -1168,8 +1365,13 @@ namespace OrgPortalMonitor
                     {
                         if (serverApp.PackageFamilyName == OrgPortalPackageFamilyName) //OrgPortal_m64ba5zfsemg0
                         { // Only OrgPortal_m64ba5zfsemg0 should be installed in a different directory otherwise the appx install will try to delete files being used in the installation of the own app
-
+                            //ResetOrgPortalPackagePaths(false);
                             this.Output.AppendText(System.Environment.NewLine + "** Package '" + OrgPortalPackageFamilyName + "' is available to install... " + System.Environment.NewLine);
+
+                            //if (DeleteOrgPortalPath())
+                            //{
+                            //    this.Output.AppendText(System.Environment.NewLine + "** Deleting previous '" + OrgPortalPackageFamilyName + "' Package files to avoid permission errors... " + System.Environment.NewLine);
+                            //}
 
                         }
                         var SavePath = CachePath; 
@@ -1179,10 +1381,15 @@ namespace OrgPortalMonitor
 
                         await RequestApp(serverApp, SavePath, requestFileName);
 
-                        //if (serverApp.PackageFamilyName == OrgPortalPackageFamilyName)
-                        //{
-                            await ProcessRequest(requestFileName); 
-                        //}
+                        if (serverApp.PackageFamilyName == OrgPortalPackageFamilyName)
+                        {
+                            //if (DeleteOrgPortalPath())
+                            //{
+                            //    this.Output.AppendText(System.Environment.NewLine + "** Previous '" + OrgPortalPackageFamilyName + "' AppData files were deleted to avoid permission errors... " + System.Environment.NewLine);
+                            //}
+                        }
+                        //TODO: Instead processing it directly, call the new UI AppRequest
+                        await ProcessRequest(requestFileName); 
                     }
                 }
 
@@ -1201,43 +1408,64 @@ namespace OrgPortalMonitor
 
         public async Task RefreshInstalledAppList()
         {
-            InstalledAppList = new List<AppInfo>();
-            InstalledAppList = await GetInstalledApps(ServerAppList);
-        }
-
-        public static async Task RequestApp(AppInfo serverApp, string SavePath, string requestFileName)
-        {
-            if (serverApp != null)
+            //if (ServerAppList == null) //TODO: if uncomment will cache even when we want it to refresh, may be consider using an expiration time flag
             {
-                var requestFile = System.IO.File.CreateText(requestFileName);
-                using (requestFile)
-                {
-                    await requestFile.WriteLineAsync("install");
-                    await requestFile.WriteLineAsync(serverApp.AppxUrl);
-                    await requestFile.WriteLineAsync("appxFile");
-                    await requestFile.WriteLineAsync(serverApp.PackageFile);
-                    await requestFile.WriteLineAsync("certificateUrl");
-                    await requestFile.WriteLineAsync(serverApp.CertificateUrl);
-                    await requestFile.WriteLineAsync("certificateFile");
-                    await requestFile.WriteLineAsync(serverApp.CertificateFile);
-                    await requestFile.WriteLineAsync("saveAt");
-                    await requestFile.WriteLineAsync(SavePath);
-                    await requestFile.WriteLineAsync("version");
-                    await requestFile.WriteLineAsync(serverApp.Version);
-                    await requestFile.WriteLineAsync("name");
-                    await requestFile.WriteLineAsync(serverApp.Name);
-                    await requestFile.WriteLineAsync("description");
-                    await requestFile.WriteLineAsync(serverApp.Description);
-                    await requestFile.WriteLineAsync("backgroundColor");
-                    await requestFile.WriteLineAsync(serverApp.BackgroundColor);
-                    await requestFile.WriteLineAsync("imageUrl");
-                    await requestFile.WriteLineAsync(serverApp.ImageUrl);
-
-                    requestFile.Close();
-                }
+                ServerAppList = await GetRemoteAppList();
+                DistinctServerAppList = await GetRemoteDistinctAppList(ServerAppList);
+            }
+            if (ServerAppList != null)
+            {
+                InstalledAppList = new List<AppInfo>();
+                InstalledAppList = await GetInstalledApps(ServerAppList);
             }
         }
 
+        public static async Task<bool> RequestApp(AppInfo serverApp, string SavePath, string requestFileName)
+        {
+            try
+            {
+                if (serverApp != null)
+                {
+                    var requestFile = System.IO.File.CreateText(requestFileName);
+                    using (requestFile)
+                    {
+                        await requestFile.WriteLineAsync("install");
+                        await requestFile.WriteLineAsync(serverApp.AppxUrl);
+                        await requestFile.WriteLineAsync("appxFile");
+                        await requestFile.WriteLineAsync(serverApp.PackageFile);
+                        await requestFile.WriteLineAsync("certificateUrl");
+                        await requestFile.WriteLineAsync(serverApp.CertificateUrl);
+                        await requestFile.WriteLineAsync("certificateFile");
+                        await requestFile.WriteLineAsync(serverApp.CertificateFile);
+                        await requestFile.WriteLineAsync("saveAt");
+                        await requestFile.WriteLineAsync(SavePath);
+                        await requestFile.WriteLineAsync("version");
+                        await requestFile.WriteLineAsync(serverApp.Version);
+                        await requestFile.WriteLineAsync("name");
+                        await requestFile.WriteLineAsync(serverApp.Name);
+                        await requestFile.WriteLineAsync("description");
+                        await requestFile.WriteLineAsync(serverApp.Description);
+                        await requestFile.WriteLineAsync("backgroundColor");
+                        await requestFile.WriteLineAsync(serverApp.BackgroundColor);
+                        await requestFile.WriteLineAsync("imageUrl");
+                        await requestFile.WriteLineAsync(serverApp.ImageUrl);
+
+                        requestFile.Close();
+
+                        return true;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.LogException(ex);
+                return false;
+            }
+        }
 
         private bool UpdateAvailable(AppInfo serverApp, AppInfo installedApp)
         {
@@ -1366,7 +1594,8 @@ namespace OrgPortalMonitor
             } // InstalledAppList will be cleared after AutoInstallUpdateApps call made by Tick timer and this method will be allowed to refresh the InstalledAppList again
 
             var appList = new List<AppInfo>();
-            var filePath = OrgPortalPackageLocalPath + "InstalledPackages.txt";
+            //var filePath = OrgPortalPackageLocalPath + "InstalledPackages.txt";
+            var filePath = CachePath + "InstalledPackages.txt";
             if (System.IO.File.Exists(filePath) && apps != null) 
             {
                 var installedPackages = System.IO.File.ReadAllLines(filePath);
@@ -1421,18 +1650,25 @@ namespace OrgPortalMonitor
 
         private void RunAsAdmin(string fileName, string parameter)
         {
-            var process = new System.Diagnostics.Process();
-            process.StartInfo.UseShellExecute = true;
+            try
+            {
+                var process = new System.Diagnostics.Process();
+                process.StartInfo.UseShellExecute = true;
 
-            process.StartInfo.FileName = fileName;
-            process.StartInfo.Arguments = parameter;
+                process.StartInfo.FileName = fileName;
+                process.StartInfo.Arguments = parameter;
+                process.StartInfo.Verb = "runas";
+                process.Start();
 
-            process.StartInfo.Verb = "runas";
+                while (!process.HasExited)
+                    System.Threading.Thread.Sleep(5);
+            }
+            catch (Exception ex)
+            {
+                ExceptionLogger.LogException(ex);
 
-            process.Start();
-
-            while (!process.HasExited)
-                System.Threading.Thread.Sleep(5);
+                this.Output.Text = ExceptionLogger.CreateErrorMessage(ex);
+            }
         }
         private async Task<InstallResult> RunAsAdminWithResult(string fileName, string parameter)
         {
@@ -1516,16 +1752,14 @@ namespace OrgPortalMonitor
 
         public bool CancelExecution { get; set; }
 
-
-
         public bool IsWatchingOrgPortal { get; set; }
 
         public bool IsWatchingCache { get; set; }
 
         public bool IsWatchingInstalledApps { get; set; }
 
-        public string DevLicenseOutput { get; set; }
+        //public string DevLicenseOutput { get; set; }
 
-        public bool DevLicenseEnabled { get; set; }
+        public DevLicense CurrentDevLicense { get; set; }
     }
 }

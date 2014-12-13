@@ -42,6 +42,33 @@ namespace OrgPortalMonitor
             this.FormClosing += AppRequest_FormClosing;
         }
 
+        public AppRequest(Installer installer)
+        {
+            InitializeComponent();
+
+            this._installer = installer;
+
+            //RequestQueryString = Utils.GetQueryStringParameters();
+            this.Load += AppRequest_Load;
+            this.FormClosing += AppRequest_FormClosing;
+        }
+
+
+        public AppRequest(Installer installer, string filePath)
+        {
+            InitializeComponent();
+
+            //progressBarApp.Minimum = 0;
+            //progressBarApp.Maximum = 100;
+            //progressBarApp.Value = 0;
+            this._installer = installer;
+            this.FilePath = filePath;
+            //RequestQueryString = new System.Collections.Specialized.NameValueCollection();
+            SetAppVersion();
+            this.Load += AppRequest_Load;
+            this.FormClosing += AppRequest_FormClosing;
+        }
+
         private void SetAppVersion()
         {
             try
@@ -93,6 +120,7 @@ namespace OrgPortalMonitor
 
             RequestQueryString = Utils.GetQueryStringParameters();
             string[] args = Environment.GetCommandLineArgs();
+            #region comments that i dont want to see now
             //•args[0] is the application path.
             //•args[1] will be the file path.
             //•args[n] will be any other arguments passed in.
@@ -106,7 +134,7 @@ namespace OrgPortalMonitor
             //    _reallyClose = true;
             //    this.Close();
             //};
-
+            #endregion
 
             #region OrgPortalUrl
             OrgPortalUrlParameter = RequestQueryString["OrgPortalUrl"] != null ? RequestQueryString["OrgPortalUrl"] : "";
@@ -123,28 +151,58 @@ namespace OrgPortalMonitor
 
             progressBarApp.Value = 1;
 
-            if (string.IsNullOrEmpty(this.FilePath) && RequestQueryString["mode"] != null && RequestQueryString["mode"] == "install")
+            var fileNamePath = CachePath +
+                               System.Guid.NewGuid().ToString() +
+                               ".rt2win";
+
+            //if (appInfo == null) appInfo = new AppInfo();
+
+            _installer = new Installer(OrgPortalUrlParameter,
+                                       this.notifyIcon1,
+                                       txtLogOutput
+                                      );
+
+            if (string.IsNullOrEmpty(this.FilePath)           && // did not use the constructor with filepath
+                RequestQueryString["mode"]           !=  null &&
+                RequestQueryString["mode"].ToLower() == "install") // using only PackageFamilyName and Version as input parameter
             {
                 PackageFamilyNameParameter = RequestQueryString["PackageFamilyName"] != null ? RequestQueryString["PackageFamilyName"] : "";
-                PackageVersionParameter = RequestQueryString["PackageVersion"] != null ? RequestQueryString["PackageVersion"] : "";
+                PackageVersionParameter    = RequestQueryString["PackageVersion"]    != null ? RequestQueryString["PackageVersion"]    : "";
 
-                var fileNamePath = CachePath + 
-                                   System.Guid.NewGuid().ToString() +
-                                   ".rt2win";
-                await Installer.RequestApp(
-                    appInfo,
-                    CachePath,
-                    fileNamePath);
+                if (!string.IsNullOrEmpty(PackageFamilyNameParameter) && !string.IsNullOrEmpty(PackageVersionParameter))
+                {
 
-                //PackageFamilyNameParameter
+                    if (_installer.ServerAppList == null)
+                    {
+                        await _installer.RefreshInstalledAppList();
+                    }
+                    if (_installer.ServerAppList != null && _installer.ServerAppList.Count > 0)
+                    {
+                        // get the requested app version on the server
+                        appInfo = _installer.ServerAppList
+                                  .FirstOrDefault(a => a.PackageFamilyName == PackageFamilyNameParameter && 
+                                                       a.Version           == PackageVersionParameter);
 
-                this.FilePath = fileNamePath;
+                        var result =
+                            await Installer.RequestApp(
+                            appInfo,
+                            CachePath,
+                            fileNamePath);
+
+                        if (result)
+                        {
+                            //_installer.ProcessRequest(this.FilePath);
+                            this.FilePath = fileNamePath;
+                        }
+                    }
+                }
             }
-
 
             if (!string.IsNullOrEmpty(FilePath))
             {
                 FileRequestToAppInfo();
+
+                this.notifyIcon1.ShowBalloonTip(250, "OrgPortal", "The OrgPortal installer has started to install " + appName + " v" + appVersion, System.Windows.Forms.ToolTipIcon.Info);
 
                 lblStatus1.Text = appName + " v" + appVersion;
                 lblStatus2.Text = appDescription;
@@ -236,6 +294,12 @@ namespace OrgPortalMonitor
         //    return appList;
         //}
 
+
+        public string OutputLog
+        {
+            get { return txtLogOutput.Text; }
+        }
+        
         private async Task StartInstall()
         {
             if (!IsStarted)
@@ -248,11 +312,11 @@ namespace OrgPortalMonitor
                     {
                         try
                         {
-                            _installer = new Installer(OrgPortalUrlParameter,
-                                                       appInfo,
-                                                       this.notifyIcon1,
-                                                       txtLogOutput
-                                                      );
+                            //_installer = new Installer(OrgPortalUrlParameter,
+                            //                           appInfo,
+                            //                           this.notifyIcon1,
+                            //                           txtLogOutput
+                            //                          );
 
                             //_installer.StartOrgPortalFileWatcher(_installer.OrgPortalPackageTempPath);
                             //Thread.Sleep(150);
@@ -263,9 +327,10 @@ namespace OrgPortalMonitor
                             lblStatus3.Text = "Connected @ " + _installer.ServiceURI;
                             //toolStripMainStatusLabel.Text = "Connected @ " + _installer.ServiceURI;
                             //toolStripStatusAdicional.Text = " & " + _installer.OrgPortalPackageTempPath;
-                            //_installer.StartFileWatcher2(_installer.CachePath);
+                            //_installer.StartCacheWatcher(_installer.CachePath);
 
-                            await _installer.ProcessRequest(this.FilePath);
+                            await 
+                            _installer.ProcessRequest(this.FilePath);
 
                             SetProgress(35);
 
@@ -275,7 +340,31 @@ namespace OrgPortalMonitor
                             //}
                             //await RefreshInstalledApps();
                             //Thread.Sleep(2500);
-                            await Task.Delay(2500);
+                            await Task.Delay(250);
+
+                            double progressoEspera = 35;
+                            double segundosPassados = 0;
+                            double delayInSecsBeforeClose = 8;
+
+                            /*
+                            try
+                            {
+                                while (_installer.IsInstalling)
+                                {
+                                    if (segundosPassados < (delayInSecsBeforeClose * 4))
+                                    {
+                                        segundosPassados++;
+                                        await Task.Delay(250);
+                                        progressoEspera = Math.Round((segundosPassados / Convert.ToDouble((delayInSecsBeforeClose * 4))) * 100);
+                                        SetProgress(Convert.ToInt16(Math.Round(progressoEspera)));
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                ExceptionLogger.LogException(ex);
+                            }
+                            */
 
                             if (!_installer.IsProcessing  && 
                                 !_installer.IsInstalling  && 
@@ -288,28 +377,28 @@ namespace OrgPortalMonitor
                                 lblStatus1.Text = lblStatus1Buffer + " - Completed - Double click on the app logo for more info";
 
                                 btnCancel.Text = "Close";
+                                this._reallyClose = true;
+
                                 await Task.Delay(1000);
 
-                                double progressoEspera = 1;
-                                double segundosPassados = 0;
-                                double delayInSecsBeforeDownload = 30;
+                                segundosPassados = 0;
+                                delayInSecsBeforeClose = 15;
 
                                 progressBarClose.Visible = true;
 
-                                while (segundosPassados < delayInSecsBeforeDownload)
+                                while (segundosPassados < delayInSecsBeforeClose)
                                 {
                                     segundosPassados++;
                                     await Task.Delay(1000);
-                                    progressoEspera = Math.Round((segundosPassados / Convert.ToDouble(delayInSecsBeforeDownload)) * 100);
-                                    btnCancel.Text = string.Format(" Closing em {0}s ",
-                                                                   (delayInSecsBeforeDownload - Convert.ToInt32(segundosPassados))
+                                    progressoEspera = Math.Round((segundosPassados / Convert.ToDouble(delayInSecsBeforeClose)) * 100);
+                                    btnCancel.Text = string.Format(" Closing in {0}s ",
+                                                                   (delayInSecsBeforeClose - Convert.ToInt32(segundosPassados))
                                                                   );
                                     progressBarClose.Value = Convert.ToInt16(Math.Round(progressoEspera));
                                 }
 
                                 //btnCancel.Text = "Fechar (" + 1 + ")";
                                 await Task.Delay(1000);
-                                this._reallyClose = true;
                                 this.Close();
                             }
                             //btnCancel.Text += "*";
@@ -326,7 +415,7 @@ namespace OrgPortalMonitor
             }
             else
             {
-                await _installer.StopPackageTempFileWatcher();
+                _installer.StopPackageTempFileWatcher();
                 _installer = null;
                 IsStarted = false;
             }
@@ -336,11 +425,14 @@ namespace OrgPortalMonitor
 
         private void SetProgress(int value)
         {
-            TaskbarProgress.SetValue(this.Handle, value, 100);
-            progressBarApp.Value = value;
+            if (value >= 0 && value <= 100)
+            {
+                TaskbarProgress.SetValue(this.Handle, value, 100);
+                progressBarApp.Value = value;
+            }
         }
 
-        async void AppRequest_FormClosing(object sender, FormClosingEventArgs e)
+        /*async*/ void AppRequest_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (_reallyClose)
             {
@@ -348,9 +440,9 @@ namespace OrgPortalMonitor
                 this.Visible = false;
                 if (_installer != null)
                 {
-                    await _installer.StopCacheFileWatcher();
-                    await _installer.StopPackageTempFileWatcher();
-                    await _installer.StopExistingAppsFileWatcher();
+                    _installer.StopCacheFileWatcher();
+                    _installer.StopPackageTempFileWatcher();
+                    _installer.StopExistingAppsFileWatcher();
                     _installer = null;
                 }
             }
@@ -487,7 +579,7 @@ namespace OrgPortalMonitor
         {
             //var dialog = MessageBox.Show("Are you sure you want to cancel?", "OrgPortal App Install", MessageBoxButtons.YesNo);
             //if (dialog == System.Windows.Forms.DialogResult.Yes)
-            if (MessageBox.Show("Are you sure you want to cancel?", "OrgPortal App Install", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+            if (this._reallyClose || MessageBox.Show("Are you sure you want to cancel?", "OrgPortal App Install", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
             {
                 if (_installer != null)
                 {

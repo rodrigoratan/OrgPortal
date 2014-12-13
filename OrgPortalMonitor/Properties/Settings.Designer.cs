@@ -97,7 +97,7 @@ namespace OrgPortalMonitor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
         public int AutoInstallMinutes {
             get {
                 return ((int)(this["AutoInstallMinutes"]));
@@ -116,6 +116,54 @@ namespace OrgPortalMonitor.Properties {
             }
             set {
                 this["MonitorInstalledApps"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool RequireDevLicense {
+            get {
+                return ((bool)(this["RequireDevLicense"]));
+            }
+            set {
+                this["RequireDevLicense"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ProcessExistingAppRequests {
+            get {
+                return ((bool)(this["ProcessExistingAppRequests"]));
+            }
+            set {
+                this["ProcessExistingAppRequests"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowUIOnLoad {
+            get {
+                return ((bool)(this["ShowUIOnLoad"]));
+            }
+            set {
+                this["ShowUIOnLoad"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DontRequireDevLicenseInstalled {
+            get {
+                return ((bool)(this["DontRequireDevLicenseInstalled"]));
+            }
+            set {
+                this["DontRequireDevLicenseInstalled"] = value;
             }
         }
     }

@@ -7,6 +7,7 @@ using System.Data;
 using System.Deployment.Application;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace OrgPortalMonitor
 {
     public partial class Form1 : Form
     {
-        public  Form1()
+        public Form1()
         {
             InitializeComponent();
 
@@ -87,9 +88,9 @@ namespace OrgPortalMonitor
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-            //this.ShowInTaskbar = false;
-            //this.Visible = false;
             DevLicenseOutput = string.Empty;
+            DevLicenseIsValid = false;
+
             this.notifyIcon1.Visible = true;
             var menu = this.notifyIcon1.ContextMenu = new ContextMenu();
             menu.MenuItems.Add(new MenuItem { Text = "Open Monitor", Name = "OpenItem", DefaultItem = true }); //0
@@ -97,22 +98,14 @@ namespace OrgPortalMonitor
             menu.MenuItems.Add(new MenuItem { Text = "Unlock device for side-loading", Name = "UnlockDevice" }); //2
             menu.MenuItems.Add(new MenuItem { Text = "Verify developer license", Name = "GetDevLicense" }); //3
             menu.MenuItems.Add(new MenuItem { Text = "Register developer license", Name = "ShowDevLicense" }); //4
-            menu.MenuItems.Add(new MenuItem { Text = "Unregister developer license", Name = "UnregisterDevLicense", Enabled = !string.IsNullOrEmpty(DevLicenseOutput) }); //5
+            menu.MenuItems.Add(new MenuItem { Text = "Unregister developer license", Name = "UnregisterDevLicense", Enabled = DevLicenseIsValid }); //5
             menu.MenuItems.Add(new MenuItem { Text = "Exit", Name = "ExitItem" }); //6
             menu.MenuItems[0].Click += (o, a) => DisplayForm();
-            menu.MenuItems[1].Click += async (o, a) => await RefreshAppList();
+            menu.MenuItems[1].Click += async (o, a) => await RefreshInstalledApps();
             menu.MenuItems[2].Click += (o, a) => UnlockDevice();
             menu.MenuItems[3].Click += async (o, a) =>
             {
-                await RefreshDevLicenseOutput();
-                if (string.IsNullOrEmpty(DevLicenseOutput))
-                {
-                    MessageBox.Show("No developer license installed");
-                }
-                else
-                {
-                    MessageBox.Show(DevLicenseOutput);
-                }
+                await VerifyDeveloperAlert();
             };
             menu.MenuItems[4].Click += (o, a) => ShowDevLicense();
             menu.MenuItems[5].Click += async (o, a) => await UnregisterDevLicense();
@@ -133,7 +126,7 @@ namespace OrgPortalMonitor
 
             refreshInstalledListToolStripMenuItem.Click += async (o, a) =>
             {
-                await RefreshAppList();
+                await RefreshInstalledApps();
             };
 
             unlockDeviceForSideloadingToolStripMenuItem.Click += (o, a) =>
@@ -153,22 +146,13 @@ namespace OrgPortalMonitor
 
             verifyDeveloperLicenseToolStripMenuItem.Click += async (o, a) =>
             {
-                await RefreshDevLicenseOutput();
-                if (string.IsNullOrEmpty(DevLicenseOutput))
-                {
-                    MessageBox.Show("No developer license installed");
-                }
-                else
-                {
-                    MessageBox.Show(DevLicenseOutput);
-                }
+                await VerifyDeveloperAlert();
             };
 
             aboutToolStripMenuItem.Click += (o, a) =>
             {
                 MessageBox.Show("OrgPortal V" + this.AppVersion + " by Zollie (www.zollie.com.br)");
             };
-
 
             //processExistingAppRequestsToolStripMenuItem.Click += (o, a) =>
             //{
@@ -189,11 +173,38 @@ namespace OrgPortalMonitor
             BlockAllTabsExceptOneIfNotStarted("tabSettings");
 
             var RequestQueryString = Utils.GetQueryStringParameters();
-            
+
+            #region ShowUIOnLoad
+
+            var ShowUIOnLoadParameter = 
+                RequestQueryString["ShowUIOnLoad"] != null ? 
+                    RequestQueryString["ShowUIOnLoad"] : 
+                    "";
+
+            bool _showUIOnLoad = false;
+            if (!string.IsNullOrEmpty(ShowUIOnLoadParameter) &&
+                bool.TryParse(ShowUIOnLoadParameter, out _showUIOnLoad))
+            {
+                showThisUIOnLoadToolStripMenuItem.Checked = _showUIOnLoad;
+                Settings.Default.ShowUIOnLoad = _showUIOnLoad;
+                Settings.Default.Save();
+            }
+            else
+            {
+                showThisUIOnLoadToolStripMenuItem.Checked = (Settings.Default.ShowUIOnLoad);
+                _showUIOnLoad = (Settings.Default.ShowUIOnLoad);
+            }
+
+            showThisUIOnLoadToolStripMenuItem.CheckedChanged += showThisUIOnLoadToolStripMenuItem_CheckedChanged;
+            #endregion
+
             #region AutoStart
-            var AutoStartParameter = RequestQueryString["AutoStart"] != null ? RequestQueryString["AutoStart"] : "";
+            var AutoStartParameter =
+                RequestQueryString["AutoStart"] != null ? 
+                    RequestQueryString["AutoStart"] : "";
+
             bool _autoStart = false;
-            if (AutoStartParameter != null &&
+            if (!string.IsNullOrEmpty(AutoStartParameter) &&
                 bool.TryParse(AutoStartParameter, out _autoStart))
             {
                 chkAutoStart.Checked = _autoStart; //bool.Parse(AutoStartParameter);
@@ -207,12 +218,15 @@ namespace OrgPortalMonitor
                 autoConnectToolStripMenuItem.Checked = (Settings.Default.AutoStart);
             }
             chkAutoStart.CheckedChanged += chkAutoStart_CheckedChanged;
-            #endregion 
+            #endregion
 
             #region AutoInstall
-            var AutoInstallParameter = RequestQueryString["AutoInstall"] != null ? RequestQueryString["AutoInstall"] : "";
+            var AutoInstallParameter = 
+                RequestQueryString["AutoInstall"] != null ? 
+                    RequestQueryString["AutoInstall"] : "";
+
             bool _autoInstall = false;
-            if (AutoInstallParameter != null &&
+            if (!string.IsNullOrEmpty(AutoInstallParameter) &&
                 bool.TryParse(AutoInstallParameter, out _autoInstall))
             {
                 chkAutoInstall.Checked = _autoInstall; //bool.Parse(AutoInstallParameter);
@@ -229,16 +243,17 @@ namespace OrgPortalMonitor
                 btnInstallUpdates.Enabled = !chkAutoInstall.Checked;
             }
             chkAutoInstall.CheckedChanged += chkAutoInstall_CheckedChanged;
-            #endregion 
+            #endregion
 
             #region AutoInstallMinutes
-            var AutoInstallMinutesParameter = RequestQueryString["AutoInstallMinutes"] != null ? RequestQueryString["AutoInstallMinutes"] : "";
-            //int _autoInstallMinutes = 0;
-            if (AutoInstallMinutesParameter != null &&
+            var AutoInstallMinutesParameter = 
+                RequestQueryString["AutoInstallMinutes"] != null ? 
+                    RequestQueryString["AutoInstallMinutes"] : "";
+            
+            if (!string.IsNullOrEmpty(AutoInstallMinutesParameter) &&
                 Int32.TryParse(AutoInstallMinutesParameter, out _autoInstallMinutes))
             {
                 txtAutoInstallTimer.Text = _autoInstallMinutes.ToString();
-
                 Settings.Default.AutoInstallMinutes = _autoInstallMinutes;
                 Settings.Default.Save();
             }
@@ -247,12 +262,14 @@ namespace OrgPortalMonitor
                 AutoInstallMinutes = Settings.Default.AutoInstallMinutes;
                 txtAutoInstallTimer.Text = Settings.Default.AutoInstallMinutes.ToString();
             }
-            #endregion 
+            #endregion
 
             #region PackageFamilyName
-            var PackageFamilyNameParameter = RequestQueryString["PackageFamilyName"] != null ? RequestQueryString["PackageFamilyName"] : "";
-            if (PackageFamilyNameParameter != null &&
-                !string.IsNullOrEmpty(PackageFamilyNameParameter))
+            var PackageFamilyNameParameter = 
+                RequestQueryString["PackageFamilyName"] != null ? 
+                    RequestQueryString["PackageFamilyName"] : "";
+
+            if (!string.IsNullOrEmpty(PackageFamilyNameParameter))
             {
                 txtPackageFamilyName.Text = PackageFamilyNameParameter;
                 Settings.Default.PackageFamilyName = PackageFamilyNameParameter;
@@ -268,9 +285,11 @@ namespace OrgPortalMonitor
             #endregion
 
             #region OrgPortalUrl
-            var OrgPortalUrlParameter = RequestQueryString["OrgPortalUrl"] != null ? RequestQueryString["OrgPortalUrl"] : "";
-            if (OrgPortalUrlParameter != null &&
-                !string.IsNullOrEmpty(OrgPortalUrlParameter))
+            var OrgPortalUrlParameter = 
+                RequestQueryString["OrgPortalUrl"] != null ? 
+                    RequestQueryString["OrgPortalUrl"] : "";
+
+            if (!string.IsNullOrEmpty(OrgPortalUrlParameter))
             {
                 txtOrgPortalUrl.Text = OrgPortalUrlParameter;
 
@@ -282,28 +301,93 @@ namespace OrgPortalMonitor
                 if (!string.IsNullOrEmpty(Settings.Default.OrgPortalUrl))
                 {
                     txtOrgPortalUrl.Text = Settings.Default.OrgPortalUrl;
+                    OrgPortalUrlParameter = Settings.Default.OrgPortalUrl;
                 }
             }
-            #endregion 
+            #endregion
 
             #region MonitorInstalledApps
-            var MonitorInstalledAppsParameter = RequestQueryString["MonitorInstalledApps"] != null ? RequestQueryString["MonitorInstalledApps"] : "";
+            var MonitorInstalledAppsParameter = 
+                RequestQueryString["MonitorInstalledApps"] != null ? 
+                    RequestQueryString["MonitorInstalledApps"] : 
+                    "";
+
             bool _monitorInstalledApps = false;
-            if (MonitorInstalledAppsParameter != null &&
+            if (!string.IsNullOrEmpty(MonitorInstalledAppsParameter) &&
                 bool.TryParse(MonitorInstalledAppsParameter, out _monitorInstalledApps))
             {
                 monitorInstalledApps.Checked = _monitorInstalledApps; //bool.Parse(AutoInstallParameter);
                 monitorInstalledAppsToolStripMenuItem.Checked = _monitorInstalledApps;
-                
-                Settings.Default.AutoInstall = _monitorInstalledApps;
+
+                Settings.Default.MonitorInstalledApps = _monitorInstalledApps;
                 Settings.Default.Save();
             }
             else
             {
                 monitorInstalledApps.Checked = (Settings.Default.MonitorInstalledApps);
-                monitorInstalledAppsToolStripMenuItem.Checked = (Settings.Default.AutoInstall);
+                monitorInstalledAppsToolStripMenuItem.Checked = (Settings.Default.MonitorInstalledApps);
+                _monitorInstalledApps = (Settings.Default.MonitorInstalledApps);
             }
+
+            chkProcessExistingAppRequests.Visible = monitorInstalledApps.Checked; //TODO: this must be before ProcessExistingAppRequests region block
+
             monitorInstalledApps.CheckedChanged += monitorInstalledApps_CheckedChanged;
+            #endregion
+
+            #region RequireDeveloperLicense
+
+            var RequireDeveloperLicenseParameter = RequestQueryString["RequireDeveloperLicense"] != null ? RequestQueryString["RequireDeveloperLicense"] : "";
+            bool _requireDeveloperLicense = true;
+            if (!string.IsNullOrEmpty(RequireDeveloperLicenseParameter) &&
+                bool.TryParse(RequireDeveloperLicenseParameter, out _requireDeveloperLicense))
+            {
+                requireDevLicense.Checked = _requireDeveloperLicense; //bool.Parse(AutoInstallParameter);
+                //RequireDeveloperLicenseToolStripMenuItem.Checked = _RequireDeveloperLicense;
+
+                Settings.Default.RequireDevLicense = _requireDeveloperLicense;
+                Settings.Default.Save();
+            }
+            else
+            {
+                requireDevLicense.Checked = (Settings.Default.RequireDevLicense);
+                //RequireDeveloperLicenseToolStripMenuItem.Checked = (Settings.Default.RequireDevLicense);
+                _requireDeveloperLicense = (Settings.Default.RequireDevLicense);
+            }
+
+            DevLicenseButtonsSet();
+
+            requireDevLicense.CheckedChanged += requireDevLicense_CheckedChanged;
+
+            //if (Settings.Default.DontRequireDevLicenseInstalled)
+            //{
+            //    requireDevLicense.Checked = false;
+            //    requireDevLicense.Enabled = false;
+            //}
+
+            #endregion
+
+            #region ProcessExistingAppRequests
+            var ProcessExistingAppRequestsParameter = 
+                RequestQueryString["ProcessExistingAppRequests"] != null ? 
+                    RequestQueryString["ProcessExistingAppRequests"] : "";
+
+            bool _processExistingAppRequests = true;
+            if (!string.IsNullOrEmpty(ProcessExistingAppRequestsParameter) &&
+                bool.TryParse(ProcessExistingAppRequestsParameter, out _processExistingAppRequests))
+            {
+                chkProcessExistingAppRequests.Checked = _processExistingAppRequests; //bool.Parse(AutoInstallParameter);
+                //ProcessExistingAppRequestsToolStripMenuItem.Checked = _ProcessExistingAppRequests;
+
+                Settings.Default.ProcessExistingAppRequests = _processExistingAppRequests;
+                Settings.Default.Save();
+            }
+            else
+            {
+                chkProcessExistingAppRequests.Checked = (Settings.Default.ProcessExistingAppRequests);
+                //ProcessExistingAppRequestsToolStripMenuItem.Checked = (Settings.Default.RequireDevLicense);
+                _processExistingAppRequests = (Settings.Default.ProcessExistingAppRequests);
+            }
+            chkProcessExistingAppRequests.CheckedChanged += chkProcessExistingAppRequests_CheckedChanged;
             #endregion
 
             #region Window Location and Size
@@ -325,25 +409,174 @@ namespace OrgPortalMonitor
 
             OrgPortalStatus();
 
+            if (_showUIOnLoad)
+            {
+                DisplayForm();
+            }
+            else
+            {
+                HideForm();
+            }
+
             IsLoaded = true;
+
             await ToggleStartStop();
 
             //GatherMachineInfo();
         }
 
+        private /*async Task*/void DevLicenseButtonsSet()
+        {
+
+            var menu = this.notifyIcon1.ContextMenu;
+            
+            //menu.MenuItems[3].Visible = requireDevLicense.Checked;
+            //verifyDeveloperLicenseToolStripMenuItem.Visible = requireDevLicense.Checked;
+
+            //registerDeveloperLicenseToolStripMenuItem.Visible = requireDevLicense.Checked;
+            //menu.MenuItems[4].Visible = requireDevLicense.Checked;
+
+            menu.MenuItems[5].Visible = requireDevLicense.Checked;
+            unregisterDeveloperLicenseToolStripMenuItem.Visible = requireDevLicense.Checked;
+        }
+
+        private async Task VerifyDeveloperAlert()
+        {
+            await RefreshDevLicenseOutput();
+
+            if (_monitor != null)
+            {
+                if (!DevLicenseIsValid)
+                {
+                    MessageBox.Show("No valid developer license is installed");
+                }
+                else
+                {
+                    MessageBox.Show("License is valid and will expire in " + DevLicenseDate);
+                }
+            }
+        }
+
+        void showThisUIOnLoadToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.ShowUIOnLoad = showThisUIOnLoadToolStripMenuItem.Checked;
+            Settings.Default.Save();
+        }
+
+        async void chkProcessExistingAppRequests_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.ProcessExistingAppRequests = chkProcessExistingAppRequests.Checked;
+            Settings.Default.Save();
+            if (chkProcessExistingAppRequests.Checked)
+            {
+                if (_monitor != null)
+                {
+                    await _monitor.ProcessExistingAppsTempRequestFiles();
+                }
+            }
+        }
+
+        async void requireDevLicense_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.RequireDevLicense = requireDevLicense.Checked;
+            Settings.Default.Save();
+
+            DevLicenseButtonsSet();
+
+            if (requireDevLicense.Checked)
+            {
+                if (!DevLicenseIsValid)
+                {
+                    await RefreshDevLicenseOutput();
+                }
+                else
+                {
+                    if (_monitor != null && _monitor.CurrentDevLicense != null)
+                    {
+                        RefreshDevLicenseInfo(_monitor.CurrentDevLicense);
+                    }
+                    else
+                    {
+                        await RefreshDevLicenseOutput();
+                    }
+                }
+            }
+            else
+            {
+                LicenseInfoDisplay.Text = "No developer license is required";
+                //TODO: remove or apply dev license (copy/encapsulate code from program.cs)
+                if (!Settings.Default.DontRequireDevLicenseInstalled)
+                {
+                    if (!File.Exists(Path.Combine(Utils.CurrentPath, Utils.DontRequiredDevLicenseRegistryFileName)))
+                    {
+                        string requiredRegistryTemplate = "REGEDIT4" + Environment.NewLine + Environment.NewLine;
+                        MessageBox.Show("We must import some settings to the registry because you changed the Require Developer License setting.\n\nPlease say YES to all security prompts you see, we will try to ask it only when strictly necessary.", "Welcome to OrgPortal");
+                        requiredRegistryTemplate += Utils.ReturnRegistryDontRequireDevLicense();
+                        if (Utils.WriteRequiredRegistry(requiredRegistryTemplate, Utils.DontRequiredDevLicenseRegistryFileName))
+                        {
+                            Utils.ImportRequiredRegistry(Utils.DontRequiredDevLicenseRegistryFileName);
+                            if (File.Exists(Path.Combine(Utils.CurrentPath, Utils.DontRequiredDevLicenseRegistryFileName)))
+                            {
+                                Settings.Default.DontRequireDevLicenseInstalled = true;
+                                Settings.Default.Save();
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
         private async Task RefreshDevLicenseOutput()
         {
-            DevLicenseOutput = await GetDevLicense();
-            DevLicenseDisableUnregister();
+            if (OrgPortalMonitor.Properties.Settings.Default.RequireDevLicense)
+            {
+                var CurrentDevLicense = await GetDevLicense();
+                    
+                DevLicenseOutput = CurrentDevLicense.DevLicenseOutput;
+                DevLicenseDate = CurrentDevLicense.DatetimeLicense;
+                DevLicenseIsValid = CurrentDevLicense.IsValid;
+
+                RefreshDevLicenseInfo(CurrentDevLicense);
+
+                DevLicenseDisableUnregister();
+            }
+            else
+            {
+                DevLicenseIsValid = true;
+                DevLicenseOutput = "No developer license is required.";
+                LicenseInfoDisplay.Text = DevLicenseOutput;
+            }
+        }
+
+        private void RefreshDevLicenseInfo(DevLicense CurrentDevLicense)
+        {
+            if (CurrentDevLicense.IsValid)
+            {
+                LicenseInfoDisplay.Text = "Expires in " + CurrentDevLicense.DateLicense;
+            }
+            else
+            {
+                LicenseInfoDisplay.Text = CurrentDevLicense.DevLicenseOutput;
+            }
         }
 
         private void DevLicenseDisableUnregister()
         {
             var menu = this.notifyIcon1.ContextMenu;
-            menu.MenuItems[5].Enabled = !string.IsNullOrEmpty(DevLicenseOutput);
-            unregisterDeveloperLicenseToolStripMenuItem.Enabled = !string.IsNullOrEmpty(DevLicenseOutput);
-            registerDeveloperLicenseToolStripMenuItem.Text = !string.IsNullOrEmpty(DevLicenseOutput) ? "Register new developer license" : "Register developer license";
-            menu.MenuItems[4].Text = !string.IsNullOrEmpty(DevLicenseOutput) ? "Register new developer license" : "Register developer license";
+            menu.MenuItems[5].Enabled = DevLicenseIsValid; //Unregister developer license
+            unregisterDeveloperLicenseToolStripMenuItem.Enabled = !string.IsNullOrEmpty(DevLicenseOutput); // Unregister developer license
+
+            //Register developer license
+            registerDeveloperLicenseToolStripMenuItem.Text =
+                DevLicenseIsValid ? 
+                    "Register new developer license" : 
+                    "Register developer license";
+
+            menu.MenuItems[4].Text =
+                DevLicenseIsValid ? 
+                    "Register new developer license" : 
+                    "Register developer license";
         }
 
         private void ReallyClose()
@@ -354,19 +587,21 @@ namespace OrgPortalMonitor
 
         private void GatherMachineInfo()
         {
-            var windowsVersion        = ""; // await WindowsStoreSystemInformation.GetWindowsVersionAsync();
-            var processor             = ""; // await WindowsStoreSystemInformation.GetProcessorArchitectureAsync();
-            var deviceCategory        = ""; // await WindowsStoreSystemInformation.GetDeviceCategoryAsync();
-            var deviceManufacturer    = ""; // await WindowsStoreSystemInformation.GetDeviceManufacturerAsync();
-            var deviceModel           = ""; // await WindowsStoreSystemInformation.GetDeviceModelAsync();
-            var osInfo                = ""; // new Windows.Security.ExchangeActiveSyncProvisioning.EasClientDeviceInformation();
-            string machineName        = ""; // osInfo.FriendlyName;
-            string operatingSystem    = ""; // osInfo.OperatingSystem;
+            /*
+            var windowsVersion = ""; // await WindowsStoreSystemInformation.GetWindowsVersionAsync();
+            var processor = ""; // await WindowsStoreSystemInformation.GetProcessorArchitectureAsync();
+            var deviceCategory = ""; // await WindowsStoreSystemInformation.GetDeviceCategoryAsync();
+            var deviceManufacturer = ""; // await WindowsStoreSystemInformation.GetDeviceManufacturerAsync();
+            var deviceModel = ""; // await WindowsStoreSystemInformation.GetDeviceModelAsync();
+            var osInfo = ""; // new Windows.Security.ExchangeActiveSyncProvisioning.EasClientDeviceInformation();
+            string machineName = ""; // osInfo.FriendlyName;
+            string operatingSystem = ""; // osInfo.OperatingSystem;
             string systemManufacturer = ""; // osInfo.SystemManufacturer;
-            string systemProductName  = ""; // osInfo.SystemProductName;
-            string systemSku          = ""; // osInfo.SystemSku;
-            string systemId           = ""; // osInfo.Id;
-            string deviceInfo         = ""; // string.Format(            
+            string systemProductName = ""; // osInfo.SystemProductName;
+            string systemSku = ""; // osInfo.SystemSku;
+            string systemId = ""; // osInfo.Id;
+            string deviceInfo = ""; // string.Format(            
+            */
         }
 
         private void OrgPortalStatus()
@@ -397,11 +632,11 @@ namespace OrgPortalMonitor
             }
         }
 
-        private async Task RefreshAppList()
-        {
-            //_monitor.GetInstalledPackages();
-            await RefreshInstalledApps();
-        }
+        //private async Task RefreshAppList()
+        //{
+        //    //_monitor.GetInstalledPackages();
+        //    await RefreshInstalledApps();
+        //}
 
         private void UnlockDevice()
         {
@@ -418,15 +653,23 @@ namespace OrgPortalMonitor
             _monitor.ShowDevLicense();
         }
 
-        private async Task<string> GetDevLicense()
+        private async Task<DevLicense> GetDevLicense()
         {
             if (_monitor != null)
             {
-                return await _monitor.GetDevLicense();
+                ////return await _monitor.GetDevLicense();
+                //if (_monitor.CurrentDevLicense != null)
+                //{
+                //    return _monitor.CurrentDevLicense;
+                //}
+                //else
+                //{
+                return await _monitor.RefreshDevLicenseOutput();
+                //}
             }
             else
             {
-                return await Task.FromResult<string>(string.Empty);
+                return await Task.FromResult<DevLicense>(new DevLicense() { IsValid = false, DevLicenseOutput = string.Empty });
             }
         }
 
@@ -442,7 +685,7 @@ namespace OrgPortalMonitor
 
         }
 
-        private async void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        private /*async*/ void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (!_reallyClose)
             {
@@ -454,9 +697,9 @@ namespace OrgPortalMonitor
             {
                 if (_monitor != null)
                 {
-                    await _monitor.StopCacheFileWatcher();
-                    await _monitor.StopPackageTempFileWatcher();
-                    await _monitor.StopExistingAppsFileWatcher();
+                    _monitor.StopCacheFileWatcher();
+                    _monitor.StopPackageTempFileWatcher();
+                    _monitor.StopExistingAppsFileWatcher();
                     _monitor = null;
                 }
             }
@@ -480,6 +723,13 @@ namespace OrgPortalMonitor
             this.BringToFront();
         }
 
+        private void HideForm()
+        {
+            this.ShowInTaskbar = false;
+            this.WindowState = FormWindowState.Minimized;
+            this.Visible = false;
+        }
+
         private async void timer1_Tick(object sender, EventArgs e)
         {
             if (chkAutoInstall.Checked && IsStarted)
@@ -497,7 +747,7 @@ namespace OrgPortalMonitor
 
                 if (AutoInstallTimer == 1 && _monitor != null)
                 {
-                    await RefreshDevLicenseOutput();
+                    //await RefreshDevLicenseOutput();
 
                     await _monitor.AutoInstallUpdateApps();
 
@@ -560,23 +810,38 @@ namespace OrgPortalMonitor
                                                this.fileSystemWatcher2
                                               );
 
-                    await _monitor.StartOrgPortalFileWatcher(_monitor.OrgPortalPackageTempPath);
+                    toolStripMainStatusLabel.Text = "Connecting to @ " + _monitor.ServiceURI + " ...";
 
+                    //await _monitor.RefreshInstalledAppList();
+                    await RefreshInstalledApps();
+
+                    IsOrgPortalWatching = await _monitor.StartOrgPortalFileWatcher(_monitor.OrgPortalPackageTempPath);
                     toolStripMainStatusLabel.Text = "Connected @ " + _monitor.ServiceURI;
-                    toolStripStatusAdicional.Text = " & " + _monitor.OrgPortalPackageTempPath;
 
-                    //_monitor.StartFileWatcher2(_monitor.CachePath);
-                    //TODO: Uncomment to ProcessExistingCacheRequestFiles on ToggleStartStop
-                    //if (!_monitor.IsAutoInstalling)
-                    //{
-                    //    _monitor.ProcessExistingCacheRequestFiles();
-                    //}
+                    if (IsOrgPortalWatching)
+                    {
+                        toolStripStatusAdicional.Text = " & " +
+                             _monitor.OrgPortalPackageTempPath.Replace(
+                                System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData),
+                                "%UserProfile%\\AppData"
+                            );
+                    }
+                    else
+                    {
+                        toolStripStatusAdicional.Text = " OrgPortal companion app is not installed. ";
+                    }
+
+                    //_monitor.StartCacheWatcher(_monitor.CachePath);
 
                     await RefreshDevLicenseOutput();
-                    if (string.IsNullOrEmpty(DevLicenseOutput) && !DontAskDeveloperLicense)
+
+                    if (!DevLicenseIsValid &&
+                        !DontAskDeveloperLicense &&
+                         OrgPortalMonitor.Properties.Settings.Default.RequireDevLicense)
                     {
-                        //MessageBox.Show("No developer license installed");
-                        var messageDialog = MessageBox.Show("No developer license installed. Do you want to install it now? (Click no if your device is sideload enabled by group policy or sideloading key)", "No developer license", MessageBoxButtons.YesNo);
+                        var messageDialog = MessageBox.Show("No developer license installed. Do you want to install it now?\n\n(Click no if your device is sideload enabled by group policy or sideloading key)", 
+                                                            "No developer license", 
+                                                             MessageBoxButtons.YesNo);
                         if (messageDialog == System.Windows.Forms.DialogResult.Yes)
                         {
                             _monitor.ShowDevLicense();
@@ -589,12 +854,11 @@ namespace OrgPortalMonitor
                         }
                     }
 
-                    await RefreshInstalledApps();
                 }
             }
             else
             {
-                await _monitor.StopPackageTempFileWatcher();
+                _monitor.StopPackageTempFileWatcher();
                 _monitor = null;
                 IsStarted = false;
                 btnStartStop.Text = btnStartStopOriginalTextBuffer;
@@ -609,43 +873,63 @@ namespace OrgPortalMonitor
 
         async void fileSystemWatcher1_Created(object sender, System.IO.FileSystemEventArgs e)
         {
-            await Task.Delay(20000);
+            await Task.Delay(25000);
             await RefreshInstalledApps();
         }
 
         public async Task RefreshInstalledApps()
         {
             dgvInstalled.Rows.Clear();
+            dgvDistinctServerApps.Rows.Clear();
             dgvServerApps.Rows.Clear();
 
             if (_monitor != null)
             {
                 //if (_monitor.ServerAppList == null || _monitor.ServerAppList.Count == 0)
                 //{
+
                 _monitor.ServerAppList = await _monitor.GetRemoteAppList();
+
+                _monitor.DistinctServerAppList =
+                    await _monitor.GetRemoteDistinctAppList(_monitor.ServerAppList);
+
                 //}
 
                 _monitor.InstalledAppList = new List<AppInfo>();
 
-                var installedApps = await _monitor
-                                    .GetInstalledApps(
-                                        _monitor.ServerAppList != null ?
-                                                _monitor.ServerAppList : 
-                                                new List<AppInfo>());
-                foreach (var app in installedApps)
+                //var installedApps = 
+                _monitor.InstalledAppList =
+                    await _monitor
+                    .GetInstalledApps(
+                        _monitor.ServerAppList != null ?
+                                _monitor.ServerAppList :
+                                    new List<AppInfo>());
+
+                foreach (var app in _monitor.InstalledAppList)
                 {
                     dgvInstalled.Rows.Add(app.DisplayName, app.Version, app.NewVersionAvailable, app.InstallMode, app.Name);
                 }
 
                 foreach (var app in _monitor.ServerAppList)
                 {
-                    AppInfo _installedItem = 
-                            (installedApps != null) ? 
-                                installedApps
+                    AppInfo _installedItem =
+                            (_monitor.InstalledAppList != null && _monitor.InstalledAppList.Count > 0) ?
+                                _monitor.InstalledAppList
                                 .FirstOrDefault(a => a.PackageFamilyName == app.PackageFamilyName &&
-                                                     a.Version           == app.Version) : new AppInfo();
+                                                     a.Version == app.Version) : new AppInfo();
 
                     dgvServerApps.Rows.Add(app.DisplayName, app.Version, _installedItem != null, app.InstallMode, app.PackageFamilyName);
+                }
+
+                foreach (var app in _monitor.DistinctServerAppList)
+                {
+                    AppInfo _installedItem =
+                            (_monitor.InstalledAppList != null && _monitor.InstalledAppList.Count > 0) ?
+                                _monitor.InstalledAppList
+                                .FirstOrDefault(a => a.PackageFamilyName == app.PackageFamilyName &&
+                                                     a.Version == app.Version) : new AppInfo();
+
+                    dgvDistinctServerApps.Rows.Add(app.DisplayName, app.Version, _installedItem != null, app.InstallMode, app.PackageFamilyName);
                 }
             }
         }
@@ -755,7 +1039,7 @@ namespace OrgPortalMonitor
 
                     var packageFamilyNameColumn = senderGrid.Columns[e.ColumnIndex - 1];
 
-                    if (packageFamilyNameColumn != null && 
+                    if (packageFamilyNameColumn != null &&
                         packageFamilyNameColumn is DataGridViewTextBoxColumn &&
                         e.RowIndex >= 0)
                     {
@@ -795,10 +1079,11 @@ namespace OrgPortalMonitor
 
         async void appRequest_FormClosing(object sender, FormClosingEventArgs e)
         {
+            this.txtLogOutput.Text += appRequest.OutputLog;
             await RefreshInstalledApps();
         }
 
-        private async void chkAutoInstall_CheckedChanged(object sender, EventArgs e)
+        private /*async*/ void chkAutoInstall_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.AutoInstall = chkAutoInstall.Checked;
             Settings.Default.Save();
@@ -809,11 +1094,12 @@ namespace OrgPortalMonitor
 
             AutoInstallTimer = 0;
 
+            #region commenting because all happens on the tick timer
             if (chkAutoInstall.Checked)
             {
                 if (_monitor != null && IsLoaded)
                 {
-                    //_monitor.StartFileWatcher2(_monitor.CachePath);
+                    //_monitor.StartCacheWatcher(_monitor.CachePath); /wont monitor cache anymore
                     //if (!_monitor.IsAutoInstalling)
                     //{
                     //await _monitor.ProcessExistingCacheRequestFiles();
@@ -828,6 +1114,7 @@ namespace OrgPortalMonitor
             //        _monitor.StopFileWatcher2();
             //    }
             //}
+            #endregion
         }
 
         private async void btnInstallUpdates_Click(object sender, EventArgs e)
@@ -882,23 +1169,28 @@ namespace OrgPortalMonitor
         {
             Settings.Default.MonitorInstalledApps = monitorInstalledApps.Checked;
             Settings.Default.Save();
-           
-            //TODO: create toolstrip
-            //monitorInstalledAppsToolStripMenuItem.Checked = monitorInstalledApps.Checked;
 
             if (monitorInstalledApps.Checked)
             {
+                chkProcessExistingAppRequests.Visible = true;
+                chkProcessExistingAppRequests.Checked =
+                    (Settings.Default.ProcessExistingAppRequests);
+
                 if (_monitor != null && IsLoaded)
                 {
-                    //_monitor.StartFileWatcher2(_monitor.CachePath);
-                    //if (!_monitor.IsAutoInstalling)
-                    //{
-                    if (_monitor.InstalledAppList != null && _monitor.InstalledAppList.Count > 0)
-                    {
-                        await _monitor.ProcessExistingAppsTempRequestFiles();
-                    }
-                    //}
+                    await _monitor.StartInstalledAppsFileWatcher();
                 }
+            }
+            else
+            {
+                chkProcessExistingAppRequests.Checked = false;
+                chkProcessExistingAppRequests.Visible = false;
+
+                if (_monitor != null && IsLoaded)
+                {
+                    _monitor.StopExistingAppsFileWatcher();
+                }
+
             }
         }
 
@@ -970,5 +1262,16 @@ namespace OrgPortalMonitor
         public string DevLicenseOutput { get; set; }
 
         public bool DontAskDeveloperLicense { get; set; }
+
+        public bool IsOrgPortalWatching { get; set; }
+
+        public bool DevLicenseIsValid { get; set; }
+
+        public DateTime DevLicenseDate { get; set; }
+
+        private void dgvDistinctServerApps_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            //dgvServerApps_CellContentClick
+        }
     }
 }

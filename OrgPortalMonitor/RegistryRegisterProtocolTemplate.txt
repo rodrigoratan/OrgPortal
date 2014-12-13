@@ -1,0 +1,14 @@
+﻿[HKEY_CLASSES_ROOT\OrgPortal]
+@="URL:OrgPortal Protocol"
+"URL Protocol"=""
+
+[HKEY_CLASSES_ROOT\OrgPortal\DefaultIcon]
+@="{0}"
+
+[HKEY_CLASSES_ROOT\OrgPortal\shell]
+
+[HKEY_CLASSES_ROOT\OrgPortal\shell\{2}]
+
+[HKEY_CLASSES_ROOT\OrgPortal\shell\{2}\command]
+@="{1} %1"
+

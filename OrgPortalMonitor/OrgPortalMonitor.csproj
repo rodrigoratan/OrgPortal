@@ -32,7 +32,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <TrustUrlParameters>true</TrustUrlParameters>
-    <ApplicationRevision>79</ApplicationRevision>
+    <ApplicationRevision>114</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -84,6 +84,12 @@
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>OrgPortalMonitor_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>Internet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -116,6 +122,7 @@
     </Compile>
     <Compile Include="Common\TaskbarProgress.cs" />
     <Compile Include="Common\Utils.cs" />
+    <Compile Include="DataModel\DevLicense.cs" />
     <Compile Include="DataModel\AppInfo.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -155,6 +162,7 @@
     </EmbeddedResource>
     <None Include="OrgPortalMonitor_TemporaryKey.pfx" />
     <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -191,6 +199,12 @@
     </Content>
     <Content Include="notifyIcon1.Icon.ico" />
     <None Include="Resources\zollie.png" />
+    <Content Include="RegistryDontRequireDevLicense.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="RegistryRegisterProtocolTemplate.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="sync.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -201,12 +215,6 @@
       <Visible>False</Visible>
       <Description>rt2win OrgPortal Write File</Description>
       <Progid>OrgPortalMonitorRt2Win</Progid>
-      <DefaultIcon>sync.ico</DefaultIcon>
-    </FileAssociation>
-    <FileAssociation Include=".win2rt">
-      <Visible>False</Visible>
-      <Description>win2rt OrgPortal Read File</Description>
-      <Progid>OrgPortalMonitorWin2Rt</Progid>
       <DefaultIcon>sync.ico</DefaultIcon>
     </FileAssociation>
   </ItemGroup>
