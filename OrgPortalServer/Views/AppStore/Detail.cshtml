@@ -76,12 +76,17 @@
                 </dd>
             }
 
+            <dt>@Html.DisplayNameFor(model => model.PackageFile)</dt>
+            <dd>@Html.DisplayFor(model => model.PackageFile) <i>(<a href="/api/appx/@Model.PackageFamilyName/?version=@Model.Version" />Install app</a>)</i></dd>
+
             <dd></dd>
             <dd></dd>
         </dl>
-       
     </div>
     <br />
+
+    <a class="btn btn-primary btn-large" href="/orgportalmonitor/OrgPortalMonitor.application?mode=Install&PackageFamilyName=@Model.PackageFamilyName&PackageVersion=@Model.Version&AutoStart=True&AutoInstall=True&AutoInstallMinutes=10&OrgPortalUrl=http://store.zollie.com.br/api/">Instalar @Model.Name v @Model.Version »</a>
+
     <p>&nbsp;</p>
     <p>&nbsp;</p>
     <div style="clear:both;margin-left:50px;">
