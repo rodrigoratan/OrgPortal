@@ -765,7 +765,9 @@ namespace OrgPortalMonitor
                 {
                     var sb = new StringBuilder();
                     sb.Append(@"add-appxpackage ");
+                    sb.Append(@"""");
                     sb.Append(appxFilePath);
+                    sb.Append(@"""");
                     sb.Append(" -ForceApplicationShutdown");
 
                     //TODO: Implement dependencies:

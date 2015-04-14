@@ -19,7 +19,7 @@ namespace OrgPortalServer.Controllers
         {
             return View(IoCContainerFactory.Current.GetInstance<ApplicationRepository>().Applications);
         }
-        // GET api/<controller>
+        // GET api/appstore/?id=x&version=y
         public ActionResult Detail(string id, string version)
         {
             try
